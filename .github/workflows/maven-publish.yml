@@ -33,7 +33,6 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         server-id: nick-maven-repo
-        settings-path: ./settings.xml
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
