@@ -1,36 +1,103 @@
 package com.thebizio.commonmodule.service;
 
+import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.SetupIntentCreateParams;
+import com.thebizio.commonmodule.dto.BillingAddress;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.CouponType;
 import com.thebizio.commonmodule.enums.OrderStatus;
 import com.thebizio.commonmodule.exception.ValidationException;
+import net.avalara.avatax.rest.client.enums.DocumentType;
 import net.avalara.avatax.rest.client.models.TransactionModel;
 import net.avalara.avatax.rest.client.models.TransactionSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderFlowImpl implements IOrderFlow {
 
+    Logger logger = LoggerFactory.getLogger(OrderFlowImpl.class);
+
     final PromotionService promotionService;
     final CalculateUtilService calculateUtilService;
 
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService) {
+    final AvalaraService avalaraService;
+
+    final EntityManager entityManager;
+
+    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager) {
         this.promotionService = promotionService;
         this.calculateUtilService = calculateUtilService;
+        this.avalaraService = avalaraService;
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public PaymentIntent payment(String paymentMethodId, String stripeCustId, Long amt, String orderRefNo) {
+        PaymentIntentCreateParams params =
+                PaymentIntentCreateParams.builder()
+                        .setAmount(amt)
+                        .setPaymentMethod(paymentMethodId)
+                        .setCurrency("usd")
+                        .setCustomer(stripeCustId)
+                        .setConfirm(true)
+                        .setOffSession(true)
+                        .putMetadata("order_ref", orderRefNo)
+                        .setAutomaticPaymentMethods(
+                                PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
+                        )
+                        .build();
+
+        try {
+            return PaymentIntent.create(params);
+        } catch (CardException exception) {
+            logger.error(exception.getMessage());
+            return exception.getStripeError().getPaymentIntent();
+        } catch (StripeException exception) {
+            logger.error(exception.getMessage());
+            throw new ValidationException("try again later or contact support");
+        }
+    }
+
+    @Override
+    public OrderPayload createOrderPayload(Order order, String payloadType, String payload, String stripeCustId) {
+
+        OrderPayload orderPayload = new OrderPayload();
+        orderPayload.setOrder(order);
+        orderPayload.setPayloadType(payloadType);
+        orderPayload.setPayload(payload);
+        orderPayload.setStripeCustomerId(stripeCustId);
+
+        entityManager.persist(orderPayload);
+
+        return orderPayload;
     }
 
     @Transactional
     @Override
-    public Order createOrder(@NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion) {
+    public Order createOrder(
+            @NotNull String orgCode,
+            @NotNull ProductVariant productVariant,
+            @NotNull Price price,
+            Promotion promotion,
+            @Valid @NotNull BillingAddress billingAddress
+    ) {
         Order order = new Order();
 
         if(!price.getProductVariant().getId().equals(productVariant.getId()))
@@ -66,8 +133,12 @@ public class OrderFlowImpl implements IOrderFlow {
             }
 
             discount = calculateUtilService.roundTwoDigits(discount);
-
             promotionService.incrementPromocodeCounter(promotion);
+        }
+
+        BigDecimal totalWithDiscount = BigDecimal.valueOf(grossTotal);;
+        if (discount != null) {
+            totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
         }
 
         BigDecimal tax = BigDecimal.ZERO;
@@ -76,26 +147,25 @@ public class OrderFlowImpl implements IOrderFlow {
         if(!isFullDiscount){
             TransactionModel tm = null;
 
-            // pending
             // get taxes for given address
-//            try {
-//                tm = avalaraService.createTransaction(reqDto.getBillingAddress(), productVariant, user.getUserName(),
-//                        DocumentType.SalesOrder, totalWithDiscount);
-//            } catch (Exception e) {
-//
-//                if (e instanceof AvaTaxClientException) {
-//                    throw new ValidationException(((AvaTaxClientException) e).getErrorResult().getError().getMessage());
-//                } else {
-//                    throw new RuntimeException(e);
-//                }
-//            }
+            // call avalara get taxes
 
-//            tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
-//            transactionSummaryList = tm.getSummary();
+            try {
+                tm = avalaraService.createTransaction(
+                        billingAddress,
+                        productVariant,
+                        orgCode,
+                        DocumentType.SalesOrder,
+                        totalWithDiscount
+                );
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+               throw new ValidationException("some error occurred while creating order");
+            }
+
+            tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
+            transactionSummaryList = tm.getSummary();
         }
-
-        // call avalara get taxes
-
 
         if(discount != null){
             order.setNetTotal(BigDecimal.valueOf(grossTotal).add(tax).subtract(BigDecimal.valueOf(discount)));
@@ -113,23 +183,34 @@ public class OrderFlowImpl implements IOrderFlow {
 
         order.setStatus(OrderStatus.IN_PROGRESS);
 
+        entityManager.persist(order);
         return order;
     }
 
     @Override
-    public String checkout(Order order) {
-        PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setAmount(order.getNetTotal().longValue() * 100)
-                        .setCurrency("usd")
-                        .putMetadata("order_ref", order.getRefNo())
-                        .build();
-
+    public SetupIntent checkout(String stripeCustId) {
+        SetupIntentCreateParams params = SetupIntentCreateParams
+                .builder()
+                .setCustomer(stripeCustId)
+                .addPaymentMethodType("card")
+                .build();
         try {
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
-            return paymentIntent.getClientSecret();
+            return SetupIntent.create(params);
         } catch (StripeException e) {
-            return null;
+            logger.error(e.getMessage());
+            throw new ValidationException("try again later or contact support");
+        }
+    }
+
+    public String createCustomer(String name, String email) {
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("name", name);
+        customerMap.put("email", email);
+        try {
+            return Customer.create(customerMap).getId();
+        } catch (StripeException e) {
+            logger.error(e.getMessage());
+            throw new ValidationException("try again later or contact support");
         }
     }
 }

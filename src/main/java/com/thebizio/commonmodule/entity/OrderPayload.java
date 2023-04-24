@@ -20,8 +20,10 @@ public class OrderPayload {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    String payloadType;
+    private String payloadType;
 
     @Column(columnDefinition="TEXT")
-    String payload;
+    private String payload;
+
+    private String stripeCustomerId;
 }
