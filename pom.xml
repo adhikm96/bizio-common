@@ -98,4 +98,12 @@
     </dependency>
 
   </dependencies>
+  
+  <distributionManagement>
+    <repository>
+      <id>nick-maven-repo</id>
+      <name>nick-maven-repo</name>
+      <url>https://nick-bz-764111674009.d.codeartifact.us-east-2.amazonaws.com/maven/bz-center/</url>
+    </repository>
+  </distributionManagement>
 </project>

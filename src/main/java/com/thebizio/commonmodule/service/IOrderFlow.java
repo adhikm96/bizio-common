@@ -1,57 +1,32 @@
 package com.thebizio.commonmodule.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.SetupIntent;
 import com.thebizio.commonmodule.dto.BillingAddress;
 import com.thebizio.commonmodule.entity.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public interface IOrderFlow {
-
-    /**
-     *
-     * @param name
-     * @param email
-     * @return stripeCustomerId
-     */
     String createCustomer(@NotNull String name, @NotNull String email);
 
-    /**
-     *
-     * @param paymentMethodId
-     * @param stripeCustId
-     * @param amt
-     * @param orderRefNo
-     * @return paymentIntent
-     */
-    PaymentIntent payment(@NotNull String paymentMethodId, @NotNull String stripeCustId, @NotNull Long amt, @NotNull String orderRefNo);
+    PaymentIntent payment(@NotNull String stripePaymentMethodId, @NotNull String stripeCustomerId, @NotNull Long amount, @NotNull String orderRefNo);
 
-    /**
-     *
-     * @param order
-     * @param payloadType
-     * @param payload
-     * @param stripeCustId
-     * @return orderPayload
-     */
-    OrderPayload createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustId);
+    void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
 
-    /**
-     *
-     * @param orgCode
-     * @param productVariant
-     * @param price
-     * @param promotion
-     * @param billingAddress
-     * @return Order
-     */
-    Order createOrder(@NotNull String orgCode, @NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @NotNull BillingAddress billingAddress);
+    Order createOrder(@NotNull String orgCode, @NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @Valid @NotNull BillingAddress billingAddress);
 
-    /**
-     *
-     * @param stripeCustId
-     * @return setupIntent
-     */
-    SetupIntent checkout(String stripeCustId);
+    String checkout(String stripeCustId);
+    String createPaymentMethodIntent(String stripeCustomerId);
+
+    Organization createOrganizationFromPayload(String payload) throws JsonProcessingException;
+
+    Account createAccountFromPayload(String payload) throws JsonProcessingException;
+
+    Subscription createSubscription(Order order,Organization organization);
+
+    Address createAddressFromPayload(String payload) throws JsonProcessingException;
+
+    Contact createContactFromPayload(String payload) throws JsonProcessingException;
 }
