@@ -1,7 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
-import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
+import com.thebizio.commonmodule.enums.InvoiceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
