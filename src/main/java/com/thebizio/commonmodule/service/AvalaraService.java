@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
+@Service("commonAvalaraService")
 public class AvalaraService {
     private static final String COUNTRY = "US";
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 
-@Service
+@Service("commonPromotionService")
 public class PromotionService {
 
     final EntityManager entityManager;
