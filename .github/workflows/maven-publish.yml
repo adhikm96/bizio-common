@@ -1,7 +1,4 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
-
-name: Maven Package
+name: Maven Package and Upload
 
 on:
   workflow_dispatch:
@@ -25,17 +22,17 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-2
+        aws-region: us-east-1
         
     - name: Set up JDK 8
       uses: actions/setup-java@v3
       with:
         java-version: '8'
         distribution: 'temurin'
-        server-id: nick-maven-repo
+        server-id: dair-maven-repo
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
     - name: Publish to AWS Artifactory
-      run: export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain nick-bz --domain-owner 764111674009 --query authorizationToken --output text` && mvn deploy -s ./settings.xml
+      run: export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain dair --domain-owner 502003452906 --region us-east-1 --query authorizationToken --output text` && mvn deploy -s ./settings.xml
