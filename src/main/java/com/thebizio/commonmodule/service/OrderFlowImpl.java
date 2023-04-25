@@ -164,6 +164,8 @@ public class OrderFlowImpl implements IOrderFlow {
             }
 
             tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
+
+            // need to decide what to do with transactionSummaryList
             transactionSummaryList = tm.getSummary();
         }
 

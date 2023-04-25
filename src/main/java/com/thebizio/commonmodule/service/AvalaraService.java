@@ -16,26 +16,18 @@ import java.math.BigDecimal;
 
 @Service
 public class AvalaraService {
+    private static final String COUNTRY = "US";
 
-    private String avalaraUsername;
+    private final String avalaraCompanyCode;
 
-    private String avalaraPassword;
+    private final AvaTaxClient avaTaxClient;
 
-    private String avalaraCompanyCode;
+    private final String avalaraTaxCode;
 
-    private String bizioCenterEnv;
+    private final BigDecimal quantity = new BigDecimal(1);
 
-    private AvaTaxClient avaTaxClient;
-
-    private String avalaraTaxCode;
-
-    private BigDecimal quantity = new BigDecimal(1);
-
-    public AvalaraService(String avalaraUsername, String avalaraPassword, String avalaraCompanyCode, String bizioCenterEnv, AvaTaxClient avaTaxClient, String avalaraTaxCode) {
-        this.avalaraUsername = avalaraUsername;
-        this.avalaraPassword = avalaraPassword;
+    public AvalaraService(String avalaraCompanyCode, AvaTaxClient avaTaxClient, String avalaraTaxCode) {
         this.avalaraCompanyCode = avalaraCompanyCode;
-        this.bizioCenterEnv = bizioCenterEnv;
         this.avaTaxClient = avaTaxClient;
         this.avalaraTaxCode = avalaraTaxCode;
     }
@@ -44,9 +36,8 @@ public class AvalaraService {
             BillingAddress ba, ProductVariant productVariant, String orgCode, DocumentType dt,
             BigDecimal productWithDiscount
     ) throws Exception {
-        AddressResolutionModel arm =addressValidate(ba);
-        return
-                new TransactionBuilder(
+        AddressResolutionModel arm = addressValidate(ba);
+        return new TransactionBuilder(
                     avaTaxClient,
                     avalaraCompanyCode,
                     dt,
@@ -60,7 +51,7 @@ public class AvalaraService {
                         arm.getValidatedAddresses().get(0).getCity(),
                         arm.getValidatedAddresses().get(0).getRegion(),
                         arm.getValidatedAddresses().get(0).getPostalCode(),
-                        "US"
+                        COUNTRY
                 )
                 .withLine(
                         productWithDiscount ,
@@ -81,34 +72,29 @@ public class AvalaraService {
                 ba.getCity(),
                 ba.getState(),
                 ba.getZip(),
-                "US",
+                COUNTRY,
                 TextCase.Mixed
         );
 
-        if (arm.getValidatedAddresses().size() == 0) {
-            throw new ValidationException("invalid address");
-        }
+        String errorMsg = "invalid address";
+
+        if (arm.getValidatedAddresses().size() == 0) throw new ValidationException(errorMsg);
 
         String addressType =  arm.getValidatedAddresses().get(0).getAddressType();
 
-        if(addressType == null){
-            throw new ValidationException("invalid address");
-        }
-        if(!addressType.equals("UnknownAddressType")) {
-            return arm;
-        }
+        if(addressType == null) throw new ValidationException(errorMsg);
 
-        if(arm.getMessages() == null || arm.getMessages().size() == 0){
-            throw new ValidationException("invalid address");
-        }
+        if(!addressType.equals("UnknownAddressType")) return arm;
 
-        if (!arm.getMessages().get(0).getSummary().isEmpty()){
-            throw new ValidationException(arm.getMessages().get(0).getSummary());
-        } else if (!arm.getMessages().get(0).getDetails().isEmpty()) {
-            throw new ValidationException(arm.getMessages().get(0).getDetails());
-        }else {
-            throw new ValidationException("invalid address");
-        }
+
+        if(arm.getMessages() == null || arm.getMessages().size() == 0) throw new ValidationException(errorMsg);
+
+        if (!arm.getMessages().get(0).getSummary().isEmpty())
+            errorMsg = arm.getMessages().get(0).getSummary();
+        else if (!arm.getMessages().get(0).getDetails().isEmpty())
+            errorMsg = arm.getMessages().get(0).getDetails();
+
+        throw new ValidationException(errorMsg);
     }
 }
 
