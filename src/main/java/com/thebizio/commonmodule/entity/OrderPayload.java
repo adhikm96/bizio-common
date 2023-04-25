@@ -26,6 +26,4 @@ public class OrderPayload {
 
     @Column(columnDefinition="TEXT")
     String payload;
-
-    private String stripeCustomerId;
 }
