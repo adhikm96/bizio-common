@@ -67,12 +67,12 @@ public class AvalaraService {
     public AddressResolutionModel addressValidate(BillingAddress ba) throws Exception {
 
         AddressResolutionModel arm = avaTaxClient.resolveAddress(
-                ba.getStreetAddress(),
+                ba.getAddressLine1(),
                 null,
                 null,
                 ba.getCity(),
                 ba.getState(),
-                ba.getZip(),
+                ba.getZipcode(),
                 COUNTRY,
                 TextCase.Mixed
         );

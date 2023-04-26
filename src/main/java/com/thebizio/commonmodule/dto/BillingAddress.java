@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.dto;
 
+import com.thebizio.commonmodule.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BillingAddress {
-    private String firstName;
-    private String lastName;
-    private String streetAddress;
-    private String state;
+    private String addressLine1;
+    private String addressLine2;
+    private String country;
+    private String zipcode;
     private String city;
-    private String zip;
+    private String state;
 }
