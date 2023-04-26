@@ -10,6 +10,7 @@ import net.avalara.avatax.rest.client.enums.TextCase;
 import net.avalara.avatax.rest.client.enums.TransactionAddressType;
 import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 import net.avalara.avatax.rest.client.models.TransactionModel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +27,7 @@ public class AvalaraService {
 
     private final BigDecimal quantity = new BigDecimal(1);
 
-    public AvalaraService(String avalaraCompanyCode, AvaTaxClient avaTaxClient, String avalaraTaxCode) {
+    public AvalaraService(@Value("${avalara-company-code}") String avalaraCompanyCode, AvaTaxClient avaTaxClient,@Value("${avalara-tax-code") String avalaraTaxCode) {
         this.avalaraCompanyCode = avalaraCompanyCode;
         this.avaTaxClient = avaTaxClient;
         this.avalaraTaxCode = avalaraTaxCode;

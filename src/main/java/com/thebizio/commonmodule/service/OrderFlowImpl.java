@@ -1,6 +1,5 @@
 package com.thebizio.commonmodule.service;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,15 +39,15 @@ public class OrderFlowImpl implements IOrderFlow {
 
     Logger logger = LoggerFactory.getLogger(OrderFlowImpl.class);
 
-    final PromotionService promotionService;
+    private final PromotionService promotionService;
 
-    final CalculateUtilService calculateUtilService;
+    private final CalculateUtilService calculateUtilService;
 
-    final AvalaraService avalaraService;
+    private final AvalaraService avalaraService;
 
-    final EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    final private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper) {
         this.promotionService = promotionService;
@@ -56,15 +55,6 @@ public class OrderFlowImpl implements IOrderFlow {
         this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
-    }
-
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, ObjectMapper objectMapper, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper1) {
-        this.promotionService = promotionService;
-        this.calculateUtilService = calculateUtilService;
-
-        this.avalaraService = avalaraService;
-        this.entityManager = entityManager;
-        this.objectMapper = objectMapper1;
     }
 
     @Override
