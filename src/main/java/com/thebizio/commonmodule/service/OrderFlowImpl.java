@@ -11,7 +11,9 @@ import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
 
+import com.thebizio.commonmodule.dto.AddOnsDto;
 import com.thebizio.commonmodule.dto.BillingAddress;
+import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.ServerException;
@@ -77,7 +79,6 @@ public class OrderFlowImpl implements IOrderFlow {
         orderPayload.setPayloadType(payloadType);
         orderPayload.setPayload(payload);
         orderPayload.setStripeCustomerId(stripeCustomerId);
-
         entityManager.persist(orderPayload);
     }
 
@@ -131,6 +132,8 @@ public class OrderFlowImpl implements IOrderFlow {
         BigDecimal totalWithDiscount = BigDecimal.valueOf(grossTotal);;
         if (discount != null) {
             totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
+            order.setDiscount(BigDecimal.valueOf(discount));
+            order.setDiscountStr("{"+promotion.getCode()+":"+discount+"}");
         }
 
         BigDecimal tax = BigDecimal.ZERO;
@@ -194,6 +197,33 @@ public class OrderFlowImpl implements IOrderFlow {
             logger.error(e.getMessage());
             throw new ValidationException("try again later or contact support");
         }
+    }
+
+    public OrderResponseDto createOrderResponse(Order order,String stripeCustId){
+        OrderResponseDto dto = new OrderResponseDto();
+        dto.setProductName(order.getProductVariant().getProduct().getName());
+        dto.setProductCode(order.getProductVariant().getProduct().getCode());
+        dto.setAttributeValue(order.getProductVariant().getAttributeValue());
+        dto.setSubTotal(order.getGrossTotal());
+
+        //need to add this field in order
+        //dto.setTax(order.getTax());
+        dto.setTaxStr(order.getTaxes());
+        dto.setDiscount(order.getDiscount());
+        dto.setDiscountStr(order.getDiscountStr());
+        dto.setNetTotal(order.getNetTotal());
+
+        List<AddOnsDto> addons = new ArrayList<>();
+        for (ProductVariant addOn: order.getProductVariant().getAddOns()) {
+            AddOnsDto addOnDto = new AddOnsDto();
+            addOnDto.setName(addOn.getName());
+            addOnDto.setPrice(BigDecimal.valueOf(addOn.getDefaultPrice()));
+            addons.add(addOnDto);
+        }
+        dto.setAddons(addons);
+        dto.setOrderRefNo(order.getRefNo());
+        dto.setStripeCustomerId(stripeCustId);
+        return dto;
     }
 
     public Account createAccountFromPayload(String payload) throws JsonProcessingException {
@@ -283,22 +313,6 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setSubscriptionStatus(SubscriptionStatusEnum.ACTIVE);
         sub.setOrg(organization);
         return sub;
-    }
-
-    @Override
-    public String createPaymentMethodIntent(String stripeCustomerId) {
-        SetupIntentCreateParams params =
-                SetupIntentCreateParams.builder()
-                        .setCustomer(stripeCustomerId)
-                        .addPaymentMethodType("card")
-                        .build();
-
-        try {
-            return SetupIntent.create(params).getClientSecret();
-        } catch (StripeException e) {
-            logger.error(e.getMessage());
-            throw new ServerException("try again later or contact support");
-        }
     }
 
     @Override
