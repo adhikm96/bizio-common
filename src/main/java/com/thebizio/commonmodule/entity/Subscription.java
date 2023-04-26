@@ -2,7 +2,8 @@ package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.enums.SubscriptionStatusEnum;
 import com.thebizio.commonmodule.enums.SubscriptionTypeEnum;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;

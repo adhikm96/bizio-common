@@ -1,8 +1,8 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.thebizio.commonmodule.enums.OrderStatus;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
+import com.thebizio.commonmodule.enums.OrderStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenerationTime;

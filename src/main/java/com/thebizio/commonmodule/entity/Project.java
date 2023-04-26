@@ -1,7 +1,8 @@
 package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.enums.Status;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.UUID;

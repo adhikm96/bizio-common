@@ -2,10 +2,12 @@ package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.Status;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -43,15 +45,9 @@ public class Promotion extends LastUpdateDetail{
         if(!status.equals(Status.ENABLED)){
             return false;
         }
-
         if(endDate != null && endDate.isBefore(LocalDateTime.now())){
             return false;
         }
-
-        if(timesRedeemed != null && (timesRedeemed >= maxRedemptions)){
-            return false;
-        }
-
-        return true;
+        return timesRedeemed == null || (timesRedeemed < maxRedemptions);
     }
 }
