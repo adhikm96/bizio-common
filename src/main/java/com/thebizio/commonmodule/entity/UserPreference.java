@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "userpreferences")
+@Table(name = "user_preferencesg")
 @Getter
 @Setter
 public class UserPreference extends LastUpdateDetail{
