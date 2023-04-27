@@ -308,9 +308,6 @@ public class OrderFlowImpl implements IOrderFlow {
                         .setCurrency("usd")
                         .setAmount(amount)
                         .putMetadata("order_ref", orderRefNo)
-                        .setAutomaticPaymentMethods(
-                                PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
-                        )
                         .setPaymentMethod(stripePaymentMethodId)
                         .setCustomer(stripeCustomerId)
                         .setConfirm(true)
