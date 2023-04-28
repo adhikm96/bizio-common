@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="87d3415e-3b31-4b3b-9273-8dd5903f35d7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/OrderFlowImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/OrderFlowImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/dto/RegisterAccountPublicDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/entity/VerificationToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/entity/VerificationToken.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +18,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -60,15 +62,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;user-preference-entity&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ADHIK MEHTA/Desktop/common module/bizio-center-common&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "verification-token-entity",
+    "last_opened_file_path": "C:/Users/ADHIK MEHTA/Desktop/common module/bizio-center-common",
+    "node.js.selected.package.tslint": "(autodetect)"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.thebizio.commonmodule.dto" />
