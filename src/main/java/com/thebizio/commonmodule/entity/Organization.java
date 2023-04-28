@@ -1,9 +1,12 @@
 package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.enums.Status;
+import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -17,7 +20,8 @@ public class Organization extends LastUpdateDetail {
 
     private String name;
 
-    @Column(updatable = false)
+    @GeneratorType(type = SecureRandomReferenceIdGenerator.class, when = GenerationTime.INSERT)
+    @Column(name = "code", unique = true, nullable = false, updatable = false, length = 64)
     private String code;
 
     private String description;
