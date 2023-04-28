@@ -1,7 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
-import com.thebizio.commonmodule.convertor.ListObjConvertor;
-import com.thebizio.commonmodule.dto.RegisterAccountPublicDto;
+import com.thebizio.commonmodule.enums.TokenType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,21 +22,16 @@ public class VerificationToken extends LastUpdateDetail{
     @Column(nullable = false, unique = true)
     private String token;
 
-//	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-//	@JoinColumn(nullable = false, name = "user_id")
-//	private User user;
-
     @Email
     @Column(nullable = false)
     private String email;
 
-    @Convert(converter = ListObjConvertor.class)
-    @Column(length = 500)
-    private RegisterAccountPublicDto regDto;
+    @Column(columnDefinition = "TEXT")
+    private String payload;
 
     private LocalDateTime expiryDate;
 
-    private String tokenType;
+    private TokenType tokenType;
 
     private String payloadClass;
 
