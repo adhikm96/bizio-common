@@ -178,6 +178,8 @@ public class OrderFlowImpl implements IOrderFlow {
             order.setPromoCode(promotion.getCode());
         }
 
+        order.setProductVariant(productVariant);
+
         order.setStatus(OrderStatus.IN_PROGRESS);
 
         entityManager.persist(order);
