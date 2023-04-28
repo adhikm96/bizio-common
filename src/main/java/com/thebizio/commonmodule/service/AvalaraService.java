@@ -47,7 +47,7 @@ public class AvalaraService {
                 .withAddress(
                         TransactionAddressType.SingleLocation,
                         arm.getValidatedAddresses().get(0).getLine1(),
-                        null,
+                        arm.getValidatedAddresses().get(0).getLine2(),
                         null,
                         arm.getValidatedAddresses().get(0).getCity(),
                         arm.getValidatedAddresses().get(0).getRegion(),

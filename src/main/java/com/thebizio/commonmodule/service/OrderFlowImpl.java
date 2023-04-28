@@ -90,8 +90,9 @@ public class OrderFlowImpl implements IOrderFlow {
             @NotNull Price price,
             Promotion promotion,
             @Valid @NotNull BillingAddress billingAddress
-    ) {
+    ) throws JsonProcessingException {
         Order order = new Order();
+        order.setPostingDate(LocalDate.now());
 
         if (!price.getProductVariant().getId().equals(productVariant.getId()))
             throw new ValidationException("priceId don't belong to variantId");
@@ -107,8 +108,17 @@ public class OrderFlowImpl implements IOrderFlow {
         boolean isFullDiscount = false;
 
         Double discount = null;
+        Double amount = price.getPrice();
+        order.setPrice(price);
 
-        Double grossTotal = price.getPrice();
+        //add addons price to product variant price
+        Double grossTotal = amount;
+        if(productVariant.getAddOns().size() > 0) {
+            for (ProductVariant pv : productVariant.getAddOns()) {
+                grossTotal += pv.getDefaultPrice();
+            }
+        }
+        order.setGrossTotal(BigDecimal.valueOf(grossTotal));
 
         // apply discount
         if (isPromotion) {
@@ -159,9 +169,8 @@ public class OrderFlowImpl implements IOrderFlow {
             }
 
             tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
-
-            // need to decide what to do with transactionSummaryList
-            transactionSummaryList = tm.getSummary();
+            order.setTax(tax);
+            order.setTaxStr(objectMapper.writeValueAsString(tm.getSummary()));
         }
 
         if (discount != null) {
@@ -179,7 +188,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
 
         order.setProductVariant(productVariant);
-
+        order.setProduct(productVariant.getProduct());
         order.setStatus(OrderStatus.IN_PROGRESS);
 
         entityManager.persist(order);
@@ -206,11 +215,12 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setProductName(order.getProductVariant().getProduct().getName());
         dto.setProductCode(order.getProductVariant().getProduct().getCode());
         dto.setAttributeValue(order.getProductVariant().getAttributeValue());
-        dto.setSubTotal(order.getGrossTotal());
 
-        //need to add this field in order
-        //dto.setTax(order.getTax());
-        dto.setTaxStr(order.getTaxes());
+        dto.setPrice(BigDecimal.valueOf(order.getPrice().getPrice()));
+        dto.setGrossTotal(order.getGrossTotal());
+
+        dto.setTax(order.getTax());
+        dto.setTaxStr(order.getTaxStr());
         dto.setDiscount(order.getDiscount());
         dto.setDiscountStr(order.getDiscountStr());
         dto.setNetTotal(order.getNetTotal());
@@ -294,10 +304,7 @@ public class OrderFlowImpl implements IOrderFlow {
     @Override
     public Subscription createSubscription(Order order,Organization organization){
         Subscription sub = new Subscription();
-        sub.setName(order.getProductVariant().getProduct().getName());
-
-        //seats should be added to product/product variant
-        sub.setSeats(10);
+        sub.setSeats(1);
 
         if (order.getProductVariant().getAttributeValue().equals("YEARLY")){
             sub.setValidFrom(LocalDate.now());
