@@ -231,7 +231,6 @@ public class OrderFlowImpl implements IOrderFlow {
     public Account createAccountFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Account acc = new Account();
-        acc.setCode(jsonNode.get("accountCode").asText());
         acc.setStatus(Status.ENABLED);
         acc.setType(AccType.valueOf(jsonNode.get("accountType").asText()));
         return acc;
@@ -241,7 +240,6 @@ public class OrderFlowImpl implements IOrderFlow {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
         org.setName(jsonNode.get("came").asText());
-        org.setCode(jsonNode.get("code").asText());
         org.setDescription(jsonNode.get("description").asText());
         org.setIndustry(jsonNode.get("industry").asText());
         org.setClassName(jsonNode.get("className").asText());
