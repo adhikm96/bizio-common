@@ -18,7 +18,8 @@ public class OrderResponseDto {
     private String attributeValue;
 
     private List<AddOnsDto> addons;
-    private BigDecimal subTotal;
+    private BigDecimal price;
+    private BigDecimal grossTotal;
     private BigDecimal tax;
     private String taxStr;
     private BigDecimal discount;

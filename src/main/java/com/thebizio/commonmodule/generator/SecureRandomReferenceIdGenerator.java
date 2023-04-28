@@ -1,9 +1,6 @@
 package com.thebizio.commonmodule.generator;
 
-import com.thebizio.commonmodule.entity.Account;
-import com.thebizio.commonmodule.entity.Invoice;
-import com.thebizio.commonmodule.entity.Order;
-import com.thebizio.commonmodule.entity.Organization;
+import com.thebizio.commonmodule.entity.*;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
