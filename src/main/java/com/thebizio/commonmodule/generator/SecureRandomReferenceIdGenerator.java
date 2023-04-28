@@ -78,7 +78,17 @@ public class SecureRandomReferenceIdGenerator implements ValueGenerator<String> 
                 return prefix+randomNumber;
             }
         }
-        return null;
+        else {
+            prefix = String.valueOf(obj.getClass().getSimpleName().subSequence(0,3)).toUpperCase() + "-"; // taking first 3 chars as uppercase
+            IRandomGeneratorField field = (IRandomGeneratorField) obj;
+            Query<?> query = session.createQuery("from "+ obj.getClass().getSimpleName() +" o where o."+ field.getRandomGeneratorField() +"=:rn", obj.getClass());
+            query.setParameter("rn", prefix+randomNumber);
+
+            if (query.setHibernateFlushMode(FlushMode.COMMIT).uniqueResultOptional().isPresent()){
+                return generateValue(session,obj);
+            }
+            return prefix+randomNumber;
+        }
     }
 
     public static String generateRandomString(int length) {
