@@ -30,5 +30,7 @@ public interface IOrderFlow {
 
     Contact createContactFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId);
+    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId) throws JsonProcessingException;
+
+    void submitTaxToAvalara(Order order,String orgCode) throws Exception;
 }

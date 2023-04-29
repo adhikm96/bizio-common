@@ -64,6 +64,19 @@ public class AvalaraService {
                 .Create();
     }
 
+    public TransactionModel createTransactionTaxInclusive(BillingAddress ba, ProductVariant productVariant, String orgCode, DocumentType dt, BigDecimal netTotal) throws Exception {
+        AddressResolutionModel arm =addressValidate(ba);
+        TransactionBuilder transaction = new TransactionBuilder(avaTaxClient, avalaraCompanyCode, dt, orgCode)
+                .withAddress(TransactionAddressType.SingleLocation, arm.getValidatedAddresses().get(0).getLine1(),
+                        arm.getValidatedAddresses().get(0).getLine2(), null, arm.getValidatedAddresses().get(0).getCity(),arm.getValidatedAddresses().get(0).getRegion(),
+                        arm.getValidatedAddresses().get(0).getPostalCode(), COUNTRY)
+                .withLine( netTotal, quantity, avalaraTaxCode,
+                        productVariant.getProduct().getCode(),productVariant.getProduct().getName());
+
+        transaction.getIntermediaryTransactionModel().getLines().forEach(model -> model.setTaxIncluded(true));
+        return transaction.Create();
+    }
+
     public AddressResolutionModel addressValidate(BillingAddress ba) throws Exception {
 
         AddressResolutionModel arm = avaTaxClient.resolveAddress(

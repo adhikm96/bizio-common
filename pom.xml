@@ -4,7 +4,7 @@
 
   <groupId>com.thebizio</groupId>
   <artifactId>common-module</artifactId>
-  <version>0.230428.4-SNAPSHOT</version>
+  <version>0.230429.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common-module</name>
@@ -53,7 +53,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.14.2</version>
+<!--      <version>2.14.2</version>-->
     </dependency>
 
     <dependency>
@@ -95,6 +95,12 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.14.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
+      <version>3.1.1</version>
     </dependency>
 
   </dependencies>

@@ -21,6 +21,7 @@ import com.thebizio.commonmodule.exception.ValidationException;
 import net.avalara.avatax.rest.client.enums.DocumentType;
 import net.avalara.avatax.rest.client.models.TransactionModel;
 import net.avalara.avatax.rest.client.models.TransactionSummary;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,12 +52,15 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final ObjectMapper objectMapper;
 
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper) {
+    private final ModelMapper modelMapper;
+
+    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper) {
         this.promotionService = promotionService;
         this.calculateUtilService = calculateUtilService;
         this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -210,7 +214,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    public OrderResponseDto createOrderResponse(Order order,String stripeCustId){
+    public OrderResponseDto createOrderResponse(Order order,String stripeCustId) throws JsonProcessingException {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setProductName(order.getProductVariant().getProduct().getName());
         dto.setProductCode(order.getProductVariant().getProduct().getCode());
@@ -220,9 +224,9 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setGrossTotal(order.getGrossTotal());
 
         dto.setTax(order.getTax());
-        dto.setTaxStr(order.getTaxStr());
+        dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
         dto.setDiscount(order.getDiscount());
-        dto.setDiscountStr(order.getDiscountStr());
+        dto.setDiscountStr(objectMapper.readTree( order.getDiscountStr()));
         dto.setNetTotal(order.getNetTotal());
 
         List<AddOnsDto> addons = new ArrayList<>();
@@ -279,6 +283,12 @@ public class OrderFlowImpl implements IOrderFlow {
 
         //attach org later
         return address;
+    }
+
+    @Override
+    public void submitTaxToAvalara(Order order,String orgCode) throws Exception {
+        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
+        avalaraService.createTransactionTaxInclusive(ba,order.getProductVariant(),orgCode,DocumentType.SalesInvoice,order.getNetTotal());
     }
 
     @Override
