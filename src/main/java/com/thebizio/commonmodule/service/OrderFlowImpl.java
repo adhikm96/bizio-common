@@ -32,10 +32,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderFlowImpl implements IOrderFlow {
@@ -346,7 +343,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
 
     @Override
-    public Subscription createSubscription(Order order,Organization organization){
+    public Subscription createSubscription(Order order,Organization organization,User user){
         Subscription sub = new Subscription();
         sub.setSeats(1);
 
@@ -368,6 +365,8 @@ public class OrderFlowImpl implements IOrderFlow {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
+        sub.setUsers(Collections.singletonList(user));
+
         sub.setOrder(order);
         return sub;
     }
