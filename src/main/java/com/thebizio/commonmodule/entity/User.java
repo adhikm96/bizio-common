@@ -1,9 +1,5 @@
 package com.thebizio.commonmodule.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.thebizio.commonmodule.enums.GenderEnum;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Getter;
@@ -44,12 +40,9 @@ public class User extends LastUpdateDetail {
     private String avatar;
     private Status status;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime lastEmailChangeDate;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
+
     private LocalDateTime lastPasswordChangeDate;
 
     @ManyToOne
