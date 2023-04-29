@@ -296,7 +296,7 @@ public class OrderFlowImpl implements IOrderFlow {
         pay.setAmount(amount);
         pay.setBillingAccount(ba);
         pay.setStatus(status);
-
+        entityManager.persist(pay);
         return pay;
     }
 
@@ -366,8 +366,8 @@ public class OrderFlowImpl implements IOrderFlow {
         }
         sub.setApplications(applications);
         sub.setUsers(Collections.singletonList(user));
-
         sub.setOrder(order);
+        entityManager.persist(sub);
         return sub;
     }
 
