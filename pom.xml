@@ -4,7 +4,7 @@
 
   <groupId>com.thebizio</groupId>
   <artifactId>common-module</artifactId>
-  <version>0.230429.9-SNAPSHOT</version>
+  <version>0.230429.10-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common-module</name>
@@ -102,6 +102,23 @@
       <version>3.1.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.9.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.14.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-json</artifactId>
+      <version>2.6.7</version>
+    </dependency>
   </dependencies>
   
   <distributionManagement>
