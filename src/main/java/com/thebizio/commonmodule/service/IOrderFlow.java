@@ -5,9 +5,12 @@ import com.stripe.model.PaymentIntent;
 import com.thebizio.commonmodule.dto.BillingAddress;
 import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.entity.*;
+import com.thebizio.commonmodule.enums.InvoiceStatus;
+import com.thebizio.commonmodule.enums.PaymentStatus;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
@@ -24,7 +27,7 @@ public interface IOrderFlow {
 
     Account createAccountFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization);
+    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization,@NotNull User user);
 
     Address createAddressFromPayload(@NotNull String payload) throws JsonProcessingException;
 
@@ -32,5 +35,11 @@ public interface IOrderFlow {
 
     OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId) throws JsonProcessingException;
 
-    void submitTaxToAvalara(Order order,String orgCode) throws Exception;
+    void submitTaxToAvalara(@NotNull Order order,@NotNull String orgCode) throws Exception;
+
+    void createInvoiceFromOrder(@NotNull Order order,@NotNull Subscription sub,@NotNull InvoiceStatus status,@NotNull Payment payment);
+
+    Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status);
+
+    void createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization);
 }

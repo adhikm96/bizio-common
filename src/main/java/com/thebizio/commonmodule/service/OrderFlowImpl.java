@@ -7,6 +7,7 @@ import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.PaymentMethod;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
@@ -32,10 +33,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderFlowImpl implements IOrderFlow {
@@ -54,13 +52,16 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final ModelMapper modelMapper;
 
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper) {
+    private final BillingAccountService billingAccountService;
+
+    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService) {
         this.promotionService = promotionService;
         this.calculateUtilService = calculateUtilService;
         this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
+        this.billingAccountService = billingAccountService;
     }
 
     @Override
@@ -293,6 +294,39 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status) {
+        Payment pay = new Payment();
+        pay.setPaymentDate(LocalDate.now());
+        pay.setAmount(amount);
+        pay.setBillingAccount(ba);
+        pay.setStatus(status);
+        entityManager.persist(pay);
+        return pay;
+    }
+
+    @Override
+    public void createInvoiceFromOrder(Order order,Subscription sub,InvoiceStatus status,Payment payment) {
+        Invoice inv = new Invoice();
+        inv.setPrice(order.getPrice());
+        inv.setProduct(order.getProduct());
+        inv.setProductVariant(order.getProductVariant());
+        inv.setGrossTotal(order.getGrossTotal());
+        inv.setNetTotal(order.getNetTotal());
+        if (order.getDiscount() != null) inv.setDiscount(order.getDiscount());
+        if (order.getDiscountStr() != null) inv.setDiscountStr(order.getDiscountStr());
+        if(order.getTax() != null) inv.setTax(order.getTax());
+        if(order.getTaxStr() != null) inv.setTaxStr(order.getTaxStr());
+        inv.setAddress(order.getAddress());
+        inv.setPostingDate(LocalDate.now());
+        if(order.getPromoCode() != null) inv.setPromoCode(order.getPromoCode());
+        inv.setSubscription(sub);
+        inv.setStatus(status);
+        inv.setPayment(payment);
+
+        entityManager.persist(inv);
+    }
+
+    @Override
     public Contact createContactFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Contact contact = new Contact();
@@ -313,7 +347,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
 
     @Override
-    public Subscription createSubscription(Order order,Organization organization){
+    public Subscription createSubscription(Order order,Organization organization,User user){
         Subscription sub = new Subscription();
         sub.setSeats(1);
 
@@ -330,7 +364,57 @@ public class OrderFlowImpl implements IOrderFlow {
         }
         sub.setSubscriptionStatus(SubscriptionStatusEnum.ACTIVE);
         sub.setOrg(organization);
+        List<Application> applications = new ArrayList<>();
+        for (BundleItem bi:order.getProductVariant().getBundleItems()) {
+            applications.add(bi.getBundleItem().getApplication());
+        }
+        sub.setApplications(applications);
+        sub.setUsers(Collections.singletonList(user));
+        sub.setOrder(order);
+        entityManager.persist(sub);
         return sub;
+    }
+
+
+    @Override
+    public void createBillingAccount(PaymentIntent paymentIntent,Organization organization){
+        List<BillingAccount> billingAccount = billingAccountService.getBillingAccountByStripeId(paymentIntent.getPaymentMethod());
+        if (billingAccount.size() >= 1){
+            if (billingAccount.get(0).getOrganization() == null){
+                billingAccount.get(0).setOrganization(organization);
+                entityManager.persist(billingAccount);
+            }
+        }else {
+            PaymentMethod stripePM = paymentIntent.getPaymentMethodObject();
+            BillingAccount ba = new BillingAccount();
+            if (stripePM.getType().equals("card")) {
+                ba.setStripePaymentMethodId(stripePM.getId());
+                ba.setCardBrand(stripePM.getCard().getBrand());
+                ba.setExpMonth(stripePM.getCard().getExpMonth().toString());
+                ba.setExpYear(stripePM.getCard().getExpYear().toString());
+                ba.setFingerprint(stripePM.getCard().getFingerprint());
+                ba.setLast4(stripePM.getCard().getLast4());
+                ba.setBillingAccType(BillingAccType.CARD);
+                ba.setAccHolderName(stripePM.getBillingDetails().getName());
+                ba.setOrganization(organization);
+                ba.setStatus(Status.ENABLED);
+                entityManager.persist(ba);
+            } else if (stripePM.getType().equals("us_bank_account")) {
+                ba.setStripePaymentMethodId(stripePM.getId());
+                ba.setBillingAccType(BillingAccType.BANK);
+                ba.setAccHolderType(stripePM.getUsBankAccount().getAccountHolderType());
+                ba.setAccHolderName(stripePM.getBillingDetails().getName());
+                ba.setPgAccType(stripePM.getUsBankAccount().getAccountType());
+                ba.setFinancialConnectionsAcc(stripePM.getUsBankAccount().getFinancialConnectionsAccount());
+                ba.setFingerprint(stripePM.getUsBankAccount().getFingerprint());
+                ba.setLast4(stripePM.getUsBankAccount().getLast4());
+                ba.setBankRoutingNumber(stripePM.getUsBankAccount().getRoutingNumber());
+                ba.setBankName(stripePM.getUsBankAccount().getBankName());
+                ba.setOrganization(organization);
+                ba.setStatus(Status.ENABLED);
+                entityManager.persist(ba);
+            }
+        }
     }
 
     @Override
