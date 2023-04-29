@@ -293,6 +293,39 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status) {
+        Payment pay = new Payment();
+        pay.setPaymentDate(LocalDate.now());
+        pay.setAmount(amount);
+        pay.setBillingAccount(ba);
+        pay.setStatus(status);
+
+        return pay;
+    }
+
+    @Override
+    public void createInvoiceFromOrder(Order order,Subscription sub,InvoiceStatus status,Payment payment) {
+        Invoice inv = new Invoice();
+        inv.setPrice(order.getPrice());
+        inv.setProduct(order.getProduct());
+        inv.setProductVariant(order.getProductVariant());
+        inv.setGrossTotal(order.getGrossTotal());
+        inv.setNetTotal(order.getNetTotal());
+        if (order.getDiscount() != null) inv.setDiscount(order.getDiscount());
+        if (order.getDiscountStr() != null) inv.setDiscountStr(order.getDiscountStr());
+        if(order.getTax() != null) inv.setTax(order.getTax());
+        if(order.getTaxStr() != null) inv.setTaxStr(order.getTaxStr());
+        inv.setAddress(order.getAddress());
+        inv.setPostingDate(LocalDate.now());
+        if(order.getPromoCode() != null) inv.setPromoCode(order.getPromoCode());
+        inv.setSubscription(sub);
+        inv.setStatus(status);
+        inv.setPayment(payment);
+
+        entityManager.persist(inv);
+    }
+
+    @Override
     public Contact createContactFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Contact contact = new Contact();
@@ -330,6 +363,12 @@ public class OrderFlowImpl implements IOrderFlow {
         }
         sub.setSubscriptionStatus(SubscriptionStatusEnum.ACTIVE);
         sub.setOrg(organization);
+        List<Application> applications = new ArrayList<>();
+        for (BundleItem bi:order.getProductVariant().getBundleItems()) {
+            applications.add(bi.getBundleItem().getApplication());
+        }
+        sub.setApplications(applications);
+        sub.setOrder(order);
         return sub;
     }
 

@@ -74,6 +74,19 @@ public class SecureRandomReferenceIdGenerator implements ValueGenerator<String> 
             }else {
                 return prefix+randomNumber;
             }
+        }else  if (obj.getClass().getSimpleName().equals("Payment")){
+            prefix = "PMT-";
+
+            Query<Payment> query = session.createQuery("from Payment p where p.refNo=:rn", Payment.class);
+            query.setParameter("rn", prefix+randomNumber);
+
+            Optional<Payment> payment = query.setHibernateFlushMode(FlushMode.COMMIT).uniqueResultOptional();
+
+            if (payment.isPresent()){
+                return generateValue(session,obj);
+            }else {
+                return prefix+randomNumber;
+            }
         }
         else if (obj instanceof IRandomGeneratorField) {
             prefix = String.valueOf(obj.getClass().getSimpleName().subSequence(0,3)).toUpperCase() + "-"; // taking first 3 chars as uppercase

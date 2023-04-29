@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.SubscriptionStatusEnum;
 import com.thebizio.commonmodule.enums.SubscriptionTypeEnum;
 import com.thebizio.commonmodule.generator.IRandomGeneratorField;
@@ -50,6 +51,11 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @JoinTable(name = "subscription_users", joinColumns = @JoinColumn(name = "subscription_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @JsonBackReference
+    private Order order;
 
     @Override
     public String getRandomGeneratorField() {
