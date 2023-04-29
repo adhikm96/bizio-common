@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,9 +22,9 @@ public class OrderResponseDto {
     private BigDecimal price;
     private BigDecimal grossTotal;
     private BigDecimal tax;
-    private String taxStr;
+    private JsonNode taxStr;
     private BigDecimal discount;
-    private String discountStr;
+    private JsonNode discountStr;
     private BigDecimal netTotal;
 
 }
