@@ -224,9 +224,10 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setGrossTotal(order.getGrossTotal());
 
         dto.setTax(order.getTax());
-        dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
+
+        if(order.getTaxStr() != null) dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
         dto.setDiscount(order.getDiscount());
-        dto.setDiscountStr(objectMapper.readTree( order.getDiscountStr()));
+        if(order.getDiscountStr() != null) dto.setDiscountStr(objectMapper.readTree( order.getDiscountStr()));
         dto.setNetTotal(order.getNetTotal());
 
         List<AddOnsDto> addons = new ArrayList<>();
