@@ -17,7 +17,7 @@ public class BillingAccountService {
 
     public List<BillingAccount> getBillingAccountByStripeId(String stripePaymentMethodId) {
         List<BillingAccount> billingAccount = (List<BillingAccount>) entityManager.createQuery("SELECT ba FROM BillingAccount ba WHERE ba.stripePaymentMethodId = :stripeId")
-                .setParameter("stripeId","BA123").getResultList();
+                .setParameter("stripeId",stripePaymentMethodId).getResultList();
         return billingAccount;
     }
 }

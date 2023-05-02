@@ -256,7 +256,7 @@ public class OrderFlowImpl implements IOrderFlow {
     public Organization createOrganizationFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
-        org.setName(jsonNode.get("came").asText());
+        org.setName(jsonNode.get("name").asText());
         org.setDescription(jsonNode.get("description").asText());
         org.setIndustry(jsonNode.get("industry").asText());
         org.setClassName(jsonNode.get("className").asText());
