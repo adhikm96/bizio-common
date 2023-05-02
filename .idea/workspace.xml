@@ -7,7 +7,6 @@
     <list default="true" id="87d3415e-3b31-4b3b-9273-8dd5903f35d7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/IOrderFlow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/IOrderFlow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/OrderFlowImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/thebizio/commonmodule/service/OrderFlowImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,6 +80,21 @@
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.thebizio.commonmodule.exception" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="bizio-center-common" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="bizio-center-common" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

@@ -7,6 +7,7 @@ import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.enums.PaymentStatus;
+import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -41,5 +42,7 @@ public interface IOrderFlow {
 
     Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status);
 
-    void createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization);
+    BillingAccount createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization);
+
+    AddressResolutionModel validateBillingAddress(@NotNull BillingAddress address) throws Exception;
 }

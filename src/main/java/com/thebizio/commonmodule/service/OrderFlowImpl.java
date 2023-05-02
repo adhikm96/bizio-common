@@ -20,6 +20,7 @@ import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.ServerException;
 import com.thebizio.commonmodule.exception.ValidationException;
 import net.avalara.avatax.rest.client.enums.DocumentType;
+import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 import net.avalara.avatax.rest.client.models.TransactionModel;
 import net.avalara.avatax.rest.client.models.TransactionSummary;
 import org.modelmapper.ModelMapper;
@@ -377,13 +378,14 @@ public class OrderFlowImpl implements IOrderFlow {
 
 
     @Override
-    public void createBillingAccount(PaymentIntent paymentIntent,Organization organization){
+    public BillingAccount createBillingAccount(PaymentIntent paymentIntent,Organization organization){
         List<BillingAccount> billingAccount = billingAccountService.getBillingAccountByStripeId(paymentIntent.getPaymentMethod());
         if (billingAccount.size() >= 1){
             if (billingAccount.get(0).getOrganization() == null){
                 billingAccount.get(0).setOrganization(organization);
                 entityManager.persist(billingAccount);
             }
+            return billingAccount.get(0);
         }else {
             PaymentMethod stripePM = paymentIntent.getPaymentMethodObject();
             BillingAccount ba = new BillingAccount();
@@ -414,7 +416,13 @@ public class OrderFlowImpl implements IOrderFlow {
                 ba.setStatus(Status.ENABLED);
                 entityManager.persist(ba);
             }
+            return ba;
         }
+    }
+
+    @Override
+    public AddressResolutionModel validateBillingAddress(BillingAddress address) throws Exception {
+        return avalaraService.addressValidate(address);
     }
 
     @Override
