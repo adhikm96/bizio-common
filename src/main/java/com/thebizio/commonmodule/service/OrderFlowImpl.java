@@ -256,15 +256,15 @@ public class OrderFlowImpl implements IOrderFlow {
     public Organization createOrganizationFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
-        org.setName(jsonNode.get("came").asText());
-        org.setDescription(jsonNode.get("description").asText());
-        org.setIndustry(jsonNode.get("industry").asText());
-        org.setClassName(jsonNode.get("className").asText());
-        org.setStructure(jsonNode.get("structure").asText());
-        org.setIndustryType(jsonNode.get("industryType").asText());
-        org.setExchange(jsonNode.get("exchange").asText());
-        org.setMarket(jsonNode.get("market").asText());
-        org.setSymbol(jsonNode.get("symbol").asText());
+        org.setName(jsonNode.get("name").asText());
+        if(jsonNode.has("description")) org.setDescription(jsonNode.get("description").asText());
+        if(jsonNode.has("industry")) org.setIndustry(jsonNode.get("industry").asText());
+        if(jsonNode.has("className")) org.setClassName(jsonNode.get("className").asText());
+        if(jsonNode.has("structure")) org.setStructure(jsonNode.get("structure").asText());
+        if(jsonNode.has("industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
+        if(jsonNode.has("exchange")) org.setExchange(jsonNode.get("exchange").asText());
+        if(jsonNode.has("market")) org.setMarket(jsonNode.get("market").asText());
+        if(jsonNode.has("symbol")) org.setSymbol(jsonNode.get("symbol").asText());
         org.setStatus(Status.ENABLED);
 
         //attach parent org and account later
