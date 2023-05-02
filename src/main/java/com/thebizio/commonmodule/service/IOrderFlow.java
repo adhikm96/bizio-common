@@ -42,7 +42,7 @@ public interface IOrderFlow {
 
     Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status);
 
-    void createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization);
+    BillingAccount createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization);
 
     AddressResolutionModel validateBillingAddress(@NotNull BillingAddress address) throws Exception;
 }
