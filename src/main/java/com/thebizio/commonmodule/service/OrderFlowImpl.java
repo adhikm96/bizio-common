@@ -20,6 +20,7 @@ import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.ServerException;
 import com.thebizio.commonmodule.exception.ValidationException;
 import net.avalara.avatax.rest.client.enums.DocumentType;
+import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 import net.avalara.avatax.rest.client.models.TransactionModel;
 import net.avalara.avatax.rest.client.models.TransactionSummary;
 import org.modelmapper.ModelMapper;
@@ -415,6 +416,11 @@ public class OrderFlowImpl implements IOrderFlow {
                 entityManager.persist(ba);
             }
         }
+    }
+
+    @Override
+    public AddressResolutionModel validateBillingAddress(BillingAddress address) throws Exception {
+        return avalaraService.addressValidate(address);
     }
 
     @Override
