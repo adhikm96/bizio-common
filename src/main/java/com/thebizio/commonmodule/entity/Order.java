@@ -1,8 +1,8 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.thebizio.commonmodule.enums.OrderStatus;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
+import com.thebizio.commonmodule.enums.OrderStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenerationTime;
@@ -35,11 +35,12 @@ public class Order extends LastUpdateDetail{
     @Positive
     private BigDecimal grossTotal;
 
+    private BigDecimal tax;
+
     @Column(columnDefinition="TEXT")
-    private String taxes;
+    private String taxStr;
 
     private String promoCode;
-
 
     private BigDecimal discount;
 
@@ -65,6 +66,11 @@ public class Order extends LastUpdateDetail{
     @JoinColumn(name = "product_variant_id")
     @JsonBackReference
     private ProductVariant productVariant;
+
+    @ManyToOne
+    @JoinColumn(name = "price_id")
+    @JsonBackReference
+    private Price price;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")

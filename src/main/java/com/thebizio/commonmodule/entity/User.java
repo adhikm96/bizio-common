@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity @Table(name = "users") @Getter @Setter
@@ -38,6 +39,11 @@ public class User extends LastUpdateDetail {
 
     private String avatar;
     private Status status;
+
+    private LocalDateTime lastEmailChangeDate;
+
+
+    private LocalDateTime lastPasswordChangeDate;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")

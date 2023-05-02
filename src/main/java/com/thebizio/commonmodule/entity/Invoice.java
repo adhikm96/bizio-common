@@ -1,7 +1,8 @@
 package com.thebizio.commonmodule.entity;
 
-import com.thebizio.commonmodule.enums.InvoiceStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
+import com.thebizio.commonmodule.enums.InvoiceStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,10 @@ public class Invoice extends LastUpdateDetail{
     @Column(columnDefinition = "TEXT")
     private String discountStr;
 
-    @Column(columnDefinition = "TEXT")
-    private String taxes;
+    private BigDecimal tax;
+
+    @Column(columnDefinition="TEXT")
+    private String taxStr;
 
     @Positive
     private BigDecimal grossTotal;
@@ -52,9 +55,31 @@ public class Invoice extends LastUpdateDetail{
 
     @ManyToOne
     @JoinColumn(name = "address_id")
+    @JsonBackReference
     private Address address;
 
     @ManyToOne
     @JoinColumn(name = "subscription_id")
+    @JsonBackReference
     private Subscription subscription;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    @JsonBackReference
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "product_variant_id")
+    @JsonBackReference
+    private ProductVariant productVariant;
+
+    @ManyToOne
+    @JoinColumn(name = "price_id")
+    @JsonBackReference
+    private Price price;
+
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    @JsonBackReference
+    private Payment payment;
 }

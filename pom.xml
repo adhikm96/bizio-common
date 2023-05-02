@@ -4,7 +4,7 @@
 
   <groupId>com.thebizio</groupId>
   <artifactId>common-module</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.230502.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common-module</name>
@@ -49,11 +49,10 @@
       <version>5.2.10.Final</version>
     </dependency>
 
-
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.14.2</version>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      			<version>2.13.1</version>
     </dependency>
 
     <dependency>
@@ -97,5 +96,36 @@
       <version>2.14.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
+      <version>3.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.9.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.14.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-json</artifactId>
+      <version>2.6.7</version>
+    </dependency>
   </dependencies>
+  
+  <distributionManagement>
+    <repository>
+      <id>dair-maven-repo</id>
+      <name>dair-maven-repo</name>
+      <url>https://dair-502003452906.d.codeartifact.us-east-1.amazonaws.com/maven/bizio-center/</url>
+    </repository>
+  </distributionManagement>
 </project>
