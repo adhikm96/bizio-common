@@ -149,7 +149,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if (discount != null) {
             totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
             order.setDiscount(BigDecimal.valueOf(discount));
-            order.setDiscountStr("{"+promotion.getCode()+":"+discount+"}");
+            order.setDiscountStr("{\""+promotion.getCode()+"\":"+discount+"}");
         }
 
         BigDecimal tax = BigDecimal.ZERO;
