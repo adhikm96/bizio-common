@@ -41,9 +41,13 @@ public class User extends LastUpdateDetail {
     private Status status;
 
     private LocalDateTime lastEmailChangeDate;
-
-
     private LocalDateTime lastPasswordChangeDate;
+
+    private boolean stayInformedAboutBizio;
+
+    private boolean termsConditionsAgreed;
+
+    private LocalDateTime termsConditionsAgreedTimestamp;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
