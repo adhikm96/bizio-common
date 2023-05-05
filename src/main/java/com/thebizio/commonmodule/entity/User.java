@@ -27,6 +27,7 @@ public class User extends LastUpdateDetail {
     private String lastName;
     private GenderEnum gender;
     private LocalDate dob;
+    private String designation;
 
     @Column(updatable = false)
     private String spaceId;

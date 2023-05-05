@@ -257,6 +257,8 @@ public class OrderFlowImpl implements IOrderFlow {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
         org.setName(jsonNode.get("name").asText());
+        if(jsonNode.has("shortName")) org.setShortName(jsonNode.get("shortName").asText());
+        if(jsonNode.has("otherName")) org.setOtherName(jsonNode.get("otherName").asText());
         if(jsonNode.has("description")) org.setDescription(jsonNode.get("description").asText());
         if(jsonNode.has("industry")) org.setIndustry(jsonNode.get("industry").asText());
         if(jsonNode.has("className")) org.setClassName(jsonNode.get("className").asText());

@@ -41,6 +41,8 @@ public class Organization extends LastUpdateDetail {
     private String symbol;
     private Status status;
     private String stripeCustomerId;
+    private String shortName;
+    private String otherName;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
