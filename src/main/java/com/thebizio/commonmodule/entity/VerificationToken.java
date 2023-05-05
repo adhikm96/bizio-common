@@ -23,8 +23,9 @@ public class VerificationToken extends LastUpdateDetail{
     private String token;
 
     @Email
-    @Column(nullable = false)
     private String email;
+
+    private String phoneNumber;
 
     @Column(columnDefinition = "TEXT")
     private String payload;
