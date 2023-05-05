@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity @Getter @Setter @NoArgsConstructor @Table(name = "organizations")
@@ -43,4 +45,9 @@ public class Organization extends LastUpdateDetail {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @ManyToMany
+    @JoinTable(name = "organization_users", joinColumns = @JoinColumn(name = "organization_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> users = new ArrayList<>();
 }
