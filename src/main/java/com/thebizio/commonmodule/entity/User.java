@@ -52,7 +52,6 @@ public class User extends LastUpdateDetail {
 
     private LocalDateTime termsConditionsAgreedTimestamp;
 
-    private String phone;
     private String profileUrl;
 
     @ManyToOne
