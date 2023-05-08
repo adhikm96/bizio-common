@@ -44,9 +44,11 @@ public class User extends LastUpdateDetail {
     private LocalDateTime lastEmailChangeDate;
     private LocalDateTime lastPasswordChangeDate;
 
-    private boolean stayInformedAboutBizio;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean stayInformedAboutBizio;
 
-    private boolean termsConditionsAgreed;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean termsConditionsAgreed;
 
     private LocalDateTime termsConditionsAgreedTimestamp;
 
