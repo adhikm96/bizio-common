@@ -52,6 +52,8 @@ public class User extends LastUpdateDetail {
 
     private LocalDateTime termsConditionsAgreedTimestamp;
 
+    private String profileUrl;
+
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
