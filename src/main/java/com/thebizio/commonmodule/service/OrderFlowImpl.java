@@ -373,7 +373,7 @@ public class OrderFlowImpl implements IOrderFlow {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
-        sub.setUsers(Collections.singletonList(user));
+        if (user != null )sub.setUsers(Collections.singletonList(user));
         sub.setOrder(order);
         entityManager.persist(sub);
         return sub;

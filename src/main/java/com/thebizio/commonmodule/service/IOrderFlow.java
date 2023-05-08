@@ -28,7 +28,7 @@ public interface IOrderFlow {
 
     Account createAccountFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization,@NotNull User user);
+    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization,User user);
 
     Address createAddressFromPayload(@NotNull String payload) throws JsonProcessingException;
 
