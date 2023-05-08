@@ -52,10 +52,10 @@ public class User extends LastUpdateDetail {
 
     private LocalDateTime termsConditionsAgreedTimestamp;
 
+    private String phone;
+    private String profileUrl;
+
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
-
-    private String phone;
-    private String profileUrl;
 }
