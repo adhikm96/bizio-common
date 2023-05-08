@@ -13,6 +13,7 @@ import java.util.List;
 public class OrderResponseDto {
 
     private String stripeCustomerId;
+    private String clientSecretKey;
     private String orderRefNo;
     private String productName;
     private String productCode;

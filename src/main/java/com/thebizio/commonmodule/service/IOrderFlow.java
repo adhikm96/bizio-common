@@ -28,13 +28,13 @@ public interface IOrderFlow {
 
     Account createAccountFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization,@NotNull User user);
+    Subscription createSubscription(@NotNull Order order,@NotNull Organization organization,User user);
 
     Address createAddressFromPayload(@NotNull String payload) throws JsonProcessingException;
 
     Contact createContactFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId) throws JsonProcessingException;
+    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId,String clientSecretKey) throws JsonProcessingException;
 
     void submitTaxToAvalara(@NotNull Order order,@NotNull String orgCode) throws Exception;
 

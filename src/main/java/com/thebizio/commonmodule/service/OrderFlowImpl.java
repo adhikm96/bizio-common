@@ -216,7 +216,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    public OrderResponseDto createOrderResponse(Order order,String stripeCustId) throws JsonProcessingException {
+    public OrderResponseDto createOrderResponse(Order order,String stripeCustId, String clientSecretKey) throws JsonProcessingException {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setProductName(order.getProductVariant().getProduct().getName());
         dto.setProductCode(order.getProductVariant().getProduct().getCode());
@@ -242,6 +242,7 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setAddons(addons);
         dto.setOrderRefNo(order.getRefNo());
         dto.setStripeCustomerId(stripeCustId);
+        dto.setClientSecretKey(clientSecretKey);
         return dto;
     }
 
@@ -372,7 +373,7 @@ public class OrderFlowImpl implements IOrderFlow {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
-        sub.setUsers(Collections.singletonList(user));
+        if (user != null )sub.setUsers(Collections.singletonList(user));
         sub.setOrder(order);
         entityManager.persist(sub);
         return sub;
