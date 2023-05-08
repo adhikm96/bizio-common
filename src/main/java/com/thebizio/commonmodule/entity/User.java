@@ -55,4 +55,7 @@ public class User extends LastUpdateDetail {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+    private String phone;
+    private String profileUrl;
 }
