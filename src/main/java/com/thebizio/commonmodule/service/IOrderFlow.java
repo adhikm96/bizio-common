@@ -34,7 +34,7 @@ public interface IOrderFlow {
 
     Contact createContactFromPayload(@NotNull String payload) throws JsonProcessingException;
 
-    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId) throws JsonProcessingException;
+    OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId,String clientSecretKey) throws JsonProcessingException;
 
     void submitTaxToAvalara(@NotNull Order order,@NotNull String orgCode) throws Exception;
 
