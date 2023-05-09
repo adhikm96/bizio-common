@@ -81,7 +81,7 @@ public class AvalaraService {
 
         AddressResolutionModel arm = avaTaxClient.resolveAddress(
                 ba.getAddressLine1(),
-                null,
+                ba.getAddressLine2(),
                 null,
                 ba.getCity(),
                 ba.getState(),
