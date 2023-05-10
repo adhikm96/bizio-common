@@ -45,4 +45,8 @@ public class BillingAccount extends LastUpdateDetail{
     @JsonBackReference
     private Organization organization;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    @JsonBackReference
+    private Address address;
 }
