@@ -37,6 +37,9 @@ public class BillingAccount extends LastUpdateDetail{
     private String pgAccType;
     private String stripePaymentMethodId;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean primaryAccount;
+
     @ManyToOne
     @JoinColumn(name = "organization_id")
     @JsonBackReference
