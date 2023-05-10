@@ -43,5 +43,4 @@ public class Address extends LastUpdateDetail{
     @JoinColumn(name = "org_id")
     @JsonBackReference
     private Organization org;
-
 }
