@@ -14,6 +14,7 @@ import com.stripe.param.SetupIntentCreateParams;
 
 import com.thebizio.commonmodule.dto.AddOnsDto;
 import com.thebizio.commonmodule.dto.BillingAddress;
+import com.thebizio.commonmodule.dto.CheckoutReqDto;
 import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.*;
@@ -35,6 +36,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderFlowImpl implements IOrderFlow {
@@ -208,6 +210,30 @@ public class OrderFlowImpl implements IOrderFlow {
                 .setCustomer(stripeCustId)
                 .addPaymentMethodType("card")
                 .build();
+        try {
+            return SetupIntent.create(params).getClientSecret();
+        } catch (StripeException e) {
+            logger.error(e.getMessage());
+            throw new ValidationException("try again later or contact support");
+        }
+    }
+
+    @Override
+    public String checkout(@Valid  CheckoutReqDto dto) {
+        assert dto.getStripeCustomerId() != null;
+
+        SetupIntentCreateParams.Builder builder = SetupIntentCreateParams
+                .builder()
+                .setCustomer(dto.getStripeCustomerId());
+
+        if(dto.getPaymentMethods() == null || dto.getPaymentMethods().size() == 0)
+            builder.addPaymentMethodType("card");
+        else
+            builder.addAllPaymentMethodType(dto.getPaymentMethods().stream().map(Enum::toString).collect(Collectors.toList()));
+
+        builder.putMetadata("primaryAccount", String.valueOf(dto.isPrimaryAccount()));
+        SetupIntentCreateParams params = builder.build();
+
         try {
             return SetupIntent.create(params).getClientSecret();
         } catch (StripeException e) {

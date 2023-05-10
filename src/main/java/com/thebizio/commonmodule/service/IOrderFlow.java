@@ -3,6 +3,7 @@ package com.thebizio.commonmodule.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.model.PaymentIntent;
 import com.thebizio.commonmodule.dto.BillingAddress;
+import com.thebizio.commonmodule.dto.CheckoutReqDto;
 import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
@@ -12,6 +13,7 @@ import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
@@ -23,6 +25,8 @@ public interface IOrderFlow {
     Order createOrder(@NotNull String orgCode, @NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @Valid @NotNull BillingAddress billingAddress) throws JsonProcessingException;
 
     String checkout(@NotNull String stripeCustId);
+
+    String checkout(@NotNull CheckoutReqDto dto);
 
     Organization createOrganizationFromPayload(@NotNull String payload) throws JsonProcessingException;
 
