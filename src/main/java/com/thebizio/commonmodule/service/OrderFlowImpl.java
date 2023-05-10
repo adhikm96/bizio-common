@@ -381,7 +381,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
 
     @Override
-    public BillingAccount createBillingAccount(PaymentIntent paymentIntent,Organization organization){
+    public BillingAccount createBillingAccount(PaymentIntent paymentIntent,Organization organization,Boolean primaryAccount){
         List<BillingAccount> billingAccount = billingAccountService.getBillingAccountByStripeId(paymentIntent.getPaymentMethod());
         if (billingAccount.size() >= 1){
             if (billingAccount.get(0).getOrganization() == null){
@@ -403,6 +403,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 ba.setAccHolderName(stripePM.getBillingDetails().getName());
                 ba.setOrganization(organization);
                 ba.setStatus(Status.ENABLED);
+                ba.setPrimaryAccount(primaryAccount);
                 entityManager.persist(ba);
             } else if (stripePM.getType().equals("us_bank_account")) {
                 ba.setStripePaymentMethodId(stripePM.getId());
@@ -417,6 +418,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 ba.setBankName(stripePM.getUsBankAccount().getBankName());
                 ba.setOrganization(organization);
                 ba.setStatus(Status.ENABLED);
+                ba.setPrimaryAccount(primaryAccount);
                 entityManager.persist(ba);
             }
             return ba;
