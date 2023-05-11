@@ -380,6 +380,7 @@ public class OrderFlowImpl implements IOrderFlow {
     public Subscription createSubscription(Order order,Organization organization,User user){
         Subscription sub = new Subscription();
         sub.setSeats(1);
+        sub.setRenewNextSubscription(true);
 
         if (order.getProductVariant().getAttributeValue().equals("YEARLY")){
             sub.setValidFrom(LocalDate.now());
