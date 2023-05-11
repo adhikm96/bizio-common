@@ -44,6 +44,8 @@ public class Organization extends LastUpdateDetail {
     private String shortName;
     private String otherName;
 
+    private String emailDomain;
+
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
