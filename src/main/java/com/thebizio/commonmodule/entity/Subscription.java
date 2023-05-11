@@ -38,6 +38,12 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     private SubscriptionTypeEnum subscriptionType;
     private SubscriptionStatusEnum subscriptionStatus;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean bizioGuestSubscription;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean renewNextSubscription;
+
     @ManyToOne
     @JoinColumn(name = "org_id")
     private Organization org;
