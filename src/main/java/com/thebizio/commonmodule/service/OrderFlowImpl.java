@@ -312,7 +312,7 @@ public class OrderFlowImpl implements IOrderFlow {
         address.setState(jsonNode.get("state").asText());
         address.setCountry(jsonNode.get("country").asText());
         address.setZipcode(jsonNode.get("zipcode").asText());
-
+        address.setStatus(Status.ENABLED);
         //attach org later
         return address;
     }
