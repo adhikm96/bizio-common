@@ -66,5 +66,5 @@ public class ProductVariant extends LastUpdateDetail{
 
     @OneToMany(mappedBy="productVariant")
     @JsonBackReference
-    private List<BundleItem> bundleItems;
+    private List<BundleItem> bundleItems = new ArrayList<>();
 }
