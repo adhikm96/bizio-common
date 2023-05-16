@@ -312,7 +312,7 @@ public class OrderFlowImpl implements IOrderFlow {
         address.setState(jsonNode.get("state").asText());
         address.setCountry(jsonNode.get("country").asText());
         address.setZipcode(jsonNode.get("zipcode").asText());
-
+        address.setStatus(Status.ENABLED);
         //attach org later
         return address;
     }
@@ -417,7 +417,7 @@ public class OrderFlowImpl implements IOrderFlow {
             }
             return billingAccount.get(0);
         }else {
-            PaymentMethod stripePM = paymentIntent.getPaymentMethodObject();
+            PaymentMethod stripePM = fetchPaymentMethod(paymentIntent.getPaymentMethod());
             BillingAccount ba = new BillingAccount();
             if (stripePM.getType().equals("card")) {
                 ba.setStripePaymentMethodId(stripePM.getId());
@@ -449,6 +449,16 @@ public class OrderFlowImpl implements IOrderFlow {
                 entityManager.persist(ba);
             }
             return ba;
+        }
+    }
+
+    private PaymentMethod fetchPaymentMethod(String id){
+        try {
+            PaymentMethod pm = PaymentMethod.retrieve(id);
+            return pm;
+        } catch (StripeException e) {
+            logger.error(e.getMessage());
+            return null;
         }
     }
 
