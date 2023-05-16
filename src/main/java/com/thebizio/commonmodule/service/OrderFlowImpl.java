@@ -229,7 +229,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if(dto.getPaymentMethods() == null || dto.getPaymentMethods().size() == 0)
             builder.addPaymentMethodType("card");
         else
-            builder.addAllPaymentMethodType(dto.getPaymentMethods().stream().map(Enum::toString).collect(Collectors.toList()));
+            builder.addAllPaymentMethodType(dto.getPaymentMethods().stream().map(e -> e.toString().toLowerCase()).collect(Collectors.toList()));
 
         builder.putMetadata("primaryAccount", String.valueOf(dto.isPrimaryAccount()));
         SetupIntentCreateParams params = builder.build();
