@@ -63,6 +63,16 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @JsonBackReference
     private Order order;
 
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    @JsonBackReference
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "product_variant_id")
+    @JsonBackReference
+    private ProductVariant productVariant;
+
     @Override
     public String getRandomGeneratorField() {
         return "name";

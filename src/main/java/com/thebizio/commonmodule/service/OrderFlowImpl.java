@@ -402,6 +402,8 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setApplications(applications);
         if (user != null )sub.setUsers(Collections.singletonList(user));
         sub.setOrder(order);
+        sub.setProduct(order.getProduct());
+        sub.setProductVariant(order.getProductVariant());
         entityManager.persist(sub);
         return sub;
     }
