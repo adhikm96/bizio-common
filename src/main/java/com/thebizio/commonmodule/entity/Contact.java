@@ -30,6 +30,9 @@ public class Contact extends LastUpdateDetail{
     private String website;
     private Status status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean primaryContact;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

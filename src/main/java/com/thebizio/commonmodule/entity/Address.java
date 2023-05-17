@@ -29,6 +29,9 @@ public class Address extends LastUpdateDetail{
     private String zipcode;
     private Status status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean primaryAddress;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
