@@ -49,4 +49,6 @@ public interface IOrderFlow {
     BillingAccount createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization,@NotNull Boolean primaryAccount);
 
     AddressResolutionModel validateBillingAddress(@NotNull BillingAddress address) throws Exception;
+
+    void validatePaymentMethodExpiry(@NotNull String stripePaymentMethodId);
 }

@@ -470,6 +470,18 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public void validatePaymentMethodExpiry(String stripePaymentMethodId) {
+        PaymentMethod pm = fetchPaymentMethod(stripePaymentMethodId);
+        if (pm == null) throw new ValidationException("billing account not found");
+        if (pm.getType().equals("card")){
+            if (pm.getCard().getExpYear() < LocalDate.now().getYear()) throw new ValidationException("card has been expired");
+            if (pm.getCard().getExpYear() == LocalDate.now().getYear()) {
+                if (pm.getCard().getExpMonth() < LocalDate.now().getMonthValue()) throw new ValidationException("card has been expired");
+            }
+        }
+    }
+
+    @Override
     public PaymentIntent payment(String stripePaymentMethodId, String stripeCustomerId,Long amount,String orderRefNo){
         PaymentIntentCreateParams params =
                 PaymentIntentCreateParams.builder()
