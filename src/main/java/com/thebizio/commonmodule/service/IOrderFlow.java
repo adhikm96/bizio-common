@@ -50,5 +50,5 @@ public interface IOrderFlow {
 
     AddressResolutionModel validateBillingAddress(@NotNull BillingAddress address) throws Exception;
 
-    void validatePaymentMethodExpiry(@NotNull String stripePaymentMethodId);
+    void validateBillingAccountExpiry(@NotNull BillingAccount billingAccount);
 }
