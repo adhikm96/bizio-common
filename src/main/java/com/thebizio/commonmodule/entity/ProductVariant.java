@@ -29,6 +29,8 @@ public class ProductVariant extends LastUpdateDetail{
     private String attributeValue;
     private Double defaultPrice;
 
+    private Integer seats;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonBackReference
