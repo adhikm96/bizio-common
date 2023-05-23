@@ -379,7 +379,10 @@ public class OrderFlowImpl implements IOrderFlow {
     @Override
     public Subscription createSubscription(Order order,Organization organization,User user){
         Subscription sub = new Subscription();
-        sub.setSeats(1);
+        assert order.getProductVariant() != null;
+        Integer seats = order.getProductVariant().getSeats();
+        if(seats == null) seats = 1;
+        sub.setSeats(seats);
         sub.setRenewNextSubscription(true);
 
         if (order.getProductVariant().getAttributeValue().equals("YEARLY")){
@@ -400,11 +403,24 @@ public class OrderFlowImpl implements IOrderFlow {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
-        if (user != null )sub.setUsers(Collections.singletonList(user));
+
         sub.setOrder(order);
         sub.setProduct(order.getProduct());
         sub.setProductVariant(order.getProductVariant());
         entityManager.persist(sub);
+
+        if (user != null ){
+            SubscriptionUser subscriptionUser = new SubscriptionUser();
+            subscriptionUser.setSubscription(sub);
+            subscriptionUser.setUser(user);
+            subscriptionUser.setStatus(Status.ENABLED);
+            entityManager.persist(subscriptionUser);
+
+            // occupy seats from sub
+            sub.setOccupiedSeats(sub.getOccupiedSeats() + 1);
+            entityManager.persist(sub);
+        }
+
         return sub;
     }
 

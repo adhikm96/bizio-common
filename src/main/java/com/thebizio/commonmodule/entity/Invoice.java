@@ -51,6 +51,8 @@ public class Invoice extends LastUpdateDetail{
     @PositiveOrZero
     private BigDecimal netTotal;
 
+    private LocalDate dueDate;
+
     //set payment
 
     @ManyToOne

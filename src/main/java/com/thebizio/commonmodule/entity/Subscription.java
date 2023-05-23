@@ -32,6 +32,10 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     private String name;
 
     private Integer seats;
+
+    @Column(columnDefinition = "int default 0")
+    private Integer occupiedSeats;
+
     private LocalDate validFrom;
     private LocalDate validTill;
     private LocalDate nextRenewalDate;
@@ -53,10 +57,12 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
             inverseJoinColumns = @JoinColumn(name = "application_id"))
     private List<Application> applications = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "subscription_users", joinColumns = @JoinColumn(name = "subscription_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> users = new ArrayList<>();
+//    @ManyToMany
+//    @JoinTable(name = "subscription_users", joinColumns = @JoinColumn(name = "subscription_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id"))
+
+    @OneToMany(mappedBy = "subscription", fetch = FetchType.LAZY)
+    private List<SubscriptionUser> subUsers = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -77,4 +83,6 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     public String getRandomGeneratorField() {
         return "name";
     }
+
+
 }
