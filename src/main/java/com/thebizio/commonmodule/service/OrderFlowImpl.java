@@ -417,7 +417,7 @@ public class OrderFlowImpl implements IOrderFlow {
             entityManager.persist(subscriptionUser);
 
             // occupy seats from sub
-            sub.setOccupiedSeats(sub.getOccupiedSeats() + 1);
+            sub.setOccupiedSeats(calculateUtilService.nullOrZeroValue(sub.getOccupiedSeats(),0) + 1);
             entityManager.persist(sub);
         }
 
