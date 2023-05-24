@@ -1,7 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.thebizio.commonmodule.enums.Status;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,9 +8,10 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Getter @Setter
-@Table(name = "subscription_users")
-public class SubscriptionUser extends LastUpdateDetail{
+@Getter
+@Setter
+@Table(name = "sub_app_user_roles")
+public class SubAppUserRoles extends LastUpdateDetail {
 
     @Id
     @GeneratedValue(generator = "uuid4")
@@ -24,7 +24,17 @@ public class SubscriptionUser extends LastUpdateDetail{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "subscription_id")
+    @JoinColumn(name = "sub_id")
     @JsonBackReference
-    private Subscription subscription;
+    private Subscription sub;
+
+    @ManyToOne
+    @JoinColumn(name = "app_id")
+    @JsonBackReference
+    private Application app;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    @JsonBackReference
+    private Role role;
 }
