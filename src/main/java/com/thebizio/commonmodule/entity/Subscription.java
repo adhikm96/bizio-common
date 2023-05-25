@@ -36,6 +36,12 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @Column(columnDefinition = "int default 0")
     private Integer occupiedSeats;
 
+
+    @Column(columnDefinition = "int default 0")
+    private Integer occupiedOrgNo;
+
+    private Integer maxOrg;
+
     private LocalDate validFrom;
     private LocalDate validTill;
     private LocalDate nextRenewalDate;

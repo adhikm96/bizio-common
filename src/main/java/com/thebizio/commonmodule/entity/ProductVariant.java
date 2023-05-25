@@ -2,6 +2,7 @@ package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.AttributeType;
+import com.thebizio.commonmodule.enums.PlanTypeEnum;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,8 @@ public class ProductVariant extends LastUpdateDetail{
     private Double defaultPrice;
 
     private Integer seats;
+    private Integer maxOrg;
+    private PlanTypeEnum planType;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

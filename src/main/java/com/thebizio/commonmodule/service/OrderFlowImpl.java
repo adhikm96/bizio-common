@@ -244,9 +244,10 @@ public class OrderFlowImpl implements IOrderFlow {
 
     public OrderResponseDto createOrderResponse(Order order,String stripeCustId, String clientSecretKey) throws JsonProcessingException {
         OrderResponseDto dto = new OrderResponseDto();
-        dto.setProductName(order.getProductVariant().getProduct().getName());
-        dto.setProductCode(order.getProductVariant().getProduct().getCode());
-        dto.setAttributeValue(order.getProductVariant().getAttributeValue());
+        ProductVariant pv = order.getProductVariant();
+        dto.setProductName(pv.getProduct().getName());
+        dto.setProductCode(pv.getProduct().getCode());
+        dto.setAttributeValue(pv.getAttributeValue());
 
         dto.setPrice(BigDecimal.valueOf(order.getPrice().getPrice()));
         dto.setGrossTotal(order.getGrossTotal());
@@ -259,7 +260,7 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setNetTotal(order.getNetTotal());
 
         List<AddOnsDto> addons = new ArrayList<>();
-        for (ProductVariant addOn: order.getProductVariant().getAddOns()) {
+        for (ProductVariant addOn: pv.getAddOns()) {
             AddOnsDto addOnDto = new AddOnsDto();
             addOnDto.setName(addOn.getName());
             addOnDto.setPrice(BigDecimal.valueOf(addOn.getDefaultPrice()));
@@ -379,13 +380,18 @@ public class OrderFlowImpl implements IOrderFlow {
     @Override
     public Subscription createSubscription(Order order,Organization organization,User user){
         Subscription sub = new Subscription();
-        assert order.getProductVariant() != null;
-        Integer seats = order.getProductVariant().getSeats();
+        ProductVariant pv = order.getProductVariant();
+        assert pv != null;
+        Integer seats = pv.getSeats();
+        Integer maxOrg = pv.getMaxOrg();
         if(seats == null) seats = 1;
+        if(maxOrg == null) maxOrg = 0;
         sub.setSeats(seats);
+        sub.setMaxOrg(maxOrg);
+        sub.setOccupiedOrgNo(0);
         sub.setRenewNextSubscription(true);
 
-        if (order.getProductVariant().getAttributeValue().equals("YEARLY")){
+        if (pv.getAttributeValue().equals("YEARLY")){
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().plusYears(1));
             sub.setSubscriptionType(SubscriptionTypeEnum.YEARLY);
@@ -399,14 +405,14 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setSubscriptionStatus(SubscriptionStatusEnum.ACTIVE);
         sub.setOrg(organization);
         List<Application> applications = new ArrayList<>();
-        for (BundleItem bi:order.getProductVariant().getBundleItems()) {
+        for (BundleItem bi:pv.getBundleItems()) {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
 
         sub.setOrder(order);
         sub.setProduct(order.getProduct());
-        sub.setProductVariant(order.getProductVariant());
+        sub.setProductVariant(pv);
         entityManager.persist(sub);
 
         if (user != null ){
