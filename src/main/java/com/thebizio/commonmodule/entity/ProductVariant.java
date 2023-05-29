@@ -31,7 +31,6 @@ public class ProductVariant extends LastUpdateDetail{
     private Double defaultPrice;
 
     private Integer seats;
-    private Integer maxOrg;
     private PlanTypeEnum planType;
 
     @ManyToOne

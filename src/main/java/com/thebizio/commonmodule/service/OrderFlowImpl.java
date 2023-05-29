@@ -383,12 +383,8 @@ public class OrderFlowImpl implements IOrderFlow {
         ProductVariant pv = order.getProductVariant();
         assert pv != null;
         Integer seats = pv.getSeats();
-        Integer maxOrg = pv.getMaxOrg();
         if(seats == null) seats = 1;
-        if(maxOrg == null) maxOrg = 0;
         sub.setSeats(seats);
-        sub.setMaxOrg(maxOrg);
-        sub.setOccupiedOrgNo(0);
         sub.setRenewNextSubscription(true);
 
         if (pv.getAttributeValue().equals("YEARLY")){
