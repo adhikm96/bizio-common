@@ -38,4 +38,9 @@ public class Role extends LastUpdateDetail{
     @JsonBackReference
     private List<Policy> policies = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @JsonBackReference
+    private Project project;
+
 }

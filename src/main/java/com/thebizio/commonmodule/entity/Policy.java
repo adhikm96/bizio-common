@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,10 @@ public class Policy extends LastUpdateDetail{
     @Column(columnDefinition="TEXT")
     private String description;
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @JsonBackReference
+    private Project project;
 
 }

@@ -1,11 +1,13 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -40,4 +42,9 @@ public class Application extends LastUpdateDetail {
             joinColumns = @JoinColumn(name = "application_id"),
             inverseJoinColumns = @JoinColumn(name = "resource_id"))
     private List<Resource> resources = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @JsonBackReference
+    private Project project;
 }
