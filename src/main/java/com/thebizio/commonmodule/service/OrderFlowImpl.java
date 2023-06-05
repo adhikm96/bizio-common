@@ -232,6 +232,7 @@ public class OrderFlowImpl implements IOrderFlow {
             builder.addAllPaymentMethodType(dto.getPaymentMethods().stream().map(e -> e.toString().toLowerCase()).collect(Collectors.toList()));
 
         builder.putMetadata("primaryAccount", String.valueOf(dto.isPrimaryAccount()));
+        builder.putMetadata("doCreate", String.valueOf(dto.isDoCreate()));
         SetupIntentCreateParams params = builder.build();
 
         try {
