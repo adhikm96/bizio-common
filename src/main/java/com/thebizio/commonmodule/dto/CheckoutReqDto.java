@@ -15,4 +15,5 @@ public class CheckoutReqDto {
     private String stripeCustomerId;
     private Set<PaymentLinkCreateParams.PaymentMethodType> paymentMethods;
     private boolean primaryAccount;
+    private boolean doCreate;
 }
