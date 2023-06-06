@@ -16,4 +16,5 @@ public class CheckoutReqDto {
     private Set<PaymentLinkCreateParams.PaymentMethodType> paymentMethods;
     private boolean primaryAccount;
     private boolean doCreate;
+    private String orderRefNo;
 }

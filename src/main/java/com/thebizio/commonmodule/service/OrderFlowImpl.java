@@ -12,10 +12,7 @@ import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
 
-import com.thebizio.commonmodule.dto.AddOnsDto;
-import com.thebizio.commonmodule.dto.BillingAddress;
-import com.thebizio.commonmodule.dto.CheckoutReqDto;
-import com.thebizio.commonmodule.dto.OrderResponseDto;
+import com.thebizio.commonmodule.dto.*;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.ServerException;
@@ -35,6 +32,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,9 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final BillingAccountService billingAccountService;
 
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService) {
+    private final OrderPayloadService orderPayloadService;
+
+    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService,OrderPayloadService orderPayloadService) {
         this.promotionService = promotionService;
         this.calculateUtilService = calculateUtilService;
         this.avalaraService = avalaraService;
@@ -65,6 +66,7 @@ public class OrderFlowImpl implements IOrderFlow {
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
         this.billingAccountService = billingAccountService;
+        this.orderPayloadService = orderPayloadService;
     }
 
     @Override
@@ -233,6 +235,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
         builder.putMetadata("primaryAccount", String.valueOf(dto.isPrimaryAccount()));
         builder.putMetadata("doCreate", String.valueOf(dto.isDoCreate()));
+        if (dto.getOrderRefNo() != null ) builder.putMetadata("orderRefNo", String.valueOf(dto.getOrderRefNo()));
         SetupIntentCreateParams params = builder.build();
 
         try {
@@ -426,7 +429,6 @@ public class OrderFlowImpl implements IOrderFlow {
         return sub;
     }
 
-
     @Override
     public BillingAccount createBillingAccount(PaymentIntent paymentIntent,Organization organization,Boolean primaryAccount){
         List<BillingAccount> billingAccount = billingAccountService.getBillingAccountByStripeId(paymentIntent.getPaymentMethod());
@@ -480,6 +482,89 @@ public class OrderFlowImpl implements IOrderFlow {
             logger.error(e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId) throws JsonProcessingException {
+        OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
+        if (op == null) throw new ValidationException("order not found");
+        Order order = op.getOrder();
+        JsonNode jsonNode = objectMapper.readTree(op.getPayload());
+        Organization parentOrg = order.getParentOrganization();
+
+        //create org
+        Organization org = op.getPayloadType().equals("OrganizationRegistration") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) :createOrganizationFromPayload(op.getPayload());
+        org.setParent(parentOrg);
+        org.setStripeCustomerId(op.getStripeCustomerId());
+        org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
+        if (parentOrg != null) org.setAccount(parentOrg.getAccount());
+        entityManager.persist(org);
+
+        //create address
+        Address address = op.getPayloadType().equals("OrganizationRegistration") ? createAddressFromPayload(jsonNode.get("address").toString()) : createAddressFromPayload(op.getPayload());
+        address.setOrg(org);
+        address.setPrimaryAddress(true);
+        entityManager.persist(address);
+
+        //create contact
+        Contact contact = op.getPayloadType().equals("OrganizationRegistration") ? createContactFromPayload(jsonNode.get("contact").toString()) : createContactFromPayload(op.getPayload());
+        contact.setOrg(org);
+        contact.setPrimaryContact(true);
+        entityManager.persist(contact);
+
+        PostpaidAccountResponse response = new PostpaidAccountResponse();
+
+        if (op.getPayloadType().equals("OrganizationRegistration")){
+            //create account
+            Account account = createAccountFromPayload(op.getPayload());
+            account.setPrimaryContact(contact);
+            account.setPrimaryOrganization(org);
+            entityManager.persist(account);
+
+            //set account in org
+            org.setEmailDomain(jsonNode.get("organizationDetails").get("emailDomain").asText());
+            org.setAccount(account);
+            entityManager.persist(org);
+
+            //create user
+            User user = new User();
+            user.setUsername(jsonNode.get("userName").asText().toLowerCase());
+            user.setOrganization(org);
+            user.setLastPasswordChangeDate(LocalDateTime.now());
+            user.setLastEmailChangeDate(LocalDateTime.now());
+            user.setStayInformedAboutBizio(jsonNode.get("stayInformedAboutBizio").asBoolean());
+            user.setTermsConditionsAgreed(jsonNode.get("termsConditionsAgreed").asBoolean());
+            if(user.getTermsConditionsAgreed()) user.setTermsConditionsAgreedTimestamp(LocalDateTime.now());
+            user.setStatus(Status.ENABLED);
+            entityManager.persist(user);
+
+            response.setUser(user);
+
+            //set account in address
+            address.setAccount(account);
+            entityManager.persist(address);
+
+            //set account in contact
+            contact.setAccount(account);
+            entityManager.persist(contact);
+
+            PaymentIntent pi = new PaymentIntent();
+            pi.setPaymentMethod(paymentMethodId);
+
+            createBillingAccount(pi,org,true);
+        }
+
+        Subscription sub = createSubscription(order,org,null);
+        sub.setValidFrom(LocalDate.now());
+        sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
+        sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
+        entityManager.persist(sub);
+
+        order.setStatus(OrderStatus.COMPLETED);
+        entityManager.persist(order);
+
+        response.setOrder(order);
+        return response;
     }
 
     @Override
