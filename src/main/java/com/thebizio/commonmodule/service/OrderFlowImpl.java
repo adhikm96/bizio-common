@@ -560,6 +560,8 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
         entityManager.persist(sub);
 
+        order.setAddress(address);
+        order.setOrganization(org);
         order.setStatus(OrderStatus.COMPLETED);
         entityManager.persist(order);
 
