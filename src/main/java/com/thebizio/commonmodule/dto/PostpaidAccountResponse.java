@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.dto;
 
 import com.thebizio.commonmodule.entity.Order;
+import com.thebizio.commonmodule.entity.Organization;
 import com.thebizio.commonmodule.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +14,5 @@ public class PostpaidAccountResponse {
 
     private Order order;
     private User user;
+    private Organization organization;
 }

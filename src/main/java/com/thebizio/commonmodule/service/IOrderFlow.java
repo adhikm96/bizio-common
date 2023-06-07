@@ -52,5 +52,5 @@ public interface IOrderFlow {
 
     void validateBillingAccountExpiry(@NotNull BillingAccount billingAccount);
 
-    PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId) throws JsonProcessingException;
+    PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId,BillingAccount billingAccount) throws JsonProcessingException;
 }

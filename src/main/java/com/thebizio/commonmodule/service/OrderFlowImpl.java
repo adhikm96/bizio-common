@@ -485,7 +485,7 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId) throws JsonProcessingException {
+    public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId,BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
         if (op == null) throw new ValidationException("order not found");
         Order order = op.getOrder();
@@ -558,6 +558,7 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setValidFrom(LocalDate.now());
         sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
         sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
+        sub.setPreferredBillingAccount(billingAccount);
         entityManager.persist(sub);
 
         order.setAddress(address);
@@ -566,6 +567,7 @@ public class OrderFlowImpl implements IOrderFlow {
         entityManager.persist(order);
 
         response.setOrder(order);
+        response.setOrganization(org);
         return response;
     }
 
