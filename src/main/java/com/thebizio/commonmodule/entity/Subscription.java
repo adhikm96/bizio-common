@@ -79,6 +79,11 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @JsonBackReference
     private ProductVariant productVariant;
 
+    @ManyToOne
+    @JoinColumn(name = "preferred_billing_account_id")
+    @JsonBackReference
+    private BillingAccount preferredBillingAccount;
+
     @Override
     public String getRandomGeneratorField() {
         return "name";
