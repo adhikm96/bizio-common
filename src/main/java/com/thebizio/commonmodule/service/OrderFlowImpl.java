@@ -555,9 +555,11 @@ public class OrderFlowImpl implements IOrderFlow {
         }
 
         Subscription sub = createSubscription(order,org,null);
-        sub.setValidFrom(LocalDate.now());
-        sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
-        sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
+        if (order.getProductVariant().getAttributeValue().equals("MONTHLY")) {
+            sub.setValidFrom(LocalDate.now());
+            sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
+            sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
+        }
         sub.setPreferredBillingAccount(billingAccount);
         entityManager.persist(sub);
 
