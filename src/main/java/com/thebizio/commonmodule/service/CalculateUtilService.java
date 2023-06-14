@@ -12,4 +12,6 @@ public class CalculateUtilService {
     public <T> T nullOrZeroValue(T val, T dVal) {
         return val == null ? dVal : val;
     }
+
+    public boolean isEven(int x) { return x % 2 == 0; }
 }
