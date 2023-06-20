@@ -31,5 +31,5 @@ public class Contract{
     private ContractStatus status;
 
     @Convert(converter = HashMapConvertor.class)
-    private Map<String, String> traits = new HashMap<>();
+    private Map<String, String> attributes = new HashMap<>();
 }
