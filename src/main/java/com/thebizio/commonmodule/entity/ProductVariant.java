@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.thebizio.commonmodule.convertor.UUIDListConvertor;
 import com.thebizio.commonmodule.enums.AttributeType;
 import com.thebizio.commonmodule.enums.PlanTypeEnum;
 import com.thebizio.commonmodule.enums.Status;
@@ -71,4 +72,10 @@ public class ProductVariant extends LastUpdateDetail{
     @OneToMany(mappedBy="productVariant")
     @JsonBackReference
     private List<BundleItem> bundleItems = new ArrayList<>();
+
+    @Convert(converter = UUIDListConvertor.class)
+    private List<UUID> extensionOf = new ArrayList<>();
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean addonExtension;
 }
