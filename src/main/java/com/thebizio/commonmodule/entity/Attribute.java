@@ -1,6 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
-import com.thebizio.commonmodule.enums.TraitTypeEnum;
+import com.thebizio.commonmodule.enums.AttributeTypeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,14 +10,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "traits")
+@Table(name = "attributes")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Trait {
+public class Attribute extends LastUpdateDetail{
     @Id
     private String code;
 
     private String description;
-    private TraitTypeEnum traitType;
+    private AttributeTypeEnum attributeType;
 }

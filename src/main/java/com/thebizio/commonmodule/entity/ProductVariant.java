@@ -2,7 +2,7 @@ package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.convertor.UUIDListConvertor;
-import com.thebizio.commonmodule.enums.AttributeType;
+import com.thebizio.commonmodule.enums.VariantAttributeType;
 import com.thebizio.commonmodule.enums.PlanTypeEnum;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Data;
@@ -27,8 +27,8 @@ public class ProductVariant extends LastUpdateDetail{
     private String name;
     private String code;
     private Status status;
-    private AttributeType attributeType;
-    private String attributeValue;
+    private VariantAttributeType variantAttributeType;
+    private String variantAttributeValue;
     private Double defaultPrice;
 
     private Integer seats;
@@ -77,5 +77,5 @@ public class ProductVariant extends LastUpdateDetail{
     private List<UUID> extensionOf = new ArrayList<>();
 
     @Column(columnDefinition = "boolean default false")
-    private Boolean addonExtension;
+    private Boolean extension;
 }

@@ -8,19 +8,19 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "variant_traits")
+@Table(name = "variant_attributes")
 @Getter
 @Setter
 @NoArgsConstructor
-public class VariantTrait {
+public class VariantAttributes extends LastUpdateDetail{
     @Id
     @GeneratedValue(generator = "uuid4")
     @Column(columnDefinition = "uuid")
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "trait_id")
-    private Trait trait;
+    @JoinColumn(name = "attribute_code")
+    private Attribute attribute;
 
     private String value;
 

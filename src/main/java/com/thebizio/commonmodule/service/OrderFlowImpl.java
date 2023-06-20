@@ -251,7 +251,7 @@ public class OrderFlowImpl implements IOrderFlow {
         ProductVariant pv = order.getProductVariant();
         dto.setProductName(pv.getProduct().getName());
         dto.setProductCode(pv.getProduct().getCode());
-        dto.setAttributeValue(pv.getAttributeValue());
+        dto.setAttributeValue(pv.getVariantAttributeValue());
 
         dto.setPrice(BigDecimal.valueOf(order.getPrice().getPrice()));
         dto.setGrossTotal(order.getGrossTotal());
@@ -391,7 +391,7 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setSeats(seats);
         sub.setRenewNextSubscription(true);
 
-        if (pv.getAttributeValue().equals("YEARLY")){
+        if (pv.getVariantAttributeValue().equals("YEARLY")){
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().plusYears(1));
             sub.setSubscriptionType(SubscriptionTypeEnum.YEARLY);
@@ -555,7 +555,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
 
         Subscription sub = createSubscription(order,org,null);
-        if (order.getProductVariant().getAttributeValue().equals("MONTHLY")) {
+        if (order.getProductVariant().getVariantAttributeValue().equals("MONTHLY")) {
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
             sub.setNextRenewalDate(sub.getValidTill().plusDays(1));
