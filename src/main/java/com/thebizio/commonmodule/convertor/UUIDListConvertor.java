@@ -15,6 +15,7 @@ public class UUIDListConvertor implements AttributeConverter<List<UUID>, String>
 
     @Override
     public List<UUID> convertToEntityAttribute(String s) {
-        return s == null ? Collections.emptyList() : Arrays.stream(s.split(",")).map(UUID::fromString).collect(Collectors.toList());
+        if(s == null || s.isEmpty()) return Collections.emptyList();
+        return Arrays.stream(s.split(",")).map(UUID::fromString).collect(Collectors.toList());
     }
 }
