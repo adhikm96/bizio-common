@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Attribute {
+public class Attribute extends LastUpdateDetail{
     @Id
     private String code;
 

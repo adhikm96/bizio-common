@@ -17,7 +17,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Contract{
+public class Contract extends LastUpdateDetail{
 
     @Id
     private String entityCode;
