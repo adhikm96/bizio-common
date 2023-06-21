@@ -386,9 +386,7 @@ public class OrderFlowImpl implements IOrderFlow {
         Subscription sub = new Subscription();
         ProductVariant pv = order.getProductVariant();
         assert pv != null;
-        Integer seats = pv.getSeats();
-        if(seats == null) seats = 1;
-        sub.setSeats(seats);
+        sub.setSeats(1);
         sub.setRenewNextSubscription(true);
 
         if (pv.getVariantAttributeValue().equals("YEARLY")){
