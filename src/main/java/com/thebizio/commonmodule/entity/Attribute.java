@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.enums.AttributeTypeEnum;
+import com.thebizio.commonmodule.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,4 +21,6 @@ public class Attribute extends LastUpdateDetail{
 
     private String description;
     private AttributeTypeEnum attributeType;
+
+    private Status status;
 }
