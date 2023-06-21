@@ -18,14 +18,11 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class Contract extends LastUpdateDetail{
-
     @Id
     private String entityCode;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "product_group_id")
-    private ProductGroup productGroup;
+    private String productGroupCode;
 
     private ContractEntityEnum contractEntity;
     private ContractStatus status;

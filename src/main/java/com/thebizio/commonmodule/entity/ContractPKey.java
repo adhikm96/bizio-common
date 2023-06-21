@@ -15,10 +15,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class ContractPKey implements Serializable {
-
     private String entityCode;
-
-    @ManyToOne
-    @JoinColumn(name = "product_group_id")
-    private ProductGroup productGroup;
+    private String productGroupCode;
 }
