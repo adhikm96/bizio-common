@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VariantAttributes extends LastUpdateDetail{
+public class VariantAttribute extends LastUpdateDetail{
     @Id
     @GeneratedValue(generator = "uuid4")
     @Column(columnDefinition = "uuid")

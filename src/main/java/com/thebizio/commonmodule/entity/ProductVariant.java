@@ -30,8 +30,6 @@ public class ProductVariant extends LastUpdateDetail{
     private VariantAttributeType variantAttributeType;
     private String variantAttributeValue;
     private Double defaultPrice;
-
-    private Integer seats;
     private PlanTypeEnum planType;
 
     @ManyToOne
