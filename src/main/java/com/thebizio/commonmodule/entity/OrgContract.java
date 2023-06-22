@@ -1,30 +1,28 @@
 package com.thebizio.commonmodule.entity;
 
-import com.thebizio.commonmodule.enums.ContractEntityEnum;
+import com.thebizio.commonmodule.convertor.HashMapConvertor;
 import com.thebizio.commonmodule.enums.ContractStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.thebizio.commonmodule.convertor.HashMapConvertor;
 
 import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "contracts")
-@IdClass(ContractPKey.class)
+@Table(name = "org_contracts")
+@IdClass(OrgContractPKey.class)
 @Getter
 @Setter
 @NoArgsConstructor
-public class Contract extends LastUpdateDetail{
+public class OrgContract extends LastUpdateDetail{
     @Id
-    private String entityCode;
+    private String orgCode;
 
     @Id
     private String productGroupCode;
 
-    private ContractEntityEnum contractEntity;
     private ContractStatus status;
 
     @Convert(converter = HashMapConvertor.class)
