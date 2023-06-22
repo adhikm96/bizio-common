@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.thebizio.commonmodule.convertor.ListConvertorForPolicyResourceScopeAttrDto;
 import com.thebizio.commonmodule.convertor.ListObjConvertor;
 import com.thebizio.commonmodule.enums.ContractStatus;
 import lombok.Getter;
@@ -25,6 +26,6 @@ public class UserContract {
     private String appCode;
     private ContractStatus status;
 
-    @Convert(converter = ListObjConvertor.class)
+    @Convert(converter = ListConvertorForPolicyResourceScopeAttrDto.class)
     private List<PolicyResourceScopeAttrDto> policyResourceScopeAttrs = new ArrayList<>();
 }
