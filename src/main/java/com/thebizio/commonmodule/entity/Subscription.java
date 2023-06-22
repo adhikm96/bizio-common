@@ -48,6 +48,12 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @Column(columnDefinition = "boolean default false")
     private Boolean renewNextSubscription;
 
+    private boolean extension;
+
+    @ManyToOne
+    @JoinColumn(name = "extension_of")
+    private Subscription extensionOf;
+
     @ManyToOne
     @JoinColumn(name = "org_id")
     private Organization org;

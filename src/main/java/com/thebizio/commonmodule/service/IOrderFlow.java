@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
 
-    PaymentIntent payment(@NotNull String stripePaymentMethodId, @NotNull String stripeCustomerId, @NotNull Long amount, @NotNull String orderRefNo);
+    PaymentIntent payment(@NotNull String stripePaymentMethodId, @NotNull String stripeCustomerId, @NotNull Long amount,String orderRefNo);
 
     void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
 
