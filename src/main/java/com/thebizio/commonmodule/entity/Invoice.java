@@ -1,8 +1,8 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
+import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,7 +53,7 @@ public class Invoice extends LastUpdateDetail{
 
     private LocalDate dueDate;
 
-    //set payment
+    private LocalDate nextPaymentAttemptDate;
 
     @ManyToOne
     @JoinColumn(name = "address_id")
