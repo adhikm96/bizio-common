@@ -27,5 +27,5 @@ public class UserContract {
     private ContractStatus status;
 
     @Convert(converter = ListConvertorForPolicyResourceScopeAttrDto.class)
-    private List<PolicyResourceScopeAttrDto> policyResourceScopeAttrs = new ArrayList<>();
+    private List<PolicyResourceScopeAttrDto> resolvedResourceScopeAttrs = new ArrayList<>();
 }
