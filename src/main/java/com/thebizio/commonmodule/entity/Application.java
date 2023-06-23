@@ -47,4 +47,11 @@ public class Application extends LastUpdateDetail {
     @JoinColumn(name = "project_id")
     @JsonBackReference
     private Project project;
+
+    @ManyToMany
+    @JoinTable(
+            name = "application_primary_user_roles",
+            joinColumns = @JoinColumn(name = "application_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> primaryUserRoles = new ArrayList<>();
 }
