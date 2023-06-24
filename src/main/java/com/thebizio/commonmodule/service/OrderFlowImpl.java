@@ -369,7 +369,6 @@ public class OrderFlowImpl implements IOrderFlow {
         if(jsonNode.has("middleName")) contact.setMiddleName(jsonNode.get("middleName").asText());
         if(jsonNode.has("lastName")) contact.setLastName(jsonNode.get("lastName").asText());
         if(jsonNode.has("email")) contact.setEmail(jsonNode.get("email").asText());
-        if(jsonNode.has("phone")) contact.setPhone(jsonNode.get("phone").asText());
         if(jsonNode.has("mobile")) contact.setMobile(jsonNode.get("mobile").asText());
         if(jsonNode.has("fax")) contact.setFax(jsonNode.get("fax").asText());
         if(jsonNode.has("website")) contact.setWebsite(jsonNode.get("website").asText());
