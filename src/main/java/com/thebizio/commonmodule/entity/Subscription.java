@@ -31,8 +31,6 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     @Column(name = "name", unique = true, nullable = false, updatable = false, length = 64)
     private String name;
 
-    private Integer seats;
-
     @Column(columnDefinition = "int default 0")
     private Integer occupiedSeats;
 

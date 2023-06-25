@@ -393,7 +393,6 @@ public class OrderFlowImpl implements IOrderFlow {
         Subscription sub = new Subscription();
         ProductVariant pv = order.getProductVariant();
         assert pv != null;
-        sub.setSeats(1);
         sub.setRenewNextSubscription(true);
 
         if (pv.getVariantAttributeValue().equals("YEARLY")){
@@ -428,7 +427,7 @@ public class OrderFlowImpl implements IOrderFlow {
             entityManager.persist(subscriptionUser);
 
             // occupy seats from sub
-            sub.setOccupiedSeats(calculateUtilService.nullOrZeroValue(sub.getOccupiedSeats(),0) + 1);
+            sub.setOccupiedSeats(1);
             entityManager.persist(sub);
         }
 
