@@ -82,6 +82,16 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
+    private boolean nullCheckpoint(JsonNode jsonNode,String property){
+        if (jsonNode.has(property)) {
+            if (jsonNode.get(property) == null) return true;
+            if (jsonNode.get(property).asText().isEmpty()) return true;
+            if (jsonNode.get(property).asText().equals("null")) return true;
+            else return false;
+        }
+        else return true;
+    }
+
     @Override
     public void createOrderPayload(Order order,String payloadType,String payload,String stripeCustomerId) {
         OrderPayload orderPayload = new OrderPayload();
@@ -289,16 +299,16 @@ public class OrderFlowImpl implements IOrderFlow {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
         org.setName(jsonNode.get("name").asText());
-        if(jsonNode.has("shortName")) org.setShortName(jsonNode.get("shortName").asText());
-        if(jsonNode.has("otherName")) org.setOtherName(jsonNode.get("otherName").asText());
-        if(jsonNode.has("description")) org.setDescription(jsonNode.get("description").asText());
-        if(jsonNode.has("industry")) org.setIndustry(jsonNode.get("industry").asText());
-        if(jsonNode.has("className")) org.setClassName(jsonNode.get("className").asText());
-        if(jsonNode.has("structure")) org.setStructure(jsonNode.get("structure").asText());
-        if(jsonNode.has("industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
-        if(jsonNode.has("exchange")) org.setExchange(jsonNode.get("exchange").asText());
-        if(jsonNode.has("market")) org.setMarket(jsonNode.get("market").asText());
-        if(jsonNode.has("symbol")) org.setSymbol(jsonNode.get("symbol").asText());
+        if(!nullCheckpoint(jsonNode,"shortName")) org.setShortName(jsonNode.get("shortName").asText());
+        if(!nullCheckpoint(jsonNode,"otherName")) org.setOtherName(jsonNode.get("otherName").asText());
+        if(!nullCheckpoint(jsonNode,"description")) org.setDescription(jsonNode.get("description").asText());
+        if(!nullCheckpoint(jsonNode,"industry")) org.setIndustry(jsonNode.get("industry").asText());
+        if(!nullCheckpoint(jsonNode,"className")) org.setClassName(jsonNode.get("className").asText());
+        if(!nullCheckpoint(jsonNode,"structure")) org.setStructure(jsonNode.get("structure").asText());
+        if(!nullCheckpoint(jsonNode,"industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
+        if(!nullCheckpoint(jsonNode,"exchange")) org.setExchange(jsonNode.get("exchange").asText());
+        if(!nullCheckpoint(jsonNode,"market")) org.setMarket(jsonNode.get("market").asText());
+        if(!nullCheckpoint(jsonNode,"symbol")) org.setSymbol(jsonNode.get("symbol").asText());
         org.setStatus(Status.ENABLED);
 
         //attach parent org and account later
@@ -311,13 +321,12 @@ public class OrderFlowImpl implements IOrderFlow {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Address address = new Address();
         if(jsonNode.has("addressLine1")) address.setAddressLine1(jsonNode.get("addressLine1").asText());
-        if(jsonNode.has("addressLine2")) address.setAddressLine2(jsonNode.get("addressLine2").asText());
+        if(!nullCheckpoint(jsonNode,"addressLine2")) address.setAddressLine2(jsonNode.get("addressLine2").asText());
         address.setStatus(Status.ENABLED);
         address.setCity(jsonNode.get("city").asText());
         address.setState(jsonNode.get("state").asText());
         address.setCountry(jsonNode.get("country").asText());
         address.setZipcode(jsonNode.get("zipcode").asText());
-        address.setStatus(Status.ENABLED);
         //attach org later
         return address;
     }
@@ -365,14 +374,13 @@ public class OrderFlowImpl implements IOrderFlow {
     public Contact createContactFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Contact contact = new Contact();
-        if(jsonNode.has("firstName")) contact.setFirstName(jsonNode.get("firstName").asText());
-        if(jsonNode.has("middleName")) contact.setMiddleName(jsonNode.get("middleName").asText());
-        if(jsonNode.has("lastName")) contact.setLastName(jsonNode.get("lastName").asText());
-        if(jsonNode.has("email")) contact.setEmail(jsonNode.get("email").asText());
-        if(jsonNode.has("mobile")) contact.setMobile(jsonNode.get("mobile").asText());
-        if(jsonNode.has("fax")) contact.setFax(jsonNode.get("fax").asText());
-        if(jsonNode.has("website")) contact.setWebsite(jsonNode.get("website").asText());
-        if(jsonNode.has("email")) contact.setEmail(jsonNode.get("email").asText());
+        if(!nullCheckpoint(jsonNode,"firstName")) contact.setFirstName(jsonNode.get("firstName").asText());
+        if(!nullCheckpoint(jsonNode,"middleName")) contact.setMiddleName(jsonNode.get("middleName").asText());
+        if(!nullCheckpoint(jsonNode,"lastName")) contact.setLastName(jsonNode.get("lastName").asText());
+        if(!nullCheckpoint(jsonNode,"email")) contact.setEmail(jsonNode.get("email").asText());
+        if(!nullCheckpoint(jsonNode,"mobile")) contact.setMobile(jsonNode.get("mobile").asText());
+        if(!nullCheckpoint(jsonNode,"fax")) contact.setFax(jsonNode.get("fax").asText());
+        if(!nullCheckpoint(jsonNode,"website")) contact.setWebsite(jsonNode.get("website").asText());
         contact.setStatus(Status.ENABLED);
 
         //attach org later
