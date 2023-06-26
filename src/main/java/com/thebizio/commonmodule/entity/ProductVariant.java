@@ -83,7 +83,6 @@ public class ProductVariant extends LastUpdateDetail{
     @JsonBackReference
     private List<Price> prices = new ArrayList<>();
 
-    @Autowired
     public Price getPriceRecord() {
         return this.getPrices().stream().filter(price -> price.getIsDefault() && price.getStatus().equals(Status.ENABLED)).collect(Collectors.toList()).get(0);
     }
