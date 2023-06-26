@@ -84,6 +84,11 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     private ProductVariant productVariant;
 
     @ManyToOne
+    @JoinColumn(name = "primary_user_id")
+    @JsonBackReference
+    private User primaryUser;
+
+    @ManyToOne
     @JoinColumn(name = "preferred_billing_account_id")
     @JsonBackReference
     private BillingAccount preferredBillingAccount;
