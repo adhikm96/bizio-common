@@ -428,6 +428,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
             // occupy seats from sub
             sub.setOccupiedSeats(1);
+            //primary user added to subscription
+            sub.setPrimaryUser(user);
             entityManager.persist(sub);
         }
 
@@ -519,6 +521,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
         PostpaidAccountResponse response = new PostpaidAccountResponse();
 
+        User user = null;
         if (op.getPayloadType().equals("OrganizationRegistration")){
             //create account
             Account account = createAccountFromPayload(op.getPayload());
@@ -532,7 +535,7 @@ public class OrderFlowImpl implements IOrderFlow {
             entityManager.persist(org);
 
             //create user
-            User user = new User();
+            user = new User();
             user.setUsername(jsonNode.get("userName").asText().toLowerCase());
             user.setOrganization(org);
             user.setLastPasswordChangeDate(LocalDateTime.now());
@@ -559,7 +562,7 @@ public class OrderFlowImpl implements IOrderFlow {
             createBillingAccount(pi,org,true);
         }
 
-        Subscription sub = createSubscription(order,org,null);
+        Subscription sub = createSubscription(order,org,user);
         if (order.getProductVariant().getVariantAttributeValue().equals("MONTHLY")) {
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
