@@ -84,6 +84,16 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     private ProductVariant productVariant;
 
     @ManyToOne
+    @JoinColumn(name = "price_id")
+    @JsonBackReference
+    private Price price;
+
+    @ManyToOne
+    @JoinColumn(name = "promotion_id")
+    @JsonBackReference
+    private Promotion promotion;
+
+    @ManyToOne
     @JoinColumn(name = "primary_user_id")
     @JsonBackReference
     private User primaryUser;
