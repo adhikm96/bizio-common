@@ -73,6 +73,11 @@ public class Order extends LastUpdateDetail{
     private Price price;
 
     @ManyToOne
+    @JoinColumn(name = "promotion_id")
+    @JsonBackReference
+    private Promotion promotion;
+
+    @ManyToOne
     @JoinColumn(name = "organization_id")
     @JsonBackReference
     private Organization organization;

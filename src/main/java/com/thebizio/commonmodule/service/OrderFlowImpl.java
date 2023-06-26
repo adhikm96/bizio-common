@@ -126,6 +126,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
         if (isPromotion && !promotion.isValid()) throw new ValidationException("promotion is not valid");
         boolean isFullDiscount = false;
+        if (isPromotion) order.setPromotion(promotion);
 
         Double discount = null;
         Double amount = price.getPrice();
@@ -135,7 +136,7 @@ public class OrderFlowImpl implements IOrderFlow {
         Double grossTotal = amount;
         if(productVariant.getAddOns().size() > 0) {
             for (ProductVariant pv : productVariant.getAddOns()) {
-                grossTotal += pv.getDefaultPrice();
+                grossTotal += pv.getPriceRecord().getPrice();
             }
         }
         order.setGrossTotal(BigDecimal.valueOf(grossTotal));
@@ -277,7 +278,7 @@ public class OrderFlowImpl implements IOrderFlow {
         for (ProductVariant addOn: pv.getAddOns()) {
             AddOnsDto addOnDto = new AddOnsDto();
             addOnDto.setName(addOn.getName());
-            addOnDto.setPrice(BigDecimal.valueOf(addOn.getDefaultPrice()));
+            addOnDto.setPrice(BigDecimal.valueOf(addOn.getPriceRecord().getPrice()));
             addons.add(addOnDto);
         }
         dto.setAddons(addons);
@@ -418,6 +419,9 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setProduct(order.getProduct());
         sub.setProductVariant(pv);
         sub.setExtension(false);
+        sub.setPrice(order.getPrice());
+        sub.setPromotion(order.getPromotion());
+        if (order.getPromoCode() != null) sub.setPromotion(order.getPromotion());
         entityManager.persist(sub);
 
         if (user != null ){

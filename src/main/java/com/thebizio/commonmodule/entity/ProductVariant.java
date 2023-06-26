@@ -7,11 +7,13 @@ import com.thebizio.commonmodule.enums.PlanTypeEnum;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "product_variants")
@@ -76,4 +78,12 @@ public class ProductVariant extends LastUpdateDetail{
 
     @Column(columnDefinition = "boolean default false")
     private Boolean extension;
+
+    @OneToMany(mappedBy="productVariant")
+    @JsonBackReference
+    private List<Price> prices = new ArrayList<>();
+
+    public Price getPriceRecord() {
+        return this.getPrices().stream().filter(price -> price.getIsDefault() && price.getStatus().equals(Status.ENABLED)).collect(Collectors.toList()).get(0);
+    }
 }
