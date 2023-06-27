@@ -51,7 +51,7 @@ public class Role extends LastUpdateDetail{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Role role = (Role) o;
-        return Objects.equals(id.toString(), role.id.toString());
+        return Objects.equals(id, role.id);
     }
 
     @Override
