@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thebizio.commonmodule.convertor.UUIDListConvertor;
 import com.thebizio.commonmodule.enums.VariantAttributeType;
 import com.thebizio.commonmodule.enums.PlanTypeEnum;
@@ -83,6 +84,7 @@ public class ProductVariant extends LastUpdateDetail{
     @JsonBackReference
     private List<Price> prices = new ArrayList<>();
 
+    @JsonIgnore
     public Price getPriceRecord() {
         return this.getPrices().stream().filter(price -> price.getIsDefault() && price.getStatus().equals(Status.ENABLED)).collect(Collectors.toList()).get(0);
     }
