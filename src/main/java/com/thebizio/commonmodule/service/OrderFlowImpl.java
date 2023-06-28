@@ -541,8 +541,10 @@ public class OrderFlowImpl implements IOrderFlow {
             //create user
             user = new User();
             user.setFirstName(jsonNode.get("personalDetails").get("firstName").asText());
+            if(!nullCheckpoint(jsonNode.get("personalDetails"),"middleName")) user.setMiddleName(jsonNode.get("personalDetails").get("middleName").asText());
             user.setLastName(jsonNode.get("personalDetails").get("lastName").asText());
             user.setUsername(jsonNode.get("userName").asText().toLowerCase());
+            user.setEmail(jsonNode.get("contact").get("email").asText().toLowerCase());
             user.setOrganization(org);
             user.setLastPasswordChangeDate(LocalDateTime.now());
             user.setLastEmailChangeDate(LocalDateTime.now());
