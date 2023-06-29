@@ -339,6 +339,12 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public void submitTaxToAvalara(ProductVariant pv,String orgCode,Address address,BigDecimal netTotal) throws Exception {
+        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
+        avalaraService.createTransactionTaxInclusive(ba,pv,orgCode,DocumentType.SalesInvoice,netTotal);
+    }
+
+    @Override
     public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status) {
         Payment pay = new Payment();
         pay.setPaymentDate(LocalDate.now());
@@ -464,6 +470,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 ba.setOrganization(organization);
                 ba.setStatus(Status.ENABLED);
                 ba.setPrimaryAccount(primaryAccount);
+                ba.setAddress(mapAddress(stripePM.getBillingDetails().getAddress()));
                 entityManager.persist(ba);
             } else if (stripePM.getType().equals("us_bank_account")) {
                 ba.setStripePaymentMethodId(stripePM.getId());
@@ -483,6 +490,19 @@ public class OrderFlowImpl implements IOrderFlow {
             }
             return ba;
         }
+    }
+
+    private Address mapAddress(com.stripe.model.Address address){
+        Address add = new com.thebizio.commonmodule.entity.Address();
+        add.setAddressLine1(address.getLine1());
+        add.setAddressLine2(address.getLine2());
+        add.setCity(address.getCity());
+        add.setState(address.getState());
+        add.setZipcode(address.getPostalCode());
+        add.setCountry(address.getCountry());
+        add.setStatus(Status.ENABLED);
+        entityManager.persist(add);
+        return add;
     }
 
     private PaymentMethod fetchPaymentMethod(String id){
