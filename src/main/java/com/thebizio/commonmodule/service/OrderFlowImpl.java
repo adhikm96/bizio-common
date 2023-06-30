@@ -186,7 +186,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 );
             } catch (Exception e) {
                 logger.error(e.getMessage());
-               throw new ValidationException("some error occurred while creating order");
+                throw new ValidationException("some error occurred while creating order");
             }
 
             tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
@@ -582,6 +582,9 @@ public class OrderFlowImpl implements IOrderFlow {
 
             //set account in contact
             contact.setAccount(account);
+            contact.setFirstName(user.getFirstName());
+            contact.setMiddleName(user.getMiddleName());
+            contact.setLastName(user.getLastName());
             entityManager.persist(contact);
 
             PaymentIntent pi = new PaymentIntent();
