@@ -15,7 +15,6 @@ public class TrimmedStringDeserializer extends StringDeserializer {
             value = value.trim();
         }
 
-        System.out.println("I am called");
         return value;
     }
 }
