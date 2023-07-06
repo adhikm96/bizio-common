@@ -35,6 +35,9 @@ public class ProductVariant extends LastUpdateDetail{
     private Double defaultPrice;
     private PlanTypeEnum planType;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean published;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonBackReference
