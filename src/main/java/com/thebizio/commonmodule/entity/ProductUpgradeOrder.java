@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ProductUpgradeOrder {
+public class ProductUpgradeOrder extends LastUpdateDetail {
 
     @EmbeddedId
     private ProductUpgradeOrderKey id;
