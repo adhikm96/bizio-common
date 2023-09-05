@@ -29,7 +29,8 @@ public class UserContract {
     private String orgCode;
 
     private ContractStatus status;
-
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = ListConvertorForPolicyResourceScopeAttrDto.class)
+
     private List<PolicyResourceScopeAttrDto> resolvedResourceScopeAttrs = new ArrayList<>();
 }
