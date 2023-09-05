@@ -21,7 +21,7 @@ public class OrgContract extends LastUpdateDetail{
     private String orgCode;
 
     @Id
-    private String productGroupCode;
+    private String productCode;
 
     private ContractStatus status;
 

@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class UserContractPKey implements Serializable {
     private String email;
     private String appCode;
+    private String orgCode;
 }

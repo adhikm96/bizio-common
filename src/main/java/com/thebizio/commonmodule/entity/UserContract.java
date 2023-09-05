@@ -24,6 +24,10 @@ public class UserContract {
 
     @Id
     private String appCode;
+
+    @Id
+    private String orgCode;
+
     private ContractStatus status;
 
     @Convert(converter = ListConvertorForPolicyResourceScopeAttrDto.class)
