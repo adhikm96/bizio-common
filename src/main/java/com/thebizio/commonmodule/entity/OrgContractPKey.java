@@ -11,5 +11,5 @@ import java.io.Serializable;
 @Setter
 public class OrgContractPKey implements Serializable {
     private String orgCode;
-    private String productGroupCode;
+    private String productCode;
 }

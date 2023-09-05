@@ -21,10 +21,11 @@ public class OrgContract extends LastUpdateDetail{
     private String orgCode;
 
     @Id
-    private String productGroupCode;
+    private String productCode;
 
     private ContractStatus status;
 
     @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
     private Map<String, String> attributes = new HashMap<>();
 }
