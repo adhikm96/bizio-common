@@ -32,10 +32,6 @@ public class Application extends LastUpdateDetail {
     private String description;
     private Status status;
 
-    @ManyToOne
-    @JoinColumn(name = "product_group_id")
-    private ProductGroup productGroup;
-
     @ManyToMany
     @JoinTable(
             name = "application_resources",
