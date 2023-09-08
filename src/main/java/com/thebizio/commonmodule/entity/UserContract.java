@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserContract {
+public class UserContract extends LastUpdateDetail {
 
     @Id
     private String email;
