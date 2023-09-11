@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_contracts")
@@ -29,8 +30,16 @@ public class UserContract extends LastUpdateDetail {
     private String orgCode;
 
     private ContractStatus status;
+
+    // to be commented later after migration
     @Column(columnDefinition = "TEXT")
     @Convert(converter = ListConvertorForPolicyResourceScopeAttrDto.class)
 
     private List<PolicyResourceScopeAttrDto> resolvedResourceScopeAttrs = new ArrayList<>();
+
+    @Column(columnDefinition = "uuid", name = "resolved_rsa_key", unique = true)
+    private UUID resolvedRSAKey;
+
+    @OneToMany(mappedBy = "userContract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<UContractResolvedRSA> resolvedRSAList = new ArrayList<>();
 }
