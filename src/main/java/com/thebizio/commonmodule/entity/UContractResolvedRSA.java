@@ -17,22 +17,23 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@IdClass(UContractResolvedRSAKey.class)
 public class UContractResolvedRSA extends LastUpdateDetail {
 
     @Id
+    @GeneratedValue(generator = "uuid4")
+    @Column(columnDefinition = "uuid")
+    private UUID id;
+
     private String policyCode;
 
-    @Id
     private String resourceCode;
 
-    @Id
     private String scopeCode;
 
     @Convert(converter = HashMapConvertor.class)
     private Map<String, String> attributes = new HashMap<>();
 
     @ManyToOne
-    @JoinColumn(columnDefinition = "uuid", name = "resolved_rsa_key", referencedColumnName = "resolved_rsa_key")
+    @JoinColumn(columnDefinition = "uuid", name = "resolved_rsa_key", referencedColumnName = "resolved_rsa_key", nullable = false)
     private UserContract userContract;
 }

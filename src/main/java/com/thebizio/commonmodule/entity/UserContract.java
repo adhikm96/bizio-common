@@ -6,6 +6,7 @@ import com.thebizio.commonmodule.enums.ContractStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -37,7 +38,9 @@ public class UserContract extends LastUpdateDetail {
 
     private List<PolicyResourceScopeAttrDto> resolvedResourceScopeAttrs = new ArrayList<>();
 
+
     @Column(columnDefinition = "uuid", name = "resolved_rsa_key", unique = true)
+//    @NaturalId - not working now bcz of old entries
     private UUID resolvedRSAKey;
 
     @OneToMany(mappedBy = "userContract", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
