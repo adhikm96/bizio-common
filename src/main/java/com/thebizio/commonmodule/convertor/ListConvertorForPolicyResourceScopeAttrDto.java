@@ -3,7 +3,7 @@ package com.thebizio.commonmodule.convertor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thebizio.commonmodule.entity.PolicyResourceScopeAttrDto;
+import com.thebizio.commonmodule.dto.PolicyResourceScopeAttrDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
