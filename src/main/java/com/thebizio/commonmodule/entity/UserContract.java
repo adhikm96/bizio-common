@@ -1,12 +1,11 @@
 package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.convertor.ListConvertorForPolicyResourceScopeAttrDto;
-import com.thebizio.commonmodule.convertor.ListObjConvertor;
+import com.thebizio.commonmodule.dto.PolicyResourceScopeAttrDto;
 import com.thebizio.commonmodule.enums.ContractStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.ArrayList;
