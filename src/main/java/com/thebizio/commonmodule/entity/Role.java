@@ -31,6 +31,9 @@ public class Role extends LastUpdateDetail{
 
     private Status status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean changeRequested;
+
     @ManyToMany
     @JoinTable(
             name = "role_policies",

@@ -29,6 +29,9 @@ public class Scope extends LastUpdateDetail{
     private String description;
     private Status status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean changeRequested;
+
     @ManyToMany
     @JoinTable(
             name = "scope_actions",

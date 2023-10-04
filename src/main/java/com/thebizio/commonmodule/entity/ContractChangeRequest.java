@@ -35,6 +35,5 @@ public class ContractChangeRequest extends LastUpdateDetail {
 
     private String entityName;
 
-    private Boolean changeRequested;
     private String payloadAction;
 }
