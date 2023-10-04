@@ -26,6 +26,9 @@ public class Policy extends LastUpdateDetail{
     private String description;
     private Status status;
 
+    @Column(columnDefinition = "boolean default false")
+    private Boolean changeRequested;
+
     @ManyToOne
     @JoinColumn(name = "project_id")
     @JsonBackReference
