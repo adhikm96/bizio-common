@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.ChangeRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,9 @@ public class ContractChangeRequest extends LastUpdateDetail {
     private String entityName;
 
     private String payloadAction;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_migration_id")
+    @JsonBackReference
+    private ContractMigration contractMigration;
 }
