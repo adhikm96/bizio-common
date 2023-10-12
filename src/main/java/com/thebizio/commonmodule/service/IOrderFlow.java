@@ -46,7 +46,7 @@ public interface IOrderFlow {
 
     void createInvoiceFromOrder(@NotNull Order order,@NotNull Subscription sub,@NotNull InvoiceStatus status,@NotNull Payment payment);
 
-    Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status);
+    Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status,@NotNull String paymentRef);
 
     BillingAccount createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization,@NotNull Boolean primaryAccount);
 
