@@ -345,12 +345,13 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status) {
+    public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status,String paymentRef) {
         Payment pay = new Payment();
         pay.setPaymentDate(LocalDate.now());
         pay.setAmount(amount);
         pay.setBillingAccount(ba);
         pay.setStatus(status);
+        pay.setPaymentRef(paymentRef);
         entityManager.persist(pay);
         return pay;
     }
