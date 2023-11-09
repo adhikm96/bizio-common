@@ -36,6 +36,9 @@ public class ProductVariant extends LastUpdateDetail{
     private PlanTypeEnum planType;
 
     @Column(columnDefinition = "boolean default false")
+    private Boolean changeRequested;
+
+    @Column(columnDefinition = "boolean default false")
     private Boolean published;
 
     @ManyToOne
