@@ -334,14 +334,14 @@ public class OrderFlowImpl implements IOrderFlow {
 
     @Override
     public void submitTaxToAvalara(Order order,String orgCode) throws Exception {
-        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
-        avalaraService.createTransactionTaxInclusive(ba,order.getProductVariant(),orgCode,DocumentType.SalesInvoice,order.getNetTotal());
+//        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
+//        avalaraService.createTransactionTaxInclusive(ba,order.getProductVariant(),orgCode,DocumentType.SalesInvoice,order.getNetTotal());
     }
 
     @Override
     public void submitTaxToAvalara(ProductVariant pv,String orgCode,Address address,BigDecimal netTotal) throws Exception {
-        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
-        avalaraService.createTransactionTaxInclusive(ba,pv,orgCode,DocumentType.SalesInvoice,netTotal);
+//        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
+//        avalaraService.createTransactionTaxInclusive(ba,pv,orgCode,DocumentType.SalesInvoice,netTotal);
     }
 
     @Override
