@@ -8,13 +8,17 @@ import net.avalara.avatax.rest.client.TransactionBuilder;
 import net.avalara.avatax.rest.client.enums.DocumentType;
 import net.avalara.avatax.rest.client.enums.TextCase;
 import net.avalara.avatax.rest.client.enums.TransactionAddressType;
+import net.avalara.avatax.rest.client.models.AddressInfo;
 import net.avalara.avatax.rest.client.models.AddressResolutionModel;
 import net.avalara.avatax.rest.client.models.TransactionModel;
+import net.avalara.avatax.rest.client.models.ValidatedAddressInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service("commonAvalaraService")
 public class AvalaraService {
@@ -38,8 +42,7 @@ public class AvalaraService {
             BillingAddress ba, ProductVariant productVariant, String orgCode, DocumentType dt,
             BigDecimal productWithDiscount
     ) throws Exception {
-        AddressResolutionModel arm = addressValidate(ba);
-
+//        AddressResolutionModel arm = addressValidate(ba);
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setTotalTax(BigDecimal.valueOf(0));
         transactionModel.setSummary(new ArrayList<>());
@@ -86,36 +89,61 @@ public class AvalaraService {
 
     public AddressResolutionModel addressValidate(BillingAddress ba) throws Exception {
 
-        AddressResolutionModel arm = avaTaxClient.resolveAddress(
-                ba.getAddressLine1(),
-                ba.getAddressLine2(),
-                null,
-                ba.getCity(),
-                ba.getState(),
-                ba.getZipcode(),
-                COUNTRY,
-                TextCase.Mixed
-        );
+//        AddressResolutionModel arm = avaTaxClient.resolveAddress(
+//                ba.getAddressLine1(),
+//                ba.getAddressLine2(),
+//                null,
+//                ba.getCity(),
+//                ba.getState(),
+//                ba.getZipcode(),
+//                COUNTRY,
+//                TextCase.Mixed
+//        );
 
-        String errorMsg = "invalid address";
+        AddressInfo addressInfo = new AddressInfo();
+        addressInfo.setLine1(ba.getAddressLine1());
+        addressInfo.setLine2(ba.getAddressLine2());
+        addressInfo.setCity(ba.getCity());
+        addressInfo.setRegion(ba.getState());
+        addressInfo.setPostalCode(ba.getZipcode());
+        addressInfo.setCountry(COUNTRY);
 
-        if (arm.getValidatedAddresses().size() == 0) throw new ValidationException(errorMsg);
+        ValidatedAddressInfo validatedAddressInfo = new ValidatedAddressInfo();
+        validatedAddressInfo.setLine1(ba.getAddressLine1());
+        validatedAddressInfo.setLine2(ba.getAddressLine2());
+        validatedAddressInfo.setCity(ba.getCity());
+        validatedAddressInfo.setRegion(ba.getState());
+        validatedAddressInfo.setPostalCode(ba.getZipcode());
+        validatedAddressInfo.setCountry(COUNTRY);
 
-        String addressType =  arm.getValidatedAddresses().get(0).getAddressType();
+        ArrayList<ValidatedAddressInfo> validatedAddressInfoList = new ArrayList<>();
+        validatedAddressInfoList.add(validatedAddressInfo);
 
-        if(addressType == null) throw new ValidationException(errorMsg);
+        AddressResolutionModel arm = new AddressResolutionModel();
+        arm.setAddress(addressInfo);
+        arm.setValidatedAddresses(validatedAddressInfoList);
 
-        if(!addressType.equals("UnknownAddressType")) return arm;
+        return arm;
 
-
-        if(arm.getMessages() == null || arm.getMessages().size() == 0) throw new ValidationException(errorMsg);
-
-        if (!arm.getMessages().get(0).getSummary().isEmpty())
-            errorMsg = arm.getMessages().get(0).getSummary();
-        else if (!arm.getMessages().get(0).getDetails().isEmpty())
-            errorMsg = arm.getMessages().get(0).getDetails();
-
-        throw new ValidationException(errorMsg);
+//        String errorMsg = "invalid address";
+//
+//        if (arm.getValidatedAddresses().size() == 0) throw new ValidationException(errorMsg);
+//
+//        String addressType =  arm.getValidatedAddresses().get(0).getAddressType();
+//
+//        if(addressType == null) throw new ValidationException(errorMsg);
+//
+//        if(!addressType.equals("UnknownAddressType")) return arm;
+//
+//
+//        if(arm.getMessages() == null || arm.getMessages().size() == 0) throw new ValidationException(errorMsg);
+//
+//        if (!arm.getMessages().get(0).getSummary().isEmpty())
+//            errorMsg = arm.getMessages().get(0).getSummary();
+//        else if (!arm.getMessages().get(0).getDetails().isEmpty())
+//            errorMsg = arm.getMessages().get(0).getDetails();
+//
+//        throw new ValidationException(errorMsg);
     }
 }
 
