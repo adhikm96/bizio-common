@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Service("commonAvalaraService")
 public class AvalaraService {
@@ -38,30 +39,36 @@ public class AvalaraService {
             BigDecimal productWithDiscount
     ) throws Exception {
         AddressResolutionModel arm = addressValidate(ba);
-        return new TransactionBuilder(
-                    avaTaxClient,
-                    avalaraCompanyCode,
-                    dt,
-                    orgCode
-                )
-                .withAddress(
-                        TransactionAddressType.SingleLocation,
-                        arm.getValidatedAddresses().get(0).getLine1(),
-                        arm.getValidatedAddresses().get(0).getLine2(),
-                        null,
-                        arm.getValidatedAddresses().get(0).getCity(),
-                        arm.getValidatedAddresses().get(0).getRegion(),
-                        arm.getValidatedAddresses().get(0).getPostalCode(),
-                        COUNTRY
-                )
-                .withLine(
-                        productWithDiscount ,
-                        quantity,
-                        avalaraTaxCode,
-                        productVariant.getProduct().getCode(),
-                        productVariant.getProduct().getName()
-                )
-                .Create();
+
+        TransactionModel transactionModel = new TransactionModel();
+        transactionModel.setTotalTax(BigDecimal.valueOf(0));
+        transactionModel.setSummary(new ArrayList<>());
+        return transactionModel;
+
+//        return new TransactionBuilder(
+//                    avaTaxClient,
+//                    avalaraCompanyCode,
+//                    dt,
+//                    orgCode
+//                )
+//                .withAddress(
+//                        TransactionAddressType.SingleLocation,
+//                        arm.getValidatedAddresses().get(0).getLine1(),
+//                        arm.getValidatedAddresses().get(0).getLine2(),
+//                        null,
+//                        arm.getValidatedAddresses().get(0).getCity(),
+//                        arm.getValidatedAddresses().get(0).getRegion(),
+//                        arm.getValidatedAddresses().get(0).getPostalCode(),
+//                        COUNTRY
+//                )
+//                .withLine(
+//                        productWithDiscount ,
+//                        quantity,
+//                        avalaraTaxCode,
+//                        productVariant.getProduct().getCode(),
+//                        productVariant.getProduct().getName()
+//                )
+//                .Create();
     }
 
     public TransactionModel createTransactionTaxInclusive(BillingAddress ba, ProductVariant productVariant, String orgCode, DocumentType dt, BigDecimal netTotal) throws Exception {
