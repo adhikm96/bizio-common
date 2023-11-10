@@ -22,7 +22,8 @@ public class CalculateUtilService {
 
     public static String calculateTaxPercentage(ArrayList<TransactionSummary> transactionSummaries){
         BigDecimal taxPercentage = BigDecimal.valueOf(0);
-        for (TransactionSummary ts:transactionSummaries){ taxPercentage = taxPercentage.add(ts.getRate());}
+        for (TransactionSummary ts:transactionSummaries){
+            if (ts.getTaxable().compareTo(BigDecimal.valueOf(0)) > 0) taxPercentage = taxPercentage.add(ts.getRate());}
         return decfor.format(taxPercentage.multiply(BigDecimal.valueOf(100)));
     }
 
