@@ -1,17 +1,30 @@
 package com.thebizio.commonmodule.service;
 
-import org.springframework.stereotype.Service;
+import net.avalara.avatax.rest.client.models.TransactionSummary;
 
-@Service("commonCalculateUtilService")
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+
 public class CalculateUtilService {
-    public Double roundTwoDigits(Double no){
+    public static Double roundTwoDigits(Double no){
         return Math.round(no * 100.0) / 100.0;
     }
 
 
-    public <T> T nullOrZeroValue(T val, T dVal) {
+    public static <T> T nullOrZeroValue(T val, T dVal) {
         return val == null ? dVal : val;
     }
 
-    public boolean isEven(int x) { return x % 2 == 0; }
+    public static boolean isEven(int x) { return x % 2 == 0; }
+
+    public static final DecimalFormat decfor = new DecimalFormat("0.00");
+
+    public static String calculateTaxPercentage(ArrayList<TransactionSummary> transactionSummaries){
+        BigDecimal taxPercentage = BigDecimal.valueOf(0);
+        for (TransactionSummary ts:transactionSummaries){
+            if (ts.getTaxable().compareTo(BigDecimal.valueOf(0)) > 0) taxPercentage = taxPercentage.add(ts.getRate());}
+        return decfor.format(taxPercentage.multiply(BigDecimal.valueOf(100)));
+    }
+
 }

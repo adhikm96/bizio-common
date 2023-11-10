@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.CardException;
@@ -44,8 +45,6 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final PromotionService promotionService;
 
-    private final CalculateUtilService calculateUtilService;
-
     private final AvalaraService avalaraService;
 
     private final EntityManager entityManager;
@@ -58,9 +57,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final OrderPayloadService orderPayloadService;
 
-    public OrderFlowImpl(PromotionService promotionService, CalculateUtilService calculateUtilService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService,OrderPayloadService orderPayloadService) {
+    public OrderFlowImpl(PromotionService promotionService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService,OrderPayloadService orderPayloadService) {
         this.promotionService = promotionService;
-        this.calculateUtilService = calculateUtilService;
         this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
@@ -156,7 +154,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 }
             }
 
-            discount = calculateUtilService.roundTwoDigits(discount);
+            discount = CalculateUtilService.roundTwoDigits(discount);
             promotionService.incrementPromocodeCounter(promotion);
         }
 
@@ -189,7 +187,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 throw new ValidationException("some error occurred while creating order");
             }
 
-            tax = calculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
+            tax = CalculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
             order.setTax(tax);
             order.setTaxStr(objectMapper.writeValueAsString(tm.getSummary()));
         }
@@ -263,13 +261,22 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setProductName(pv.getProduct().getName());
         dto.setProductCode(pv.getProduct().getCode());
         dto.setAttributeValue(pv.getVariantAttributeValue());
+        dto.setPlanType(order.getProductVariant().getPlanType());
 
         dto.setPrice(BigDecimal.valueOf(order.getPrice().getPrice()));
         dto.setGrossTotal(order.getGrossTotal());
 
         dto.setTax(order.getTax());
+        if(order.getTaxStr() != null && !order.getTaxStr().equals("[]")) {
+            ArrayList<TransactionSummary> transactionSummaries = new ArrayList<>();
+            transactionSummaries = objectMapper.readValue(order.getTaxStr(),new TypeReference<ArrayList<TransactionSummary>>(){});
+            dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
+            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(transactionSummaries)+"%");
+        }else {
+            dto.setTaxPercentage("0%");
+        }
 
-        if(order.getTaxStr() != null) dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
+
         dto.setDiscount(order.getDiscount());
         if(order.getDiscountStr() != null) dto.setDiscountStr(objectMapper.readTree( order.getDiscountStr()));
         dto.setNetTotal(order.getNetTotal());
