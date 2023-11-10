@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.thebizio.commonmodule.enums.PlanTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,4 +29,6 @@ public class OrderResponseDto {
     private JsonNode discountStr;
     private BigDecimal netTotal;
 
+    private PlanTypeEnum planType;
+    private String taxPercentage;
 }
