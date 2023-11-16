@@ -532,21 +532,21 @@ public class OrderFlowImpl implements IOrderFlow {
         Organization parentOrg = order.getParentOrganization();
 
         //create org
-        Organization org = op.getPayloadType().equals("OrganizationRegistration") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) :createOrganizationFromPayload(op.getPayload());
+        Organization org = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) :createOrganizationFromPayload(op.getPayload());
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
-        org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
+        org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         entityManager.persist(org);
 
         //create address
-        Address address = op.getPayloadType().equals("OrganizationRegistration") ? createAddressFromPayload(jsonNode.get("address").toString()) : createAddressFromPayload(op.getPayload());
+        Address address = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createAddressFromPayload(jsonNode.get("address").toString()) : createAddressFromPayload(op.getPayload());
         address.setOrg(org);
         address.setPrimaryAddress(true);
         entityManager.persist(address);
 
         //create contact
-        Contact contact = op.getPayloadType().equals("OrganizationRegistration") ? createContactFromPayload(jsonNode.get("contact").toString()) : createContactFromPayload(op.getPayload());
+        Contact contact = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createContactFromPayload(jsonNode.get("contact").toString()) : createContactFromPayload(op.getPayload());
         contact.setOrg(org);
         contact.setPrimaryContact(true);
         entityManager.persist(contact);
@@ -554,7 +554,7 @@ public class OrderFlowImpl implements IOrderFlow {
         PostpaidAccountResponse response = new PostpaidAccountResponse();
 
         User user = null;
-        if (op.getPayloadType().equals("OrganizationRegistration")){
+        if (op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister")){
             //create account
             Account account = createAccountFromPayload(op.getPayload());
             account.setPrimaryContact(contact);
