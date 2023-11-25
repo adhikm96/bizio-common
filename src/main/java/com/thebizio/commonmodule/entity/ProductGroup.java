@@ -22,5 +22,7 @@ public class ProductGroup extends LastUpdateDetail {
     private String name;
     private String code;
     private Status status;
+
+    @Column(columnDefinition = "int default 2", nullable = false)
     private PGType pgType;
 }
