@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.thebizio.commonmodule.enums.PGType;
 import com.thebizio.commonmodule.enums.Status;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,5 @@ public class ProductGroup extends LastUpdateDetail {
     private String name;
     private String code;
     private Status status;
+    private PGType pgType;
 }
