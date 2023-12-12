@@ -20,4 +20,6 @@ public class EventDto {
     private String activity;
     private String activityContent;
     private String payload;
+    private boolean log;
+    private boolean forward;
 }
