@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thebizio.commonmodule.dto.mq.EventDto;
 import com.thebizio.commonmodule.service.EventDtoService;
@@ -20,7 +21,8 @@ class Temp {
 }
 
 public class EventDtoCreateTest extends TestCase {
-    EventDtoService eventDtoService = new EventDtoService(new ObjectMapper());
+    private ObjectMapper objectMapper = new ObjectMapper();
+    EventDtoService eventDtoService = new EventDtoService(objectMapper);
 
     public EventDtoCreateTest( String testName )
     {
@@ -33,8 +35,7 @@ public class EventDtoCreateTest extends TestCase {
     }
 
 
-    public void testApp()
-    {
+    public void testApp() throws JsonProcessingException {
         EventDto eventDto = eventDtoService.createEventDto(
             "groupName",
             "componentName",
@@ -46,7 +47,9 @@ public class EventDtoCreateTest extends TestCase {
             "activityGroup",
             "activity",
             "content",
-            "payload"
+            "payload",
+                false,
+                false
         );
 
         assertNotNull(eventDto);
@@ -64,8 +67,13 @@ public class EventDtoCreateTest extends TestCase {
                 "content",
                 new HashMap<String, String>() {{
                     put("some", "data");
-                }}
+                }},
+                true,
+                false
         );
+
+        assertTrue(eventDto.isLog());
+
 
         assertNotNull(eventDto);
         assertNotNull(eventDto.getPayload());
@@ -81,12 +89,19 @@ public class EventDtoCreateTest extends TestCase {
                 "activityGroup",
                 "activity",
                 "content",
-                new Temp("data1", "data2", "data3")
+                new Temp("data1", "data2", "data3"),
+                false,
+                false
         );
 
         assertNotNull(eventDto);
         assertNotNull(eventDto.getPayload());
+        assertFalse(eventDto.isLog());
+
+
 
         System.out.println(eventDto.getPayload());
+
+        System.out.println(objectMapper.writeValueAsString(eventDto));
     }
 }
