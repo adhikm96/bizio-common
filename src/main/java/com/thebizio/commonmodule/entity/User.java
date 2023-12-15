@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity @Table(name = "users") @Getter @Setter
 public class User extends LastUpdateDetail {
     @Id
-//    @GeneratedValue(generator = "uuid4")
+    @GeneratedValue(generator = "uuid4")
     @Column(columnDefinition = "uuid")
     private UUID id;
 
