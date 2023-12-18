@@ -1,3 +1,29 @@
+CREATE TABLE IF NOT EXISTS public.admin_users
+(
+    id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by character varying(255) COLLATE pg_catalog."default",
+    modified_at timestamp without time zone,
+    modified_by character varying(255) COLLATE pg_catalog."default",
+    avatar character varying(255) COLLATE pg_catalog."default",
+    city character varying(255) COLLATE pg_catalog."default",
+    country character varying(255) COLLATE pg_catalog."default",
+    dob date,
+    email character varying(255) COLLATE pg_catalog."default",
+    first_name character varying(255) COLLATE pg_catalog."default",
+    gender integer,
+    last_name character varying(255) COLLATE pg_catalog."default",
+    middle_name character varying(255) COLLATE pg_catalog."default",
+    mobile character varying(255) COLLATE pg_catalog."default",
+    oidc_id uuid,
+    state character varying(255) COLLATE pg_catalog."default",
+    status integer,
+    street character varying(255) COLLATE pg_catalog."default",
+    username character varying(255) COLLATE pg_catalog."default",
+    zip_code character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT admin_users_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS public.accounts
 (
     id uuid NOT NULL,
