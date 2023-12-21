@@ -523,6 +523,15 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
+    public BillingAccType fetchBillingAccTypeFromPmId(String pmId){
+        try {
+            return PaymentMethod.retrieve(pmId).getType().equals("card") ? BillingAccType.CARD : BillingAccType.BANK;
+        } catch (StripeException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
+
     @Override
     public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId,BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
