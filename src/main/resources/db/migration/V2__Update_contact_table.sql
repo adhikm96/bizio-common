@@ -1,0 +1,3 @@
+
+ALTER TABLE contacts DROP COLUMN IF EXISTS user_id;
+
