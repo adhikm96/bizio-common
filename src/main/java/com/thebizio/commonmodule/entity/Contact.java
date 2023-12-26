@@ -33,10 +33,6 @@ public class Contact extends LastUpdateDetail{
     private Boolean primaryContact;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
     @JoinColumn(name = "acc_id")
     private Account account;
 
