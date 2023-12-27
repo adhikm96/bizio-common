@@ -56,4 +56,8 @@ public class User extends LastUpdateDetail {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    @ManyToOne
+    @JoinColumn(name = "contact_id")
+    private Contact contact;
+
 }
