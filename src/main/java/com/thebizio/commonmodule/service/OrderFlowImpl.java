@@ -57,7 +57,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final OrderPayloadService orderPayloadService;
 
-    public OrderFlowImpl(PromotionService promotionService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper,BillingAccountService billingAccountService,OrderPayloadService orderPayloadService) {
+    public OrderFlowImpl(PromotionService promotionService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService) {
         this.promotionService = promotionService;
         this.avalaraService = avalaraService;
         this.entityManager = entityManager;
@@ -80,18 +80,17 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    private boolean nullCheckpoint(JsonNode jsonNode,String property){
+    private boolean nullCheckpoint(JsonNode jsonNode, String property) {
         if (jsonNode.has(property)) {
             if (jsonNode.get(property) == null) return true;
             if (jsonNode.get(property).asText().isEmpty()) return true;
             if (jsonNode.get(property).asText().equals("null")) return true;
             else return false;
-        }
-        else return true;
+        } else return true;
     }
 
     @Override
-    public void createOrderPayload(Order order,String payloadType,String payload,String stripeCustomerId) {
+    public void createOrderPayload(Order order, String payloadType, String payload, String stripeCustomerId) {
         OrderPayload orderPayload = new OrderPayload();
         orderPayload.setOrder(order);
         orderPayload.setPayloadType(payloadType);
@@ -132,7 +131,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
         //add addons price to product variant price
         Double grossTotal = amount;
-        if(productVariant.getAddOns().size() > 0) {
+        if (productVariant.getAddOns().size() > 0) {
             for (ProductVariant pv : productVariant.getAddOns()) {
                 grossTotal += pv.getPriceRecord().getPrice();
             }
@@ -158,11 +157,12 @@ public class OrderFlowImpl implements IOrderFlow {
             promotionService.incrementPromocodeCounter(promotion);
         }
 
-        BigDecimal totalWithDiscount = BigDecimal.valueOf(grossTotal);;
+        BigDecimal totalWithDiscount = BigDecimal.valueOf(grossTotal);
+        ;
         if (discount != null) {
             totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
             order.setDiscount(BigDecimal.valueOf(discount));
-            order.setDiscountStr("{\""+promotion.getCode()+"\":"+discount+"}");
+            order.setDiscountStr("{\"" + promotion.getCode() + "\":" + discount + "}");
         }
 
         BigDecimal tax = BigDecimal.ZERO;
@@ -230,21 +230,21 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public String checkout(@Valid  CheckoutReqDto dto) {
+    public String checkout(@Valid CheckoutReqDto dto) {
         assert dto.getStripeCustomerId() != null;
 
         SetupIntentCreateParams.Builder builder = SetupIntentCreateParams
                 .builder()
                 .setCustomer(dto.getStripeCustomerId());
 
-        if(dto.getPaymentMethods() == null || dto.getPaymentMethods().size() == 0)
+        if (dto.getPaymentMethods() == null || dto.getPaymentMethods().size() == 0)
             builder.addPaymentMethodType("card");
         else
             builder.addAllPaymentMethodType(dto.getPaymentMethods().stream().map(e -> e.toString().toLowerCase()).collect(Collectors.toList()));
 
         builder.putMetadata("primaryAccount", String.valueOf(dto.isPrimaryAccount()));
         builder.putMetadata("doCreate", String.valueOf(dto.isDoCreate()));
-        if (dto.getOrderRefNo() != null ) builder.putMetadata("orderRefNo", String.valueOf(dto.getOrderRefNo()));
+        if (dto.getOrderRefNo() != null) builder.putMetadata("orderRefNo", String.valueOf(dto.getOrderRefNo()));
         SetupIntentCreateParams params = builder.build();
 
         try {
@@ -255,7 +255,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    public OrderResponseDto createOrderResponse(Order order,String stripeCustId, String clientSecretKey) throws JsonProcessingException {
+    public OrderResponseDto createOrderResponse(Order order, String stripeCustId, String clientSecretKey) throws JsonProcessingException {
         OrderResponseDto dto = new OrderResponseDto();
         ProductVariant pv = order.getProductVariant();
         dto.setProductName(pv.getProduct().getName());
@@ -267,22 +267,23 @@ public class OrderFlowImpl implements IOrderFlow {
         dto.setGrossTotal(order.getGrossTotal());
 
         dto.setTax(order.getTax());
-        if(order.getTaxStr() != null && !order.getTaxStr().equals("[]")) {
+        if (order.getTaxStr() != null && !order.getTaxStr().equals("[]")) {
             ArrayList<TransactionSummary> transactionSummaries = new ArrayList<>();
-            transactionSummaries = objectMapper.readValue(order.getTaxStr(),new TypeReference<ArrayList<TransactionSummary>>(){});
+            transactionSummaries = objectMapper.readValue(order.getTaxStr(), new TypeReference<ArrayList<TransactionSummary>>() {
+            });
             dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
-            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(transactionSummaries)+"%");
-        }else {
+            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(transactionSummaries) + "%");
+        } else {
             dto.setTaxPercentage("0%");
         }
 
 
         dto.setDiscount(order.getDiscount());
-        if(order.getDiscountStr() != null) dto.setDiscountStr(objectMapper.readTree( order.getDiscountStr()));
+        if (order.getDiscountStr() != null) dto.setDiscountStr(objectMapper.readTree(order.getDiscountStr()));
         dto.setNetTotal(order.getNetTotal());
 
         List<AddOnsDto> addons = new ArrayList<>();
-        for (ProductVariant addOn: pv.getAddOns()) {
+        for (ProductVariant addOn : pv.getAddOns()) {
             AddOnsDto addOnDto = new AddOnsDto();
             addOnDto.setName(addOn.getName());
             addOnDto.setPrice(BigDecimal.valueOf(addOn.getPriceRecord().getPrice()));
@@ -302,21 +303,22 @@ public class OrderFlowImpl implements IOrderFlow {
         acc.setType(AccType.valueOf(jsonNode.get("accountType").asText()));
         return acc;
     }
+
     @Override
     public Organization createOrganizationFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
         org.setName(jsonNode.get("name").asText());
-        if(!nullCheckpoint(jsonNode,"shortName")) org.setShortName(jsonNode.get("shortName").asText());
-        if(!nullCheckpoint(jsonNode,"otherName")) org.setOtherName(jsonNode.get("otherName").asText());
-        if(!nullCheckpoint(jsonNode,"description")) org.setDescription(jsonNode.get("description").asText());
-        if(!nullCheckpoint(jsonNode,"industry")) org.setIndustry(jsonNode.get("industry").asText());
-        if(!nullCheckpoint(jsonNode,"className")) org.setClassName(jsonNode.get("className").asText());
-        if(!nullCheckpoint(jsonNode,"structure")) org.setStructure(jsonNode.get("structure").asText());
-        if(!nullCheckpoint(jsonNode,"industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
-        if(!nullCheckpoint(jsonNode,"exchange")) org.setExchange(jsonNode.get("exchange").asText());
-        if(!nullCheckpoint(jsonNode,"market")) org.setMarket(jsonNode.get("market").asText());
-        if(!nullCheckpoint(jsonNode,"symbol")) org.setSymbol(jsonNode.get("symbol").asText());
+        if (!nullCheckpoint(jsonNode, "shortName")) org.setShortName(jsonNode.get("shortName").asText());
+        if (!nullCheckpoint(jsonNode, "otherName")) org.setOtherName(jsonNode.get("otherName").asText());
+        if (!nullCheckpoint(jsonNode, "description")) org.setDescription(jsonNode.get("description").asText());
+        if (!nullCheckpoint(jsonNode, "industry")) org.setIndustry(jsonNode.get("industry").asText());
+        if (!nullCheckpoint(jsonNode, "className")) org.setClassName(jsonNode.get("className").asText());
+        if (!nullCheckpoint(jsonNode, "structure")) org.setStructure(jsonNode.get("structure").asText());
+        if (!nullCheckpoint(jsonNode, "industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
+        if (!nullCheckpoint(jsonNode, "exchange")) org.setExchange(jsonNode.get("exchange").asText());
+        if (!nullCheckpoint(jsonNode, "market")) org.setMarket(jsonNode.get("market").asText());
+        if (!nullCheckpoint(jsonNode, "symbol")) org.setSymbol(jsonNode.get("symbol").asText());
         org.setStatus(Status.ENABLED);
 
         //attach parent org and account later
@@ -328,8 +330,8 @@ public class OrderFlowImpl implements IOrderFlow {
     public Address createAddressFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Address address = new Address();
-        if(jsonNode.has("addressLine1")) address.setAddressLine1(jsonNode.get("addressLine1").asText());
-        if(!nullCheckpoint(jsonNode,"addressLine2")) address.setAddressLine2(jsonNode.get("addressLine2").asText());
+        if (jsonNode.has("addressLine1")) address.setAddressLine1(jsonNode.get("addressLine1").asText());
+        if (!nullCheckpoint(jsonNode, "addressLine2")) address.setAddressLine2(jsonNode.get("addressLine2").asText());
         address.setStatus(Status.ENABLED);
         address.setCity(jsonNode.get("city").asText());
         address.setState(jsonNode.get("state").asText());
@@ -340,19 +342,19 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void submitTaxToAvalara(Order order,String orgCode) throws Exception {
+    public void submitTaxToAvalara(Order order, String orgCode) throws Exception {
 //        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
 //        avalaraService.createTransactionTaxInclusive(ba,order.getProductVariant(),orgCode,DocumentType.SalesInvoice,order.getNetTotal());
     }
 
     @Override
-    public void submitTaxToAvalara(ProductVariant pv,String orgCode,Address address,BigDecimal netTotal) throws Exception {
+    public void submitTaxToAvalara(ProductVariant pv, String orgCode, Address address, BigDecimal netTotal) throws Exception {
 //        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
 //        avalaraService.createTransactionTaxInclusive(ba,pv,orgCode,DocumentType.SalesInvoice,netTotal);
     }
 
     @Override
-    public Payment createPayment(BigDecimal amount,BillingAccount ba,PaymentStatus status,String paymentRef) {
+    public Payment createPayment(BigDecimal amount, BillingAccount ba, PaymentStatus status, String paymentRef) {
         Payment pay = new Payment();
         pay.setPaymentDate(LocalDate.now());
         pay.setAmount(amount);
@@ -364,7 +366,7 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void createInvoiceFromOrder(Order order,Subscription sub,InvoiceStatus status,Payment payment) {
+    public void createInvoiceFromOrder(Order order, Subscription sub, InvoiceStatus status, Payment payment) {
         Invoice inv = new Invoice();
         inv.setPrice(order.getPrice());
         inv.setProduct(order.getProduct());
@@ -373,11 +375,11 @@ public class OrderFlowImpl implements IOrderFlow {
         inv.setNetTotal(order.getNetTotal());
         if (order.getDiscount() != null) inv.setDiscount(order.getDiscount());
         if (order.getDiscountStr() != null) inv.setDiscountStr(order.getDiscountStr());
-        if(order.getTax() != null) inv.setTax(order.getTax());
-        if(order.getTaxStr() != null) inv.setTaxStr(order.getTaxStr());
+        if (order.getTax() != null) inv.setTax(order.getTax());
+        if (order.getTaxStr() != null) inv.setTaxStr(order.getTaxStr());
         inv.setAddress(order.getAddress());
         inv.setPostingDate(LocalDate.now());
-        if(order.getPromoCode() != null) inv.setPromoCode(order.getPromoCode());
+        if (order.getPromoCode() != null) inv.setPromoCode(order.getPromoCode());
         inv.setSubscription(sub);
         inv.setStatus(status);
         inv.setPayment(payment);
@@ -389,13 +391,13 @@ public class OrderFlowImpl implements IOrderFlow {
     public Contact createContactFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Contact contact = new Contact();
-        if(!nullCheckpoint(jsonNode,"firstName")) contact.setFirstName(jsonNode.get("firstName").asText());
-        if(!nullCheckpoint(jsonNode,"middleName")) contact.setMiddleName(jsonNode.get("middleName").asText());
-        if(!nullCheckpoint(jsonNode,"lastName")) contact.setLastName(jsonNode.get("lastName").asText());
-        if(!nullCheckpoint(jsonNode,"email")) contact.setEmail(jsonNode.get("email").asText());
-        if(!nullCheckpoint(jsonNode,"mobile")) contact.setMobile(jsonNode.get("mobile").asText());
-        if(!nullCheckpoint(jsonNode,"fax")) contact.setFax(jsonNode.get("fax").asText());
-        if(!nullCheckpoint(jsonNode,"website")) contact.setWebsite(jsonNode.get("website").asText());
+        if (!nullCheckpoint(jsonNode, "firstName")) contact.setFirstName(jsonNode.get("firstName").asText());
+        if (!nullCheckpoint(jsonNode, "middleName")) contact.setMiddleName(jsonNode.get("middleName").asText());
+        if (!nullCheckpoint(jsonNode, "lastName")) contact.setLastName(jsonNode.get("lastName").asText());
+        if (!nullCheckpoint(jsonNode, "email")) contact.setEmail(jsonNode.get("email").asText());
+        if (!nullCheckpoint(jsonNode, "mobile")) contact.setMobile(jsonNode.get("mobile").asText());
+        if (!nullCheckpoint(jsonNode, "fax")) contact.setFax(jsonNode.get("fax").asText());
+        if (!nullCheckpoint(jsonNode, "website")) contact.setWebsite(jsonNode.get("website").asText());
         contact.setStatus(Status.ENABLED);
 
         //attach org later
@@ -404,18 +406,18 @@ public class OrderFlowImpl implements IOrderFlow {
 
 
     @Override
-    public Subscription createSubscription(Order order,Organization organization,User user){
+    public Subscription createSubscription(Order order, Organization organization, User user) {
         Subscription sub = new Subscription();
         ProductVariant pv = order.getProductVariant();
         assert pv != null;
         sub.setRenewNextSubscription(true);
 
-        if (pv.getVariantAttributeValue().equals("YEARLY")){
+        if (pv.getVariantAttributeValue().equals("YEARLY")) {
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().plusYears(1));
             sub.setSubscriptionType(SubscriptionTypeEnum.YEARLY);
             sub.setNextRenewalDate(LocalDate.now().plusYears(1).plusDays(1));
-        }else {
+        } else {
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().plusMonths(1));
             sub.setSubscriptionType(SubscriptionTypeEnum.MONTHLY);
@@ -424,7 +426,7 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setSubscriptionStatus(SubscriptionStatusEnum.ACTIVE);
         sub.setOrg(organization);
         List<Application> applications = new ArrayList<>();
-        for (BundleItem bi:pv.getBundleItems()) {
+        for (BundleItem bi : pv.getBundleItems()) {
             applications.add(bi.getBundleItem().getApplication());
         }
         sub.setApplications(applications);
@@ -438,7 +440,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if (order.getPromoCode() != null) sub.setPromotion(order.getPromotion());
         entityManager.persist(sub);
 
-        if (user != null ){
+        if (user != null) {
             SubscriptionUser subscriptionUser = new SubscriptionUser();
             subscriptionUser.setSubscription(sub);
             subscriptionUser.setUser(user);
@@ -455,15 +457,15 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public BillingAccount createBillingAccount(PaymentIntent paymentIntent,Organization organization,Boolean primaryAccount){
+    public BillingAccount createBillingAccount(PaymentIntent paymentIntent, Organization organization, Boolean primaryAccount) {
         List<BillingAccount> billingAccount = billingAccountService.getBillingAccountByStripeId(paymentIntent.getPaymentMethod());
-        if (billingAccount.size() >= 1){
-            if (billingAccount.get(0).getOrganization() == null){
+        if (billingAccount.size() >= 1) {
+            if (billingAccount.get(0).getOrganization() == null) {
                 billingAccount.get(0).setOrganization(organization);
                 entityManager.persist(billingAccount);
             }
             return billingAccount.get(0);
-        }else {
+        } else {
             PaymentMethod stripePM = fetchPaymentMethod(paymentIntent.getPaymentMethod());
             BillingAccount ba = new BillingAccount();
             if (stripePM.getType().equals("card")) {
@@ -500,7 +502,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    private Address mapAddress(com.stripe.model.Address address){
+    private Address mapAddress(com.stripe.model.Address address) {
         Address add = new com.thebizio.commonmodule.entity.Address();
         add.setAddressLine1(address.getLine1());
         add.setAddressLine2(address.getLine2());
@@ -513,7 +515,7 @@ public class OrderFlowImpl implements IOrderFlow {
         return add;
     }
 
-    private PaymentMethod fetchPaymentMethod(String id){
+    private PaymentMethod fetchPaymentMethod(String id) {
         try {
             PaymentMethod pm = PaymentMethod.retrieve(id);
             return pm;
@@ -523,7 +525,7 @@ public class OrderFlowImpl implements IOrderFlow {
         }
     }
 
-    public BillingAccType fetchBillingAccTypeFromPmId(String pmId){
+    public BillingAccType fetchBillingAccTypeFromPmId(String pmId) {
         try {
             return PaymentMethod.retrieve(pmId).getType().equals("card") ? BillingAccType.CARD : BillingAccType.BANK;
         } catch (StripeException e) {
@@ -533,7 +535,7 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId,BillingAccount billingAccount) throws JsonProcessingException {
+    public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId, BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
         if (op == null) throw new ValidationException("order not found");
         Order order = op.getOrder();
@@ -541,7 +543,7 @@ public class OrderFlowImpl implements IOrderFlow {
         Organization parentOrg = order.getParentOrganization();
 
         //create org
-        Organization org = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) :createOrganizationFromPayload(op.getPayload());
+        Organization org = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) : createOrganizationFromPayload(op.getPayload());
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
         org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
@@ -563,7 +565,7 @@ public class OrderFlowImpl implements IOrderFlow {
         PostpaidAccountResponse response = new PostpaidAccountResponse();
 
         User user = null;
-        if (op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister")){
+        if (op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister")) {
             //create account
             Account account = createAccountFromPayload(op.getPayload());
             account.setPrimaryContact(contact);
@@ -578,7 +580,8 @@ public class OrderFlowImpl implements IOrderFlow {
             //create user
             user = new User();
             user.setFirstName(jsonNode.get("personalDetails").get("firstName").asText());
-            if(!nullCheckpoint(jsonNode.get("personalDetails"),"middleName")) user.setMiddleName(jsonNode.get("personalDetails").get("middleName").asText());
+            if (!nullCheckpoint(jsonNode.get("personalDetails"), "middleName"))
+                user.setMiddleName(jsonNode.get("personalDetails").get("middleName").asText());
             user.setLastName(jsonNode.get("personalDetails").get("lastName").asText());
             user.setUsername(jsonNode.get("userName").asText().toLowerCase());
             user.setEmail(jsonNode.get("contact").get("email").asText().toLowerCase());
@@ -587,7 +590,7 @@ public class OrderFlowImpl implements IOrderFlow {
             user.setLastEmailChangeDate(LocalDateTime.now());
             user.setStayInformedAboutBizio(jsonNode.get("stayInformedAboutBizio").asBoolean());
             user.setTermsConditionsAgreed(jsonNode.get("termsConditionsAgreed").asBoolean());
-            if(user.getTermsConditionsAgreed()) user.setTermsConditionsAgreedTimestamp(LocalDateTime.now());
+            if (user.getTermsConditionsAgreed()) user.setTermsConditionsAgreedTimestamp(LocalDateTime.now());
             user.setStatus(Status.ENABLED);
             entityManager.persist(user);
 
@@ -607,10 +610,10 @@ public class OrderFlowImpl implements IOrderFlow {
             PaymentIntent pi = new PaymentIntent();
             pi.setPaymentMethod(paymentMethodId);
 
-            createBillingAccount(pi,org,true);
+            createBillingAccount(pi, org, true);
         }
 
-        Subscription sub = createSubscription(order,org,user);
+        Subscription sub = createSubscription(order, org, user);
         if (order.getProductVariant().getVariantAttributeValue().equals("MONTHLY")) {
             sub.setValidFrom(LocalDate.now());
             sub.setValidTill(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
@@ -636,16 +639,18 @@ public class OrderFlowImpl implements IOrderFlow {
 
     @Override
     public void validateBillingAccountExpiry(BillingAccount billingAccount) {
-        if (billingAccount.getBillingAccType().equals(BillingAccType.CARD)){
-            if (Long.parseLong(billingAccount.getExpYear()) < LocalDate.now().getYear()) throw new ValidationException("card has been expired");
+        if (billingAccount.getBillingAccType().equals(BillingAccType.CARD)) {
+            if (Long.parseLong(billingAccount.getExpYear()) < LocalDate.now().getYear())
+                throw new ValidationException("card has been expired");
             if (Long.parseLong(billingAccount.getExpYear()) == LocalDate.now().getYear()) {
-                if (Long.parseLong(billingAccount.getExpMonth()) < LocalDate.now().getMonthValue()) throw new ValidationException("card has been expired");
+                if (Long.parseLong(billingAccount.getExpMonth()) < LocalDate.now().getMonthValue())
+                    throw new ValidationException("card has been expired");
             }
         }
     }
 
     @Override
-    public PaymentIntent payment(String stripePaymentMethodId, String stripeCustomerId,Long amount,String orderRefNo){
+    public PaymentIntent payment(String stripePaymentMethodId, String stripeCustomerId, Long amount, String orderRefNo) {
         PaymentIntentCreateParams params =
                 PaymentIntentCreateParams.builder()
                         .setCurrency("usd")
