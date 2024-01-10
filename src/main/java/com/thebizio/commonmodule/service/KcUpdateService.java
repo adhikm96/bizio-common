@@ -8,6 +8,7 @@ import com.thebizio.commonmodule.enums.TaskStatus;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,12 +21,13 @@ public class KcUpdateService {
         this.entityManager = entityManager;
     }
 
-    public void createKcUpdate(User user, Status status) {
+    public KcUpdate createKcUpdate(User user, Status status) {
         KcUpdate kcu = new KcUpdate();
         kcu.setStatus(TaskStatus.PENDING);
         kcu.setUser(user);
         kcu.setRequiredAction(status);
         entityManager.persist(kcu);
+        return kcu;
     }
 
     public List<KcUpdate> getPendingUsers() {
@@ -34,8 +36,12 @@ public class KcUpdateService {
         return kcUsers;
     }
 
-    public void changeStatus(UUID kuId, TaskStatus status) {
-        entityManager.createQuery("update KcUpdate ku set ku.status = :status where ku.id = :id")
-                .setParameter("status",status).setParameter("id",kuId).getResultList();
+    public Integer changeStatus(UUID kuId, TaskStatus status) {
+        Integer count = entityManager.createQuery("update KcUpdate ku set ku.status = :status where ku.id = :id")
+                .setParameter("status",status).setParameter("id",kuId).executeUpdate();
+
+        entityManager.clear();
+        entityManager.close();
+        return count;
     }
 }
