@@ -3,6 +3,7 @@ package com.thebizio.commonmodule.service;
 import com.thebizio.commonmodule.entity.BillingAccount;
 import com.thebizio.commonmodule.entity.KcUpdate;
 import com.thebizio.commonmodule.entity.User;
+import com.thebizio.commonmodule.enums.Status;
 import com.thebizio.commonmodule.enums.TaskStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,11 @@ public class KcUpdateService {
         this.entityManager = entityManager;
     }
 
-    public void createKcUpdate(User user) {
+    public void createKcUpdate(User user, Status status) {
         KcUpdate kcu = new KcUpdate();
         kcu.setStatus(TaskStatus.PENDING);
         kcu.setUser(user);
+        kcu.setRequiredAction(status);
         entityManager.persist(kcu);
     }
 
