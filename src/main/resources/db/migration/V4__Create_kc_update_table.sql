@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS public.kc_updates
     modified_at timestamp without time zone,
     modified_by character varying(255) COLLATE pg_catalog."default",
     status integer,
+    required_action integer,
     user_id uuid,
     CONSTRAINT kc_updates_pkey PRIMARY KEY (id),
     CONSTRAINT fkb0pe8lwcxgfaxc9sjf0m3mas2 FOREIGN KEY (user_id)

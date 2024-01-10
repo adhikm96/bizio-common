@@ -23,6 +23,8 @@ public class KcUpdate extends LastUpdateDetail {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
+    private Status requiredAction;
+
     private TaskStatus status;
 
     @ManyToOne
