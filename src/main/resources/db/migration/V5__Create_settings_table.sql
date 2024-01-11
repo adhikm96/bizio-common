@@ -1,0 +1,1 @@
+create table if not exists settings (id uuid not null, created_at timestamp default CURRENT_TIMESTAMP not null, created_by varchar(255), modified_at timestamp, modified_by varchar(255), auth_whitelisted_urls TEXT, bizio_center_cors_urls TEXT, primary key (id));
