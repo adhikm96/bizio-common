@@ -21,11 +21,8 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 public class BrandProfile extends LastUpdateDetail{
     @Id
-    @GeneratedValue(generator = "uuid4")
-    @Column(columnDefinition = "uuid")
-    private UUID id;
-
     private String domain;
+
     private String brandName;
     private String logo;
     private String favicon;
