@@ -1,0 +1,1 @@
+create table if not exists brand_profiles (id uuid not null, created_at timestamp default CURRENT_TIMESTAMP not null, created_by varchar(255), modified_at timestamp, modified_by varchar(255), apps TEXT, brand_name varchar(255), domain varchar(255), favicon varchar(255), home_url varchar(255), loader varchar(255), logo varchar(255), seo TEXT, primary key (id));
