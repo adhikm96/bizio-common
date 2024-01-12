@@ -1,5 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
+import com.thebizio.commonmodule.convertor.ListConvertorForAppDto;
+import com.thebizio.commonmodule.convertor.ListConvertorForSeoDto;
 import com.thebizio.commonmodule.convertor.ListObjConvertor;
 import com.thebizio.commonmodule.dto.brand.AppDto;
 import com.thebizio.commonmodule.dto.brand.SeoDto;
@@ -30,10 +32,10 @@ public class BrandProfile extends LastUpdateDetail{
     private String homeUrl;
 
     @Column(columnDefinition = "TEXT")
-    @Convert(converter = ListObjConvertor.class)
+    @Convert(converter = ListConvertorForSeoDto.class)
     List<SeoDto> seo = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
-    @Convert(converter = ListObjConvertor.class)
+    @Convert(converter = ListConvertorForAppDto.class)
     List<AppDto> apps = new ArrayList<>();
 }
