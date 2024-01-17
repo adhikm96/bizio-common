@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -16,10 +17,10 @@ import java.util.UUID;
 @Setter
 @Getter
 public class OverdueSuspendedSub {
-    @Id
-    private UUID subId;
+    @EmbeddedId
+    private OverdueSuspendedSubPKey id;
+
     private UUID orgId;
     private String orgCode;
-    private String username;
     private SubscriptionStatusEnum status;
 }
