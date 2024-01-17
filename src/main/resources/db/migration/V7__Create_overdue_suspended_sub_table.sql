@@ -1,4 +1,4 @@
-create materialized view if not exists ots_subscriptions as (
+create materialized view if not exists ost_subscriptions as (
     select
         sub.id as sub_id,
         org.code as org_code,

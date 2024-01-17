@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ots_subscriptions")
+@Table(name = "ost_subscriptions")
 @NoArgsConstructor
 @Setter
 @Getter
