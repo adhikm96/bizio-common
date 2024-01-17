@@ -7,18 +7,17 @@ import lombok.Setter;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "overdue_suspended_subs")
+@Table(name = "ots_subscriptions")
 @NoArgsConstructor
 @Setter
 @Getter
-public class OverdueSuspendedSub {
+public class OSTSubscription {
     @EmbeddedId
-    private OverdueSuspendedSubPKey id;
+    private OSTSubscriptionPKey id;
 
     private UUID orgId;
     private String orgCode;

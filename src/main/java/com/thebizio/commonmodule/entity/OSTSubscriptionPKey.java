@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class OverdueSuspendedSubPKey implements Serializable {
+public class OSTSubscriptionPKey implements Serializable {
     private UUID subId;
     private String username;
 }
