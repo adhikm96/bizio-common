@@ -1,5 +1,5 @@
 package com.thebizio.commonmodule.enums;
 
 public enum InvoiceStatus {
-    SUBMITTED, PAID, OVERDUE,UNPAID
+    SUBMITTED, PAID, OVERDUE,UNPAID, CLOSED
 }
