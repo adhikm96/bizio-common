@@ -308,7 +308,8 @@ public class OrderFlowImpl implements IOrderFlow {
     public Organization createOrganizationFromPayload(String payload) throws JsonProcessingException {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
-        org.setName(jsonNode.get("name").asText());
+
+        org.setName(!nullCheckpoint(jsonNode, "name") ? jsonNode.get("name").asText() : "main");
         if (!nullCheckpoint(jsonNode, "shortName")) org.setShortName(jsonNode.get("shortName").asText());
         if (!nullCheckpoint(jsonNode, "otherName")) org.setOtherName(jsonNode.get("otherName").asText());
         if (!nullCheckpoint(jsonNode, "description")) org.setDescription(jsonNode.get("description").asText());
@@ -544,6 +545,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
         //create org
         Organization org = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) : createOrganizationFromPayload(op.getPayload());
+
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
         org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
