@@ -438,6 +438,7 @@ public class OrderFlowImpl implements IOrderFlow {
         sub.setExtension(false);
         sub.setPrice(order.getPrice());
         sub.setPromotion(order.getPromotion());
+        sub.setOccupiedSeats(0);
         if (order.getPromoCode() != null) sub.setPromotion(order.getPromotion());
         entityManager.persist(sub);
 
