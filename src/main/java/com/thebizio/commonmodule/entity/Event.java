@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Event {
+public class Event extends LastUpdateDetail {
     @Id
     private String eventKey; // {projCode}|{moduleCode}|{EventCode}
 
