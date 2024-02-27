@@ -50,4 +50,12 @@ public class Application extends LastUpdateDetail {
             joinColumns = @JoinColumn(name = "application_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> primaryUserRoles = new ArrayList<>();
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "application_default_roles",
+            joinColumns = @JoinColumn(name = "application_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> defaultRoles = new ArrayList<>();
 }
