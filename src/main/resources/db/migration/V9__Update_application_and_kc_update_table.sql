@@ -12,4 +12,4 @@ ALTER TABLE public.application_default_roles
     ADD CONSTRAINT fkiuiisag1bjtlgih2kvlwnlkt FOREIGN KEY (role_id)
         REFERENCES public.roles (id);
 
-ALTER TABLE public.kc_updates ADD update_type integer;
+ALTER TABLE public.kc_updates ADD update_type integer DEFAULT 0;
