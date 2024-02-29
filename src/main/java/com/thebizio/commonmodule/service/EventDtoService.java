@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -18,12 +19,12 @@ public class EventDtoService {
         this.objectMapper = objectMapper;
     }
 
-    public EventDto createEventDto(String groupName, String componentName, String hostName, String eventType, String logType, String actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward) {
+    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, String logType, String actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, String event, String org, List<String> notificationsIds) {
 
         EventDto eventDto = new EventDto();
 
-        eventDto.setGroup(groupName);
-        eventDto.setComponent(componentName);
+        eventDto.setProject(projectName);
+        eventDto.setModule(moduleName);
         eventDto.setHostName(hostName);
         eventDto.setEventType(eventType);
 
@@ -39,6 +40,9 @@ public class EventDtoService {
 
         eventDto.setLog(log_);
         eventDto.setForward(forward);
+        eventDto.setEvent(event);
+        eventDto.setOrg(org);
+        eventDto.setNotificationsIds(notificationsIds);
 
         if(payload.getClass() == String.class)
             eventDto.setPayload((String) payload);
