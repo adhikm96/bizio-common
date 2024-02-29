@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -37,8 +38,8 @@ public class EventDtoCreateTest extends TestCase {
 
     public void testApp() throws JsonProcessingException {
         EventDto eventDto = eventDtoService.createEventDto(
-            "groupName",
-            "componentName",
+            "projectName",
+            "moduleName",
             "hostName",
             "eventType",
             "logType",
@@ -49,14 +50,17 @@ public class EventDtoCreateTest extends TestCase {
             "content",
             "payload",
                 false,
-                false
+                false,
+                "event",
+                "org",
+                Collections.singletonList("notificationIds")
         );
 
         assertNotNull(eventDto);
 
         eventDto = eventDtoService.createEventDto(
-                "groupName",
-                "componentName",
+                "projectName",
+                "moduleName",
                 "hostName",
                 "eventType",
                 "logType",
@@ -69,7 +73,10 @@ public class EventDtoCreateTest extends TestCase {
                     put("some", "data");
                 }},
                 true,
-                false
+                false,
+                "event",
+                "org",
+                Collections.singletonList("notificationIds")
         );
 
         assertTrue(eventDto.isLog());
@@ -79,8 +86,8 @@ public class EventDtoCreateTest extends TestCase {
         assertNotNull(eventDto.getPayload());
 
         eventDto = eventDtoService.createEventDto(
-                "groupName",
-                "componentName",
+                "projectName",
+                "moduleName",
                 "hostName",
                 "eventType",
                 "logType",
@@ -91,14 +98,15 @@ public class EventDtoCreateTest extends TestCase {
                 "content",
                 new Temp("data1", "data2", "data3"),
                 false,
-                false
+                false,
+                "event",
+                "org",
+                Collections.singletonList("notificationIds")
         );
 
         assertNotNull(eventDto);
         assertNotNull(eventDto.getPayload());
         assertFalse(eventDto.isLog());
-
-
 
         System.out.println(eventDto.getPayload());
 
