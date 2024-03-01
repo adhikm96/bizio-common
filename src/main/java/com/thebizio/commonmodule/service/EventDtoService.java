@@ -19,7 +19,7 @@ public class EventDtoService {
         this.objectMapper = objectMapper;
     }
 
-    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, String logType, String actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, String event, String org, List<String> notificationsIds) {
+    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, String logType, String actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, String event, String org, List<String> notificationIds) {
 
         EventDto eventDto = new EventDto();
 
@@ -42,7 +42,7 @@ public class EventDtoService {
         eventDto.setForward(forward);
         eventDto.setEvent(event);
         eventDto.setOrg(org);
-        eventDto.setNotificationsIds(notificationsIds);
+        eventDto.setNotificationIds(notificationIds);
 
         if(payload.getClass() == String.class)
             eventDto.setPayload((String) payload);

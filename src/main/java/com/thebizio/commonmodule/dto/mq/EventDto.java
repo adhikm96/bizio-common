@@ -26,6 +26,6 @@ public class EventDto {
     private boolean forward;
     private String event;
     private String org;
-    private List<String> notificationsIds;
+    private List<String> notificationIds;
 
 }
