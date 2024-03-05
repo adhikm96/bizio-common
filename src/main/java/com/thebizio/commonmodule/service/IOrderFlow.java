@@ -44,7 +44,7 @@ public interface IOrderFlow {
 
     void submitTaxToAvalara(ProductVariant pv,String orgCode,Address address,BigDecimal netTotal) throws Exception;
 
-    void createInvoiceFromOrder(@NotNull Order order,@NotNull Subscription sub,@NotNull InvoiceStatus status,@NotNull Payment payment);
+    Invoice createInvoiceFromOrder(@NotNull Order order,@NotNull Subscription sub,@NotNull InvoiceStatus status,@NotNull Payment payment);
 
     Payment createPayment(@NotNull BigDecimal amount,@NotNull BillingAccount ba,@NotNull PaymentStatus status,@NotNull String paymentRef);
 
