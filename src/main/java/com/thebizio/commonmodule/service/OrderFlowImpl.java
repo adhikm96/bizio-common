@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -136,18 +137,18 @@ public class OrderFlowImpl implements IOrderFlow {
                 grossTotal += pv.getPriceRecord().getPrice();
             }
         }
-        order.setGrossTotal(BigDecimal.valueOf(grossTotal));
+        order.setGrossTotal(BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal)));
 
         // apply discount
         if (isPromotion) {
             Coupon coupon = promotion.getCoupon();
             if (coupon.getType().equals(CouponType.AMOUNT)) {
                 discount = (double) coupon.getValue();
-                if (coupon.getValue() >= grossTotal) {
+                if (coupon.getValue() >= CalculateUtilService.roundTwoDigits(grossTotal)) {
                     isFullDiscount = true;
                 }
             } else {
-                discount = coupon.getValue() * (grossTotal) / 100;
+                discount = coupon.getValue() * (CalculateUtilService.roundTwoDigits(grossTotal)) / 100;
                 if (coupon.getValue() == 100d) {
                     isFullDiscount = true;
                 }
@@ -157,7 +158,7 @@ public class OrderFlowImpl implements IOrderFlow {
             promotionService.incrementPromocodeCounter(promotion);
         }
 
-        BigDecimal totalWithDiscount = BigDecimal.valueOf(grossTotal);
+        BigDecimal totalWithDiscount = BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal));
         ;
         if (discount != null) {
             totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
@@ -187,15 +188,15 @@ public class OrderFlowImpl implements IOrderFlow {
                 throw new ValidationException("some error occurred while creating order");
             }
 
-            tax = CalculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO);
+            tax = CalculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
             order.setTax(tax);
             order.setTaxStr(objectMapper.writeValueAsString(tm.getSummary()));
         }
 
         if (discount != null) {
-            order.setNetTotal(BigDecimal.valueOf(grossTotal).add(tax).subtract(BigDecimal.valueOf(discount)));
+            order.setNetTotal(BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal)).add(tax).subtract(BigDecimal.valueOf(discount)));
         } else {
-            order.setNetTotal(BigDecimal.valueOf(grossTotal).add(tax));
+            order.setNetTotal(BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal)).add(tax));
         }
 
         if (order.getNetTotal().compareTo(BigDecimal.ZERO) < 0) {
@@ -367,7 +368,7 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void createInvoiceFromOrder(Order order, Subscription sub, InvoiceStatus status, Payment payment) {
+    public Invoice createInvoiceFromOrder(Order order, Subscription sub, InvoiceStatus status, Payment payment) {
         Invoice inv = new Invoice();
         inv.setPrice(order.getPrice());
         inv.setProduct(order.getProduct());
@@ -386,6 +387,8 @@ public class OrderFlowImpl implements IOrderFlow {
         inv.setPayment(payment);
 
         entityManager.persist(inv);
+
+        return inv;
     }
 
     @Override
