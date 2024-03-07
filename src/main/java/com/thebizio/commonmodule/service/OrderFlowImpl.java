@@ -598,6 +598,15 @@ public class OrderFlowImpl implements IOrderFlow {
             user.setTermsConditionsAgreed(jsonNode.get("termsConditionsAgreed").asBoolean());
             if (user.getTermsConditionsAgreed()) user.setTermsConditionsAgreedTimestamp(LocalDateTime.now());
             user.setStatus(Status.ENABLED);
+
+            if (!nullCheckpoint(jsonNode.get("personalDetails"), "gender"))
+                user.setGender(GenderEnum.valueOf(jsonNode.get("personalDetails").get("gender").asText()));
+            if (!nullCheckpoint(jsonNode.get("personalDetails"), "dob"))
+                user.setDob(LocalDate.parse(jsonNode.get("personalDetails").get("dob").asText()));
+
+            if (!nullCheckpoint(jsonNode.get("personalDetails"), "designation"))
+                user.setDesignation(jsonNode.get("personalDetails").get("designation").asText());
+
             entityManager.persist(user);
 
             response.setUser(user);
