@@ -3,6 +3,9 @@ package com.thebizio.commonmodule.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thebizio.commonmodule.dto.mq.EventDto;
+import com.thebizio.commonmodule.enums.events.Actor;
+import com.thebizio.commonmodule.enums.events.EType;
+import com.thebizio.commonmodule.enums.events.EventType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +22,7 @@ public class EventDtoService {
         this.objectMapper = objectMapper;
     }
 
-    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, String logType, String actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, String event, String org, List<String> notificationIds) {
+    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, EType eType, Actor actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, EventType event, String org, List<String> notificationIds) {
 
         EventDto eventDto = new EventDto();
 
@@ -31,8 +34,8 @@ public class EventDtoService {
         // adding current epoch ms
         eventDto.setTimestamp(Instant.now().toEpochMilli());
 
-        eventDto.setEType(logType);
-        eventDto.setActor(actor);
+        eventDto.setEType(eType.toString());
+        eventDto.setActor(actor.toString());
         eventDto.setUsername(username);
         eventDto.setActivityGroup(activityGroup);
         eventDto.setActivity(activity);
@@ -40,7 +43,7 @@ public class EventDtoService {
 
         eventDto.setLog(log_);
         eventDto.setForward(forward);
-        eventDto.setEvent(event);
+        eventDto.setEvent(event.toString());
         eventDto.setOrg(org);
         eventDto.setNotificationIds(notificationIds);
 
