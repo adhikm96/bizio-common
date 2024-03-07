@@ -3,6 +3,9 @@ package com.thebizio.commonmodule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thebizio.commonmodule.dto.mq.EventDto;
+import com.thebizio.commonmodule.enums.events.Actor;
+import com.thebizio.commonmodule.enums.events.EType;
+import com.thebizio.commonmodule.enums.events.EventType;
 import com.thebizio.commonmodule.service.EventDtoService;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -42,8 +45,8 @@ public class EventDtoCreateTest extends TestCase {
             "moduleName",
             "hostName",
             "eventType",
-            "logType",
-            "actor",
+            EType.INFO,
+            Actor.USER,
             "username",
             "activityGroup",
             "activity",
@@ -51,7 +54,7 @@ public class EventDtoCreateTest extends TestCase {
             "payload",
                 false,
                 false,
-                "event",
+                EventType.NOTIFICATION,
                 "org",
                 Collections.singletonList("notificationIds")
         );
@@ -63,8 +66,8 @@ public class EventDtoCreateTest extends TestCase {
                 "moduleName",
                 "hostName",
                 "eventType",
-                "logType",
-                "actor",
+                EType.ERROR,
+                Actor.USER,
                 "username",
                 "activityGroup",
                 "activity",
@@ -74,7 +77,7 @@ public class EventDtoCreateTest extends TestCase {
                 }},
                 true,
                 false,
-                "event",
+                EventType.NOTIFICATION,
                 "org",
                 Collections.singletonList("notificationIds")
         );
@@ -90,8 +93,8 @@ public class EventDtoCreateTest extends TestCase {
                 "moduleName",
                 "hostName",
                 "eventType",
-                "logType",
-                "actor",
+                EType.ERROR,
+                Actor.USER,
                 "username",
                 "activityGroup",
                 "activity",
@@ -99,7 +102,7 @@ public class EventDtoCreateTest extends TestCase {
                 new Temp("data1", "data2", "data3"),
                 false,
                 false,
-                "event",
+                EventType.NOTIFICATION,
                 "org",
                 Collections.singletonList("notificationIds")
         );
