@@ -22,14 +22,14 @@ public class EventDtoService {
         this.objectMapper = objectMapper;
     }
 
-    public EventDto createEventDto(String projectName, String moduleName, String hostName, String eventType, EType eType, Actor actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, EventType event, String org, List<String> notificationIds) {
+    public EventDto createEventDto(String projectName, String moduleName, String hostName, EventType eventType, EType eType, Actor actor, String username, String activityGroup, String activity, String content, Object payload, boolean log_, boolean forward, String event, String org, List<String> notificationIds) {
 
         EventDto eventDto = new EventDto();
 
         eventDto.setProject(projectName);
         eventDto.setModule(moduleName);
         eventDto.setHostName(hostName);
-        eventDto.setEventType(eventType);
+        eventDto.setEventType(eventType.toString());
 
         // adding current epoch ms
         eventDto.setTimestamp(Instant.now().toEpochMilli());
@@ -43,7 +43,7 @@ public class EventDtoService {
 
         eventDto.setLog(log_);
         eventDto.setForward(forward);
-        eventDto.setEvent(event.toString());
+        eventDto.setEvent(event);
         eventDto.setOrg(org);
         eventDto.setNotificationIds(notificationIds);
 
