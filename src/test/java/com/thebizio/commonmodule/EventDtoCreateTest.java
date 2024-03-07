@@ -44,7 +44,7 @@ public class EventDtoCreateTest extends TestCase {
             "projectName",
             "moduleName",
             "hostName",
-            "eventType",
+            EventType.NOTIFICATION,
             EType.INFO,
             Actor.USER,
             "username",
@@ -54,7 +54,7 @@ public class EventDtoCreateTest extends TestCase {
             "payload",
                 false,
                 false,
-                EventType.NOTIFICATION,
+                "event",
                 "org",
                 Collections.singletonList("notificationIds")
         );
@@ -65,7 +65,7 @@ public class EventDtoCreateTest extends TestCase {
                 "projectName",
                 "moduleName",
                 "hostName",
-                "eventType",
+                EventType.NOTIFICATION,
                 EType.ERROR,
                 Actor.USER,
                 "username",
@@ -77,7 +77,7 @@ public class EventDtoCreateTest extends TestCase {
                 }},
                 true,
                 false,
-                EventType.NOTIFICATION,
+                "event",
                 "org",
                 Collections.singletonList("notificationIds")
         );
@@ -92,7 +92,7 @@ public class EventDtoCreateTest extends TestCase {
                 "projectName",
                 "moduleName",
                 "hostName",
-                "eventType",
+                EventType.NOTIFICATION,
                 EType.ERROR,
                 Actor.USER,
                 "username",
@@ -102,7 +102,7 @@ public class EventDtoCreateTest extends TestCase {
                 new Temp("data1", "data2", "data3"),
                 false,
                 false,
-                EventType.NOTIFICATION,
+                "event",
                 "org",
                 Collections.singletonList("notificationIds")
         );
