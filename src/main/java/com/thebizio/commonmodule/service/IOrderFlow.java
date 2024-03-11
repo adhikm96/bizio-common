@@ -6,14 +6,18 @@ import com.thebizio.commonmodule.dto.BillingAddress;
 import com.thebizio.commonmodule.dto.CheckoutReqDto;
 import com.thebizio.commonmodule.dto.OrderResponseDto;
 import com.thebizio.commonmodule.dto.PostpaidAccountResponse;
+import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.enums.PaymentStatus;
-import net.avalara.avatax.rest.client.models.AddressResolutionModel;
+import com.thebizio.commonmodule.exception.InvalidAddressException;
+import com.thebizio.commonmodule.exception.TaxCalculationException;
+import com.thebizio.commonmodule.exception.TaxSubmissionException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
@@ -40,9 +44,9 @@ public interface IOrderFlow {
 
     OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId,String clientSecretKey) throws JsonProcessingException;
 
-    void submitTaxToAvalara(@NotNull Order order,@NotNull String orgCode) throws Exception;
+    void submitTax(@NotNull Order order,@NotNull String custId) throws Exception, TaxCalculationException, TaxSubmissionException;
 
-    void submitTaxToAvalara(ProductVariant pv,String orgCode,Address address,BigDecimal netTotal) throws Exception;
+    void submitTax(ProductVariant pv, String custId, Address address, BigDecimal grossTotal, BigDecimal tax, String invoiceRef, BigDecimal discount) throws TaxSubmissionException;
 
     Invoice createInvoiceFromOrder(@NotNull Order order,@NotNull Subscription sub,@NotNull InvoiceStatus status,@NotNull Payment payment);
 
@@ -50,7 +54,7 @@ public interface IOrderFlow {
 
     BillingAccount createBillingAccount(@NotNull PaymentIntent paymentIntent,@NotNull Organization organization,@NotNull Boolean primaryAccount);
 
-    AddressResolutionModel validateBillingAddress(@NotNull BillingAddress address) throws Exception;
+    TaxAddress validateBillingAddress(@NotNull BillingAddress address) throws InvalidAddressException;
 
     void validateBillingAccountExpiry(@NotNull BillingAccount billingAccount);
 
