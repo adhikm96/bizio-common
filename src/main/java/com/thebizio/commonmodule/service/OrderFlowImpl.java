@@ -1,7 +1,6 @@
 package com.thebizio.commonmodule.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.CardException;
@@ -12,7 +11,6 @@ import com.stripe.model.PaymentMethod;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
-
 import com.thebizio.commonmodule.dto.*;
 import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.dto.tax.TaxResp;
@@ -21,7 +19,6 @@ import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.*;
 import com.thebizio.commonmodule.service.tax.ITaxService;
 import com.thebizio.commonmodule.service.tax.TaxJarService;
-import net.avalara.avatax.rest.client.models.TransactionSummary;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,8 +45,6 @@ public class OrderFlowImpl implements IOrderFlow {
     Logger logger = LoggerFactory.getLogger(OrderFlowImpl.class);
 
     private final PromotionService promotionService;
-
-    private final AvalaraService avalaraService;
 
     private final EntityManager entityManager;
 
@@ -61,9 +59,8 @@ public class OrderFlowImpl implements IOrderFlow {
     private final ITaxService taxJarService;
 
 
-    public OrderFlowImpl(PromotionService promotionService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
+    public OrderFlowImpl(PromotionService promotionService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
         this.promotionService = promotionService;
-        this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
@@ -263,11 +260,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
         dto.setTax(order.getTax());
         if (order.getTaxStr() != null && !order.getTaxStr().equals("[]")) {
-            ArrayList<TransactionSummary> transactionSummaries = new ArrayList<>();
-            transactionSummaries = objectMapper.readValue(order.getTaxStr(), new TypeReference<ArrayList<TransactionSummary>>() {
-            });
             dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
-            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(transactionSummaries) + "%");
+            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(dto.getTaxStr()) + "%");
         } else {
             dto.setTaxPercentage("0%");
         }

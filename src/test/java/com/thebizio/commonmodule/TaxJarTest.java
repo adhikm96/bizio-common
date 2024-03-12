@@ -7,12 +7,14 @@ import com.taxjar.exception.TaxjarException;
 import com.taxjar.model.transactions.OrderResponse;
 import com.thebizio.commonmodule.config.TaxjarConfig;
 import com.thebizio.commonmodule.dto.BillingAddress;
+import com.thebizio.commonmodule.dto.tax.TaxResp;
 import com.thebizio.commonmodule.exception.InvalidAddressException;
 import com.thebizio.commonmodule.exception.TaxCalculationException;
 import com.thebizio.commonmodule.exception.TaxSubmissionException;
+import com.thebizio.commonmodule.service.CalculateUtilService;
 import com.thebizio.commonmodule.service.tax.TaxJarService;
 import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
@@ -20,12 +22,11 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertThrows;
 
-
+@Ignore         // comment this to run test
 public class TaxJarTest extends TestCase {
     private TaxjarConfig taxjarConfig = new TaxjarConfig(System.getenv("TAXJAR_API_TOKEN"), "2022-01-24");
 
-    // uncomment @Test & add `TAXJAR_API_TOKEN` in env
-    // @Test
+
     public void testApp() throws TaxCalculationException, JsonProcessingException, InvalidAddressException, TaxSubmissionException, TaxjarException {
 
         Taxjar taxjar = taxjarConfig.taxjar();
@@ -57,7 +58,7 @@ public class TaxJarTest extends TestCase {
         assertNotNull(taxJarService.getAddress(ba));
 
         // testing for tax calculation
-        Assert.assertNotNull(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5)));
+        assertNotNull(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5)));
 
         System.out.println(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5)));
         System.out.println(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(0)));
@@ -65,8 +66,7 @@ public class TaxJarTest extends TestCase {
         assertTrue(taxJarService.calculateTax(ba, BigDecimal.valueOf(15000), BigDecimal.valueOf(1.5)).getTax() > 0.0);
 
         // test with full discount
-        assertEquals(0.0, taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(15))
-                .getTax());
+        assertEquals(0.0, taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(15)).getTax());
 
         // with incorrect address
         final BillingAddress ba2 = new BillingAddress();
@@ -95,5 +95,12 @@ public class TaxJarTest extends TestCase {
         assertEquals("15.0", orderResponse.order.getLineItems().get(0).getUnitPrice().toString());
         assertEquals("1.28", orderResponse.order.getLineItems().get(0).getSalesTax().toString());
         assertEquals("1.28", orderResponse.order.getSalesTax().toString());
+
+        // testing total tax percentage
+        TaxResp tax = taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5));
+
+        System.out.println(tax);
+        System.out.println(CalculateUtilService.calculateTaxPercentage(new ObjectMapper().readTree(tax.getSummary())));
+        assertNotNull(CalculateUtilService.calculateTaxPercentage(new ObjectMapper().readTree(tax.getSummary())));
     }
 }

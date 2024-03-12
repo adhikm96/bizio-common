@@ -67,7 +67,6 @@ public class TaxJarService implements ITaxService {
 
         try {
             Tax tax = taxjar.taxForOrder(params).tax;
-            System.out.println(objectMapper.writeValueAsString(tax));
             return new TaxResp(tax.getAmountToCollect() != null ? CalculateUtilService.roundTwoDigits(tax.getAmountToCollect().doubleValue()) : 0.0, objectMapper.writeValueAsString(tax.getBreakdown()));
         } catch (TaxjarException e) {
             throw new TaxCalculationException(e);
@@ -109,7 +108,6 @@ public class TaxJarService implements ITaxService {
         setToDetails(params, address);
 
         params.put("amount", grossTotal.subtract(discount));
-        params.put("discount", discount);
         params.put("shipping", 0.0);
         params.put("customer_id", custId);
 
