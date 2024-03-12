@@ -126,7 +126,7 @@ public class TaxJarService implements ITaxService {
         params.put("line_items", lineItems);
 
         try {
-            taxjar.createOrder(params).order.getUserId();
+            taxjar.createOrder(params);
         } catch (TaxjarException e) {
             throw new TaxSubmissionException(e);
         }
