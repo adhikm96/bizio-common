@@ -67,7 +67,7 @@ public class TaxJarService implements ITaxService {
 
         try {
             Tax tax = taxjar.taxForOrder(params).tax;
-            return new TaxResp(tax.getAmountToCollect() != null ? CalculateUtilService.roundTwoDigits(tax.getAmountToCollect().doubleValue()) : 0.0, objectMapper.writeValueAsString(tax.getBreakdown()));
+            return new TaxResp(tax.getAmountToCollect() != null ? BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(tax.getAmountToCollect().doubleValue())) : BigDecimal.ZERO, objectMapper.writeValueAsString(tax.getBreakdown()));
         } catch (TaxjarException e) {
             throw new TaxCalculationException(e);
         }

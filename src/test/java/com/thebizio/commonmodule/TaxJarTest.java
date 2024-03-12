@@ -63,10 +63,10 @@ public class TaxJarTest extends TestCase {
         System.out.println(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5)));
         System.out.println(taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(0)));
 
-        assertTrue(taxJarService.calculateTax(ba, BigDecimal.valueOf(15000), BigDecimal.valueOf(1.5)).getTax() > 0.0);
+        assertTrue(taxJarService.calculateTax(ba, BigDecimal.valueOf(15000), BigDecimal.valueOf(1.5)).getTax().doubleValue() > 0.0);
 
         // test with full discount
-        assertEquals(0.0, taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(15)).getTax());
+        assertEquals(0.0, taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(15)).getTax().doubleValue());
 
         // with incorrect address
         final BillingAddress ba2 = new BillingAddress();

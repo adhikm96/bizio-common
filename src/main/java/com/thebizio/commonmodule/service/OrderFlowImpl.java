@@ -179,7 +179,7 @@ public class OrderFlowImpl implements IOrderFlow {
                 throw new ValidationException("some error occurred while creating order");
             }
 
-            tax = CalculateUtilService.nullOrZeroValue(BigDecimal.valueOf(taxResp.getTax()), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
+            tax = CalculateUtilService.nullOrZeroValue(taxResp.getTax(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
             order.setTax(tax);
             order.setTaxStr(objectMapper.writeValueAsString(taxResp.getSummary()));
         }
