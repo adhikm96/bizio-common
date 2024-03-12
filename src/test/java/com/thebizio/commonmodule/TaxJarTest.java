@@ -99,8 +99,9 @@ public class TaxJarTest extends TestCase {
         // testing total tax percentage
         TaxResp tax = taxJarService.calculateTax(ba, BigDecimal.valueOf(15), BigDecimal.valueOf(1.5));
 
-        System.out.println(tax);
         System.out.println(CalculateUtilService.calculateTaxPercentage(new ObjectMapper().readTree(tax.getSummary())));
         assertNotNull(CalculateUtilService.calculateTaxPercentage(new ObjectMapper().readTree(tax.getSummary())));
+
+        assertEquals("0", CalculateUtilService.calculateTaxPercentage(new ObjectMapper().readTree("{\"val\":10}")));
     }
 }
