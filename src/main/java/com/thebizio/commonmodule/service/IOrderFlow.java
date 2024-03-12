@@ -44,7 +44,7 @@ public interface IOrderFlow {
 
     OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId,String clientSecretKey) throws JsonProcessingException;
 
-    void submitTax(@NotNull Order order,@NotNull String custId) throws Exception, TaxCalculationException, TaxSubmissionException;
+    void submitTax(@NotNull Order order,@NotNull String custId) throws TaxSubmissionException;
 
     void submitTax(ProductVariant pv, String custId, Address address, BigDecimal grossTotal, BigDecimal tax, String invoiceRef, BigDecimal discount) throws TaxSubmissionException;
 
