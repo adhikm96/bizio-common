@@ -58,7 +58,6 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final ITaxService taxJarService;
 
-
     public OrderFlowImpl(PromotionService promotionService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
         this.promotionService = promotionService;
         this.entityManager = entityManager;
@@ -173,7 +172,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
             TaxResp taxResp;
             try {
-                taxResp = taxJarService.calculateTax(billingAddress, BigDecimal.valueOf(grossTotal), BigDecimal.valueOf(discount));
+                taxResp = taxJarService.calculateTax(billingAddress, BigDecimal.valueOf(grossTotal), discount == null ? BigDecimal.ZERO : BigDecimal.valueOf(discount));
             } catch (TaxCalculationException | JsonProcessingException e) {
                 logger.error(e.getMessage());
                 throw new ValidationException("some error occurred while creating order");
