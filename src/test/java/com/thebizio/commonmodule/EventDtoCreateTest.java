@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.junit.Assert.*;
+
 @Data @AllArgsConstructor @NoArgsConstructor
 class Temp {
     String prop1;
@@ -24,21 +26,12 @@ class Temp {
     String prop3;
 }
 
-public class EventDtoCreateTest extends TestCase {
+public class EventDtoCreateTest {
     private ObjectMapper objectMapper = new ObjectMapper();
     EventDtoService eventDtoService = new EventDtoService(objectMapper);
 
-    public EventDtoCreateTest( String testName )
-    {
-        super( testName );
-    }
 
-    public static Test suite()
-    {
-        return new TestSuite( EventDtoCreateTest.class );
-    }
-
-
+    @org.junit.Test
     public void testApp() throws JsonProcessingException {
         EventDto eventDto = eventDtoService.createEventDto(
             "projectName",

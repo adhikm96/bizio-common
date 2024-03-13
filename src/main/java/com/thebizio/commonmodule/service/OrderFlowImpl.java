@@ -1,7 +1,6 @@
 package com.thebizio.commonmodule.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.CardException;
@@ -12,16 +11,14 @@ import com.stripe.model.PaymentMethod;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
-
 import com.thebizio.commonmodule.dto.*;
+import com.thebizio.commonmodule.dto.tax.TaxAddress;
+import com.thebizio.commonmodule.dto.tax.TaxResp;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.*;
-import com.thebizio.commonmodule.exception.ServerException;
-import com.thebizio.commonmodule.exception.ValidationException;
-import net.avalara.avatax.rest.client.enums.DocumentType;
-import net.avalara.avatax.rest.client.models.AddressResolutionModel;
-import net.avalara.avatax.rest.client.models.TransactionModel;
-import net.avalara.avatax.rest.client.models.TransactionSummary;
+import com.thebizio.commonmodule.exception.*;
+import com.thebizio.commonmodule.service.tax.ITaxService;
+import com.thebizio.commonmodule.service.tax.TaxJarService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,8 +45,6 @@ public class OrderFlowImpl implements IOrderFlow {
     Logger logger = LoggerFactory.getLogger(OrderFlowImpl.class);
 
     private final PromotionService promotionService;
-
-    private final AvalaraService avalaraService;
 
     private final EntityManager entityManager;
 
@@ -58,14 +56,16 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final OrderPayloadService orderPayloadService;
 
-    public OrderFlowImpl(PromotionService promotionService, AvalaraService avalaraService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService) {
+    private final ITaxService taxJarService;
+
+    public OrderFlowImpl(PromotionService promotionService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
         this.promotionService = promotionService;
-        this.avalaraService = avalaraService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
         this.billingAccountService = billingAccountService;
         this.orderPayloadService = orderPayloadService;
+        this.taxJarService = taxJarService;
     }
 
     @Override
@@ -158,39 +158,29 @@ public class OrderFlowImpl implements IOrderFlow {
             promotionService.incrementPromocodeCounter(promotion);
         }
 
-        BigDecimal totalWithDiscount = BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal));
-        ;
         if (discount != null) {
-            totalWithDiscount = totalWithDiscount.subtract(BigDecimal.valueOf(discount));
             order.setDiscount(BigDecimal.valueOf(discount));
             order.setDiscountStr("{\"" + promotion.getCode() + "\":" + discount + "}");
         }
 
         BigDecimal tax = BigDecimal.ZERO;
-        List<TransactionSummary> transactionSummaryList = new ArrayList<>();
 
         if (!isFullDiscount) {
-            TransactionModel tm = null;
 
             // get taxes for given address
-            // call avalara get taxes
+            // call taxjar get taxes
 
+            TaxResp taxResp;
             try {
-                tm = avalaraService.createTransaction(
-                        billingAddress,
-                        productVariant,
-                        orgCode,
-                        DocumentType.SalesOrder,
-                        totalWithDiscount
-                );
-            } catch (Exception e) {
+                taxResp = taxJarService.calculateTax(billingAddress, BigDecimal.valueOf(grossTotal), discount == null ? BigDecimal.ZERO : BigDecimal.valueOf(discount));
+            } catch (TaxCalculationException | JsonProcessingException e) {
                 logger.error(e.getMessage());
                 throw new ValidationException("some error occurred while creating order");
             }
 
-            tax = CalculateUtilService.nullOrZeroValue(tm.getTotalTax(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
+            tax = CalculateUtilService.nullOrZeroValue(taxResp.getTax(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
             order.setTax(tax);
-            order.setTaxStr(objectMapper.writeValueAsString(tm.getSummary()));
+            order.setTaxStr(objectMapper.writeValueAsString(taxResp.getSummary()));
         }
 
         if (discount != null) {
@@ -269,11 +259,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
         dto.setTax(order.getTax());
         if (order.getTaxStr() != null && !order.getTaxStr().equals("[]")) {
-            ArrayList<TransactionSummary> transactionSummaries = new ArrayList<>();
-            transactionSummaries = objectMapper.readValue(order.getTaxStr(), new TypeReference<ArrayList<TransactionSummary>>() {
-            });
             dto.setTaxStr(objectMapper.readTree(order.getTaxStr()));
-            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(transactionSummaries) + "%");
+            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(dto.getTaxStr()) + "%");
         } else {
             dto.setTaxPercentage("0%");
         }
@@ -344,15 +331,16 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void submitTaxToAvalara(Order order, String orgCode) throws Exception {
-//        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
-//        avalaraService.createTransactionTaxInclusive(ba,order.getProductVariant(),orgCode,DocumentType.SalesInvoice,order.getNetTotal());
+    public void submitTax(Order order, String custId) throws TaxSubmissionException {
+        BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
+        ProductVariant pv = order.getProductVariant();
+        taxJarService.submitTax(ba, order.getGrossTotal(), order.getDiscount(), order.getTax(), order.getRefNo(), pv.getCode(), pv.getId().toString(), custId);
     }
 
     @Override
-    public void submitTaxToAvalara(ProductVariant pv, String orgCode, Address address, BigDecimal netTotal) throws Exception {
-//        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
-//        avalaraService.createTransactionTaxInclusive(ba,pv,orgCode,DocumentType.SalesInvoice,netTotal);
+    public void submitTax(ProductVariant pv, String custId, Address address, BigDecimal grossTotal, BigDecimal tax, String invoiceRef, BigDecimal discount) throws TaxSubmissionException {
+        BillingAddress ba = modelMapper.map(address,BillingAddress.class);
+        taxJarService.submitTax(ba, grossTotal, discount, tax, invoiceRef, pv.getCode(), pv.getId().toString(), custId);
     }
 
     @Override
@@ -648,8 +636,8 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public AddressResolutionModel validateBillingAddress(BillingAddress address) throws Exception {
-        return avalaraService.addressValidate(address);
+    public TaxAddress validateBillingAddress(BillingAddress address) throws InvalidAddressException {
+        return taxJarService.getAddress(address);
     }
 
     @Override
