@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 
 public interface ITaxService {
     TaxResp calculateTax(BillingAddress ba, BigDecimal grossTotal, BigDecimal discount) throws TaxCalculationException, JsonProcessingException;
-    void submitTax(BillingAddress ba, BigDecimal grossTotal, BigDecimal discount, BigDecimal tax, String transactionId, String productIdentifier, String lineItemId, String custId) throws TaxSubmissionException;
+    void submitTax(BillingAddress ba, BigDecimal grossTotal, BigDecimal discount, BigDecimal tax, String transactionId, String productIdentifier, String lineItemId, String orgCode) throws TaxSubmissionException;
     TaxAddress getAddress(BillingAddress ba) throws InvalidAddressException;
 }
