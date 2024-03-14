@@ -90,7 +90,7 @@ public class TaxJarService implements ITaxService {
     }
 
     @Override
-    public void submitTax(BillingAddress ba, BigDecimal grossTotal, BigDecimal discount, BigDecimal tax, String transactionId, String productIdentifier, String lineItemId, String custId) throws TaxSubmissionException {
+    public void submitTax(BillingAddress ba, BigDecimal grossTotal, BigDecimal discount, BigDecimal tax, String transactionId, String productIdentifier, String lineItemId, String orgCode) throws TaxSubmissionException {
         TaxAddress address;
         try {
             address = getAddress(ba);
@@ -109,7 +109,7 @@ public class TaxJarService implements ITaxService {
 
         params.put("amount", grossTotal.subtract(discount));
         params.put("shipping", 0.0);
-        params.put("customer_id", custId);
+        params.put("customer_id", orgCode);
 
         List<Map> lineItems = new ArrayList<>();
         Map<String, Object> lineItem = new HashMap<>();

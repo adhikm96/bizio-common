@@ -331,16 +331,16 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void submitTax(Order order, String custId) throws TaxSubmissionException {
+    public void submitTax(Order order, String orgCode) throws TaxSubmissionException {
         BillingAddress ba = modelMapper.map(order.getAddress(),BillingAddress.class);
         ProductVariant pv = order.getProductVariant();
-        taxJarService.submitTax(ba, order.getGrossTotal(), order.getDiscount(), order.getTax(), order.getRefNo(), pv.getCode(), pv.getId().toString(), custId);
+        taxJarService.submitTax(ba, order.getGrossTotal(), order.getDiscount(), order.getTax(), order.getRefNo(), pv.getCode(), pv.getId().toString(), orgCode);
     }
 
     @Override
-    public void submitTax(ProductVariant pv, String custId, Address address, BigDecimal grossTotal, BigDecimal tax, String invoiceRef, BigDecimal discount) throws TaxSubmissionException {
+    public void submitTax(ProductVariant pv, String orgCode, Address address, BigDecimal grossTotal, BigDecimal tax, String invoiceRef, BigDecimal discount) throws TaxSubmissionException {
         BillingAddress ba = modelMapper.map(address,BillingAddress.class);
-        taxJarService.submitTax(ba, grossTotal, discount, tax, invoiceRef, pv.getCode(), pv.getId().toString(), custId);
+        taxJarService.submitTax(ba, grossTotal, discount, tax, invoiceRef, pv.getCode(), pv.getId().toString(), orgCode);
     }
 
     @Override
