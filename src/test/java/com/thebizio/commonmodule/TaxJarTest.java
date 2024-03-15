@@ -40,20 +40,21 @@ public class TaxJarTest extends TestCase {
 
         // testing for address validation
         BillingAddress ba = new BillingAddress();
+        ba.setState("Florida");
 
         assertThrows(InvalidAddressException.class, () -> taxJarService.getAddress(ba));
 
         ba.setCountry("US");
-        ba.setZipcode("32801");
+        ba.setZipcode("33004");
         ba.setState("FL");
-        ba.setCity("Orlando");
+        ba.setCity("Dania");
 
         ba.setAddressLine1("incorrect line1");      // incorrect
 
         assertThrows(InvalidAddressException.class, () -> taxJarService.getAddress(ba));
 
         // correct line1
-        ba.setAddressLine1("200 S Orange Ave");
+        ba.setAddressLine1("229 SE 4th St");
 
         assertNotNull(taxJarService.getAddress(ba));
 
