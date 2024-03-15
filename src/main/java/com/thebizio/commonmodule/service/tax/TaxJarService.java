@@ -26,6 +26,7 @@ import java.util.*;
 @Service
 @Slf4j
 public class TaxJarService implements ITaxService {
+
     final Taxjar taxjar;
     final ObjectMapper objectMapper;
     final ModelMapper modelMapper;
@@ -133,6 +134,12 @@ public class TaxJarService implements ITaxService {
     }
 
     public TaxAddress getAddress(BillingAddress ba) throws InvalidAddressException {
+        if(CalculateUtilService.isDevEnv()) {
+            if (ba.getState().toLowerCase().equals("florida"))
+                return new TaxAddress("US", "33004-4133", "FL", "Dania", "229 SE 4th St");
+            return new TaxAddress("US", "14127-2532", "NY", "Orchard Park", "6851 E Quaker St");
+        }
+
         Map<String, Object> addParams = new HashMap<>();
 
         addParams.put("country", ba.getCountry());
