@@ -40,6 +40,11 @@ public class Subscription extends LastUpdateDetail implements IRandomGeneratorFi
     private SubscriptionTypeEnum subscriptionType;
     private SubscriptionStatusEnum subscriptionStatus;
 
+
+    private LocalDate suspensionDate;
+    private LocalDate terminationDate;
+    private LocalDate deletionDate;
+
     @Column(columnDefinition = "boolean default false")
     private Boolean bizioGuestSubscription;
 
