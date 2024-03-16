@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.Status;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
 import lombok.Getter;
@@ -56,4 +57,8 @@ public class Organization extends LastUpdateDetail {
     @JoinTable(name = "organization_users", joinColumns = @JoinColumn(name = "organization_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonBackReference
+    List<OrgDomain> orgDomains = new ArrayList<>();
 }
