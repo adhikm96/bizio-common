@@ -108,7 +108,7 @@ public class TaxJarService implements ITaxService {
         setFromDetails(params);
         setToDetails(params, address);
 
-        params.put("amount", grossTotal.subtract(discount));
+        params.put("amount", discount == null ? grossTotal : grossTotal.subtract(discount));
         params.put("shipping", 0.0);
         params.put("customer_id", orgCode);
 
