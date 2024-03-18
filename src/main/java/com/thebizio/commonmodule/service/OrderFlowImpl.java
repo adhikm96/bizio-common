@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -298,17 +299,14 @@ public class OrderFlowImpl implements IOrderFlow {
         Organization org = new Organization();
 
         org.setName(!nullCheckpoint(jsonNode, "name") ? jsonNode.get("name").asText() : "main");
-        if (!nullCheckpoint(jsonNode, "shortName")) org.setShortName(jsonNode.get("shortName").asText());
-        if (!nullCheckpoint(jsonNode, "otherName")) org.setOtherName(jsonNode.get("otherName").asText());
-        if (!nullCheckpoint(jsonNode, "description")) org.setDescription(jsonNode.get("description").asText());
-        if (!nullCheckpoint(jsonNode, "industry")) org.setIndustry(jsonNode.get("industry").asText());
-        if (!nullCheckpoint(jsonNode, "className")) org.setClassName(jsonNode.get("className").asText());
-        if (!nullCheckpoint(jsonNode, "structure")) org.setStructure(jsonNode.get("structure").asText());
-        if (!nullCheckpoint(jsonNode, "industryType")) org.setIndustryType(jsonNode.get("industryType").asText());
-        if (!nullCheckpoint(jsonNode, "exchange")) org.setExchange(jsonNode.get("exchange").asText());
-        if (!nullCheckpoint(jsonNode, "market")) org.setMarket(jsonNode.get("market").asText());
-        if (!nullCheckpoint(jsonNode, "symbol")) org.setSymbol(jsonNode.get("symbol").asText());
-        org.setStatus(Status.ENABLED);
+        org.setSignupEmail(jsonNode.get("signupEmail").asText());
+        org.setBillingEmail(org.getSignupEmail());
+
+        if(!nullCheckpoint(jsonNode, "subdomain")) org.setSubdomain(jsonNode.get("subdomain").asText());
+        if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
+        if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
+
+       org.setStatus(Status.ENABLED);
 
         //attach parent org and account later
 
@@ -574,8 +572,6 @@ public class OrderFlowImpl implements IOrderFlow {
             //create user
             user = new User();
             user.setFirstName(jsonNode.get("personalDetails").get("firstName").asText());
-            if (!nullCheckpoint(jsonNode.get("personalDetails"), "middleName"))
-                user.setMiddleName(jsonNode.get("personalDetails").get("middleName").asText());
             user.setLastName(jsonNode.get("personalDetails").get("lastName").asText());
             user.setUsername(jsonNode.get("userName").asText().toLowerCase());
             user.setEmail(jsonNode.get("contact").get("email").asText().toLowerCase());
@@ -606,7 +602,6 @@ public class OrderFlowImpl implements IOrderFlow {
             //set account in contact
             contact.setAccount(account);
             contact.setFirstName(user.getFirstName());
-            contact.setMiddleName(user.getMiddleName());
             contact.setLastName(user.getLastName());
             entityManager.persist(contact);
 

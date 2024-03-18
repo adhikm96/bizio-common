@@ -23,7 +23,6 @@ public class User extends LastUpdateDetail {
     private String email;
 
     private String firstName;
-    private String middleName;
     private String lastName;
     private GenderEnum gender;
     private LocalDate dob;

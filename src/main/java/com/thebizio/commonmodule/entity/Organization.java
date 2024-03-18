@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.Status;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
 import lombok.Getter;
@@ -26,25 +27,27 @@ public class Organization extends LastUpdateDetail {
     @Column(name = "code", unique = true, nullable = false, updatable = false, length = 64)
     private String code;
 
-    private String description;
-
     @ManyToOne
     @JoinColumn(name = "parent_id", updatable = false, nullable = true)
     private Organization parent;
 
-    private String industry;
-    private String className;
-    private String structure;
-    private String industryType;
-    private String exchange;
-    private String market;
-    private String symbol;
     private Status status;
     private String stripeCustomerId;
-    private String shortName;
-    private String otherName;
 
     private String emailDomain;
+    private String subdomain;
+
+    @Column(name = "type_of_business")
+    private String typeOfBusiness;
+
+    @Column(name = "tax_id")
+    private String taxId;
+
+    @Column(name = "billing_email")
+    private String billingEmail;
+
+    @Column(name = "signup_email")
+    private String signupEmail;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
@@ -54,4 +57,8 @@ public class Organization extends LastUpdateDetail {
     @JoinTable(name = "organization_users", joinColumns = @JoinColumn(name = "organization_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    List<OrgDomain> orgDomains = new ArrayList<>();
 }
