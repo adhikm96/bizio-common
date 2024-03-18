@@ -53,7 +53,7 @@ public class TaxJarService implements ITaxService {
         setToDetails(params, address);
 
         params.put("amount", grossTotal);
-        params.put("discount", discount);
+        params.put("discount", discount == null ? 0 : discount);
         params.put("shipping", 0.0);
 
         List<Map> lineItems = new ArrayList();
@@ -61,7 +61,7 @@ public class TaxJarService implements ITaxService {
         lineItem.put("quantity", 1);
         lineItem.put("product_tax_code", productTaxCode);
         lineItem.put("unit_price", grossTotal);
-        lineItem.put("discount", discount);
+        lineItem.put("discount", discount == null ? 0 : discount);
         lineItems.add(lineItem);
 
         params.put("line_items", lineItems);
@@ -118,7 +118,7 @@ public class TaxJarService implements ITaxService {
         lineItem.put("id", lineItemId);
         lineItem.put("quantity", 1);
         lineItem.put("sales_tax", tax);
-        lineItem.put("discount", discount);
+        lineItem.put("discount", discount == null ? 0 : discount);
         lineItem.put("unit_price", grossTotal);
         lineItem.put("product_identifier", productIdentifier);
 
