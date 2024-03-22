@@ -20,6 +20,7 @@ import com.thebizio.commonmodule.enums.*;
 import com.thebizio.commonmodule.exception.*;
 import com.thebizio.commonmodule.service.tax.ITaxService;
 import com.thebizio.commonmodule.service.tax.TaxJarService;
+import com.thebizio.commonmodule.taks.OrderCancelTask;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +35,20 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderFlowImpl implements IOrderFlow {
 
+    private static final long ORDER_EXPIRATION_TIME_IN_SECONDS = 601;
+
     Logger logger = LoggerFactory.getLogger(OrderFlowImpl.class);
 
     private final PromotionService promotionService;
+
+    private final OrderService orderService;
+
 
     private final EntityManager entityManager;
 
@@ -59,8 +62,9 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final ITaxService taxJarService;
 
-    public OrderFlowImpl(PromotionService promotionService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
+    public OrderFlowImpl(PromotionService promotionService, OrderService orderService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
         this.promotionService = promotionService;
+        this.orderService = orderService;
         this.entityManager = entityManager;
         this.objectMapper = objectMapper;
         this.modelMapper = modelMapper;
@@ -99,6 +103,10 @@ public class OrderFlowImpl implements IOrderFlow {
         orderPayload.setPayload(payload);
         orderPayload.setStripeCustomerId(stripeCustomerId);
         entityManager.persist(orderPayload);
+    }
+
+    private void expireOrderAndUpdatePromotion(Order order) {
+        new Timer().schedule(new OrderCancelTask(order.getId(), orderService, promotionService), (long) ORDER_EXPIRATION_TIME_IN_SECONDS * 1000);
     }
 
     @Transactional
@@ -198,6 +206,8 @@ public class OrderFlowImpl implements IOrderFlow {
         order.setStatus(OrderStatus.IN_PROGRESS);
 
         entityManager.persist(order);
+
+        expireOrderAndUpdatePromotion(order);
         return order;
     }
 
