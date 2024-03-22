@@ -305,7 +305,7 @@ public class OrderFlowImpl implements IOrderFlow {
         Organization org = new Organization();
 
         org.setName(!nullCheckpoint(jsonNode, "orgName") ? jsonNode.get("orgName").asText() : "main");
-        org.setBillingEmail(jsonNode.get("signupEmail").asText());
+        org.setBillingEmail(jsonNode.get("signupEmail").asText().toLowerCase());
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
         org.setStatus(Status.ENABLED);
@@ -458,7 +458,7 @@ public class OrderFlowImpl implements IOrderFlow {
         lead.setDob(dto.getPersonalDetails().getDob());
         lead.setGender(dto.getPersonalDetails().getGender());
         lead.setJobTitle(dto.getPersonalDetails().getJobTitle());
-        lead.setWorkEmail(dto.getPersonalDetails().getWorkEmail());
+        lead.setWorkEmail(dto.getPersonalDetails().getWorkEmail().toLowerCase());
         lead.setPhoneNumber(dto.getPersonalDetails().getPhoneNumber());
 
         lead.setAddressLine1(dto.getAddress().getAddressLine1());
@@ -468,7 +468,7 @@ public class OrderFlowImpl implements IOrderFlow {
         lead.setCountry(dto.getAddress().getCountry());
         lead.setZipcode(dto.getAddress().getZipcode());
 
-        lead.setSignupEmail(dto.getContact().getSignupEmail());
+        lead.setSignupEmail(dto.getContact().getSignupEmail().toLowerCase());
         lead.setMobile(dto.getContact().getMobile());
 
         if (dto.getOrganizationDetails() != null){
@@ -617,68 +617,87 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public void createContactFromLeadForUser(Lead lead, User user){
+        Contact userContact = new Contact();
+        userContact.setFirstName(lead.getFirstName());
+        userContact.setLastName(lead.getLastName());
+        userContact.setEmail(lead.getWorkEmail());
+        userContact.setMobile(lead.getPhoneNumber());
+        userContact.setPrimaryContact(true);
+        userContact.setStatus(Status.ENABLED);
+        entityManager.persist(userContact);
+
+        user.setContact(userContact);
+        entityManager.persist(user);
+    }
+
+    @Override
     public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId, BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
         if (op == null) throw new ValidationException("order not found");
         Order order = op.getOrder();
-        JsonNode jsonNode = objectMapper.readTree(op.getPayload());
+        Lead lead = order.getLead();
+        String leadString = lead == null ? null : objectMapper.writeValueAsString(lead);
+        JsonNode checkoutDto = objectMapper.readTree(op.getPayload());
         Organization parentOrg = order.getParentOrganization();
 
         //create org
-        Organization org = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createOrganizationFromPayload(jsonNode.get("organizationDetails").toString()) : createOrganizationFromPayload(op.getPayload());
-
+        Organization org = leadString != null ? createOrganizationFromPayload(leadString) : createOrganizationFromPayload(op.getPayload());
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
-        org.setEmailDomain(op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? jsonNode.get("organizationDetails").get("emailDomain").asText() : jsonNode.get("emailDomain").asText());
+        org.setEmailDomain(lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         entityManager.persist(org);
 
         //create address
-        Address address = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createAddressFromPayload(jsonNode.get("address").toString()) : createAddressFromPayload(op.getPayload());
+        Address address = lead != null ? createAddressFromPayload(leadString) : createAddressFromPayload(op.getPayload());
         address.setOrg(org);
         address.setPrimaryAddress(true);
         entityManager.persist(address);
 
-        //create contact
-        Contact contact = op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister") ? createContactFromPayload(jsonNode.get("contact").toString()) : createContactFromPayload(op.getPayload());
-        contact.setOrg(org);
-        contact.setPrimaryContact(true);
-        entityManager.persist(contact);
+        //create contact for child org
+        if (lead == null){
+            Contact contact = createContactFromPayload(op.getPayload());
+            contact.setOrg(org);
+            contact.setPrimaryContact(true);
+            entityManager.persist(contact);
+        }
 
         PostpaidAccountResponse response = new PostpaidAccountResponse();
 
         User user = null;
-        if (op.getPayloadType().equals("OrganizationRegistration") || op.getPayloadType().equals("IndividualRegister")) {
+        if (lead != null) {
             //create account
             Account account = createAccountFromPayload(op.getPayload());
-            account.setPrimaryContact(contact);
+            account.setSignupEmail(lead.getSignupEmail().toLowerCase());
+            account.setEmail(lead.getAccType().equals(AccType.INDIVIDUAL) ? checkoutDto.get("email").asText().toLowerCase() : lead.getSignupEmail().toLowerCase());
             account.setPrimaryOrganization(org);
             entityManager.persist(account);
 
             //set account in org
-            org.setEmailDomain(jsonNode.get("organizationDetails").get("emailDomain").asText());
             org.setAccount(account);
             entityManager.persist(org);
 
             //create user
             user = new User();
-            user.setFirstName(jsonNode.get("personalDetails").get("firstName").asText());
-            user.setLastName(jsonNode.get("personalDetails").get("lastName").asText());
-            user.setUsername(jsonNode.get("userName").asText().toLowerCase());
-            user.setEmail(jsonNode.get("contact").get("email").asText().toLowerCase());
+            user.setFirstName(lead.getFirstName());
+            user.setLastName(lead.getLastName());
+            user.setUsername(checkoutDto.get("userName").asText().toLowerCase());
+            if (lead.getAccType().equals(AccType.INDIVIDUAL)){
+                user.setEmail(checkoutDto.get("email").asText().toLowerCase());
+            }else {
+                user.setEmail(lead.getWorkEmail().toLowerCase());
+                user.setJobTitle(lead.getJobTitle());
+            }
             user.setOrganization(org);
             user.setLastPasswordChangeDate(LocalDateTime.now());
             user.setLastEmailChangeDate(LocalDateTime.now());
-            user.setStayInformedAboutBizio(jsonNode.get("stayInformedAboutBizio").asBoolean());
-            user.setTermsConditionsAgreed(jsonNode.get("termsConditionsAgreed").asBoolean());
+            user.setStayInformedAboutBizio(lead.isStayInformedAboutBizio());
+            user.setTermsConditionsAgreed(lead.isTermsConditionsAgreed());
             if (user.getTermsConditionsAgreed()) user.setTermsConditionsAgreedTimestamp(LocalDateTime.now());
             user.setStatus(Status.ENABLED);
-
-            if (!nullCheckpoint(jsonNode.get("personalDetails"), "gender"))
-                user.setGender(GenderEnum.valueOf(jsonNode.get("personalDetails").get("gender").asText()));
-            if (!nullCheckpoint(jsonNode.get("personalDetails"), "dob"))
-                user.setDob(LocalDate.parse(jsonNode.get("personalDetails").get("dob").asText()));
-
+            user.setGender(lead.getGender());
+            user.setDob(lead.getDob());
             entityManager.persist(user);
 
             response.setUser(user);
@@ -687,11 +706,10 @@ public class OrderFlowImpl implements IOrderFlow {
             address.setAccount(account);
             entityManager.persist(address);
 
-            //set account in contact
-            contact.setAccount(account);
-            contact.setFirstName(user.getFirstName());
-            contact.setLastName(user.getLastName());
-            entityManager.persist(contact);
+            //create contact for primary user or org acc
+            if (lead.getAccType().equals(AccType.ORGANIZATION)) {
+                createContactFromLeadForUser(lead, user);
+            }
 
             PaymentIntent pi = new PaymentIntent();
             pi.setPaymentMethod(paymentMethodId);

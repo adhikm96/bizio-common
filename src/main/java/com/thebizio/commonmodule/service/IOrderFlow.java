@@ -21,7 +21,10 @@ public interface IOrderFlow {
 
     PaymentIntent payment(@NotNull String stripePaymentMethodId, @NotNull String stripeCustomerId, @NotNull Long amount,String orderRefNo);
 
+    void createContactFromLeadForUser(@NotNull Lead lead, @NotNull User user);
+
     void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
+
 
     Order createOrder(@NotNull String orgCode, @NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @Valid @NotNull BillingAddress billingAddress) throws JsonProcessingException;
 
