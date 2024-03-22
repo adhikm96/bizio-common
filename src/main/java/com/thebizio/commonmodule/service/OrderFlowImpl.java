@@ -680,10 +680,13 @@ public class OrderFlowImpl implements IOrderFlow {
         User user = null;
         if (lead != null) {
             //create account
-            Account account = createAccountFromPayload(op.getPayload());
+            Account account = new Account();
+            account.setStatus(Status.ENABLED);
+            account.setType(lead.getAccType());
             account.setSignupEmail(lead.getSignupEmail().toLowerCase());
             account.setEmail(lead.getAccType().equals(AccType.INDIVIDUAL) ? checkoutDto.get("email").asText().toLowerCase() : lead.getSignupEmail().toLowerCase());
             account.setPrimaryOrganization(org);
+            account.setPhone(lead.getMobile());
             entityManager.persist(account);
 
             //set account in org
