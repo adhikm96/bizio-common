@@ -1,5 +1,5 @@
 package com.thebizio.commonmodule.enums;
 
 public enum GenderEnum {
-    M, F, X
+    M, F, X, N
 }

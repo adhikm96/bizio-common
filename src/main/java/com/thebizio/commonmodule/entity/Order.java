@@ -86,4 +86,10 @@ public class Order extends LastUpdateDetail{
     @JoinColumn(name = "parent_organization_id")
     @JsonBackReference
     private Organization parentOrganization;
+
+    @ManyToOne
+    @JoinColumn(name = "lead_id")
+    @JsonBackReference
+    private Lead lead;
+
 }
