@@ -657,7 +657,10 @@ public class OrderFlowImpl implements IOrderFlow {
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         entityManager.persist(org);
 
-        createOrgDomain(org, lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText(), DomainStatus.PENDING);
+        if (lead == null || lead.getAccType().equals(AccType.ORGANIZATION)){
+            createOrgDomain(org, lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText(), DomainStatus.PENDING);
+        }
+
         //create address
         Address address = lead != null ? createAddressFromPayload(leadString) : createAddressFromPayload(op.getPayload());
         address.setOrg(org);
