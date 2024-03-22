@@ -6,6 +6,7 @@ import com.thebizio.commonmodule.dto.*;
 import com.thebizio.commonmodule.dto.lead.LeadRegistrationDto;
 import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.entity.*;
+import com.thebizio.commonmodule.enums.DomainStatus;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.enums.PaymentStatus;
 import com.thebizio.commonmodule.exception.InvalidAddressException;
@@ -22,6 +23,8 @@ public interface IOrderFlow {
     PaymentIntent payment(@NotNull String stripePaymentMethodId, @NotNull String stripeCustomerId, @NotNull Long amount,String orderRefNo);
 
     void createContactFromLeadForUser(@NotNull Lead lead, @NotNull User user);
+
+    void createOrgDomain(Organization org, String domain, DomainStatus status);
 
     void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
 

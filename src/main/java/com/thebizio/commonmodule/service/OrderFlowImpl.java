@@ -632,6 +632,15 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public void createOrgDomain(Organization org, String domain, DomainStatus status){
+        OrgDomain orgDomain = new OrgDomain();
+        orgDomain.setOrganization(org);
+        orgDomain.setDomain(domain);
+        orgDomain.setStatus(status);
+        entityManager.persist(orgDomain);
+    }
+
+    @Override
     public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId, BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
         if (op == null) throw new ValidationException("order not found");
@@ -648,12 +657,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         entityManager.persist(org);
 
-        OrgDomain orgDomain = new OrgDomain();
-        orgDomain.setOrganization(org);
-        orgDomain.setDomain(lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText());
-        orgDomain.setStatus(DomainStatus.PENDING);
-        entityManager.persist(orgDomain);
-
+        createOrgDomain(org, lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText(), DomainStatus.PENDING);
         //create address
         Address address = lead != null ? createAddressFromPayload(leadString) : createAddressFromPayload(op.getPayload());
         address.setOrg(org);
