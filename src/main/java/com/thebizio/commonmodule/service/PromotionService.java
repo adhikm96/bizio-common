@@ -18,4 +18,9 @@ public class PromotionService {
         promotion.setTimesRedeemed(promotion.getTimesRedeemed()+1);
         entityManager.persist(promotion);
     }
+
+    public void decrementPromocodeCounter(Promotion promotion) {
+        promotion.setTimesRedeemed(promotion.getTimesRedeemed()-1);
+        entityManager.persist(promotion);
+    }
 }

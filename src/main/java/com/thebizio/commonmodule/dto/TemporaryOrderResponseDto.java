@@ -1,0 +1,30 @@
+package com.thebizio.commonmodule.dto;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.thebizio.commonmodule.enums.PlanTypeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Data
+@AllArgsConstructor@NoArgsConstructor
+public class TemporaryOrderResponseDto {
+
+    private String productName;
+    private String productCode;
+    private String attributeValue;
+    private List<AddOnsDto> addons;
+    private BigDecimal price;
+    private BigDecimal grossTotal;
+    private BigDecimal tax;
+    private JsonNode taxStr;
+    private BigDecimal discount;
+    private JsonNode discountStr;
+    private BigDecimal netTotal;
+    private PlanTypeEnum planType;
+    private String taxPercentage;
+    private String orderRefNo;
+}

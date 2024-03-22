@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.thebizio.commonmodule.enums.DomainStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,5 +23,6 @@ public class OrgDomain extends LastUpdateDetail{
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    private DomainStatus status;
     private String domain;
 }

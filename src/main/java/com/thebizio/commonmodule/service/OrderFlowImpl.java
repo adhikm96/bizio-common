@@ -12,6 +12,7 @@ import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
 import com.thebizio.commonmodule.dto.*;
+import com.thebizio.commonmodule.dto.lead.LeadRegistrationDto;
 import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.dto.tax.TaxResp;
 import com.thebizio.commonmodule.entity.*;
@@ -34,10 +35,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,12 +101,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
     @Transactional
     @Override
-    public Order createOrder(
-            @NotNull String orgCode,
-            @NotNull ProductVariant productVariant,
-            @NotNull Price price,
-            Promotion promotion,
-            @Valid @NotNull BillingAddress billingAddress
+    public Order createOrder(String orgCode, ProductVariant productVariant, Price price,
+            Promotion promotion, BillingAddress billingAddress
     ) throws JsonProcessingException {
         Order order = new Order();
         order.setPostingDate(LocalDate.now());
@@ -197,11 +191,21 @@ public class OrderFlowImpl implements IOrderFlow {
         if (promotion != null) {
             order.setPromoCode(promotion.getCode());
         }
-
         order.setProductVariant(productVariant);
         order.setProduct(productVariant.getProduct());
         order.setStatus(OrderStatus.IN_PROGRESS);
 
+        entityManager.persist(order);
+        return order;
+    }
+
+    @Transactional
+    @Override
+    public Order createOrder(ProductVariant productVariant, Price price,
+            Promotion promotion, Lead lead) throws JsonProcessingException {
+
+        Order order = createOrder(null, productVariant, price, promotion,  modelMapper.map(lead, BillingAddress.class));
+        order.setLead(lead);
         entityManager.persist(order);
         return order;
     }
@@ -298,17 +302,12 @@ public class OrderFlowImpl implements IOrderFlow {
         JsonNode jsonNode = objectMapper.readTree(payload);
         Organization org = new Organization();
 
-        org.setName(!nullCheckpoint(jsonNode, "name") ? jsonNode.get("name").asText() : "main");
-        org.setSignupEmail(jsonNode.get("signupEmail").asText());
-        org.setBillingEmail(org.getSignupEmail());
+        org.setName(!nullCheckpoint(jsonNode, "orgName") ? jsonNode.get("orgName").asText() : "main");
+        org.setBillingEmail(jsonNode.get("signupEmail").asText());
 
-        if(!nullCheckpoint(jsonNode, "subdomain")) org.setSubdomain(jsonNode.get("subdomain").asText());
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
-
-       org.setStatus(Status.ENABLED);
-
-        //attach parent org and account later
+        org.setStatus(Status.ENABLED);
 
         return org;
     }
@@ -392,6 +391,97 @@ public class OrderFlowImpl implements IOrderFlow {
 
         //attach org later
         return contact;
+    }
+
+    @Override
+    public TemporaryOrderResponseDto temporaryOrderResponse(@NotNull ProductVariant productVariant, @NotNull Price price, BillingAddress billingAddress) throws JsonProcessingException {
+        TemporaryOrderResponseDto dto = new TemporaryOrderResponseDto();
+        dto.setProductName(productVariant.getProduct().getName());
+        dto.setProductCode(productVariant.getProduct().getCode());
+        dto.setAttributeValue(productVariant.getVariantAttributeValue());
+        dto.setPlanType(productVariant.getPlanType());
+
+        dto.setPrice(BigDecimal.valueOf(price.getPrice()));
+
+        Double grossTotal = price.getPrice();
+        if (productVariant.getAddOns().size() > 0) {
+            for (ProductVariant pv : productVariant.getAddOns()) {
+                grossTotal += pv.getPriceRecord().getPrice();
+            }
+        }
+
+        dto.setGrossTotal(BigDecimal.valueOf(grossTotal));
+
+        BigDecimal tax = BigDecimal.ZERO;
+
+        TaxResp taxResp;
+        try {
+            taxResp = taxJarService.calculateTax(billingAddress, BigDecimal.valueOf(grossTotal), BigDecimal.ZERO);
+        } catch (TaxCalculationException | JsonProcessingException e) {
+            logger.error(e.getMessage());
+            throw new ValidationException("some error occurred while creating order");
+        }
+
+        tax = CalculateUtilService.nullOrZeroValue(taxResp.getTax(), BigDecimal.ZERO).setScale(2, RoundingMode.HALF_EVEN);
+        dto.setTax(tax);
+
+        if (dto.getTaxStr() != null && !dto.getTaxStr().equals("[]")) {
+            dto.setTaxStr(objectMapper.readTree(taxResp.getSummary()));
+            dto.setTaxPercentage(CalculateUtilService.calculateTaxPercentage(dto.getTaxStr()) + "%");
+        } else {
+            dto.setTaxPercentage("0%");
+        }
+
+        dto.setDiscount(BigDecimal.valueOf(0));
+        dto.setNetTotal(BigDecimal.valueOf(CalculateUtilService.roundTwoDigits(grossTotal)).add(tax));
+
+        List<AddOnsDto> addons = new ArrayList<>();
+        for (ProductVariant addOn : productVariant.getAddOns()) {
+            AddOnsDto addOnDto = new AddOnsDto();
+            addOnDto.setName(addOn.getName());
+            addOnDto.setPrice(BigDecimal.valueOf(addOn.getPriceRecord().getPrice()));
+            addons.add(addOnDto);
+        }
+        dto.setAddons(addons);
+        return dto;
+    }
+
+    @Override
+    public Lead createLead(LeadRegistrationDto dto) {
+        Lead lead = new Lead();
+        lead.setAccType(dto.getAccountType());
+        lead.setStatus(LeadStatus.OPEN);
+
+        lead.setFirstName(dto.getPersonalDetails().getFirstName());
+        lead.setLastName(dto.getPersonalDetails().getLastName());
+        lead.setDob(dto.getPersonalDetails().getDob());
+        lead.setGender(dto.getPersonalDetails().getGender());
+        lead.setJobTitle(dto.getPersonalDetails().getJobTitle());
+        lead.setWorkEmail(dto.getPersonalDetails().getWorkEmail());
+        lead.setPhoneNumber(dto.getPersonalDetails().getPhoneNumber());
+
+        lead.setAddressLine1(dto.getAddress().getAddressLine1());
+        lead.setAddressLine2(dto.getAddress().getAddressLine2());
+        lead.setCity(dto.getAddress().getCity());
+        lead.setState(dto.getAddress().getState());
+        lead.setCountry(dto.getAddress().getCountry());
+        lead.setZipcode(dto.getAddress().getZipcode());
+
+        lead.setSignupEmail(dto.getContact().getSignupEmail());
+        lead.setMobile(dto.getContact().getMobile());
+
+        if (dto.getOrganizationDetails() != null){
+            lead.setOrgName(dto.getOrganizationDetails().getName());
+            lead.setWebsite(dto.getOrganizationDetails().getWebsite());
+            lead.setTaxId(dto.getOrganizationDetails().getTaxId());
+            lead.setTypeOfBusiness(dto.getOrganizationDetails().getTypeOfBusiness());
+            lead.setEmailDomain(dto.getOrganizationDetails().getEmailDomain());
+        }
+        lead.setStayInformedAboutBizio(dto.isStayInformedAboutBizio());
+        lead.setTermsConditionsAgreed(dto.isTermsConditionsAgreed());
+        entityManager.persist(lead);
+
+        return lead;
     }
 
 
@@ -587,9 +677,6 @@ public class OrderFlowImpl implements IOrderFlow {
                 user.setGender(GenderEnum.valueOf(jsonNode.get("personalDetails").get("gender").asText()));
             if (!nullCheckpoint(jsonNode.get("personalDetails"), "dob"))
                 user.setDob(LocalDate.parse(jsonNode.get("personalDetails").get("dob").asText()));
-
-            if (!nullCheckpoint(jsonNode.get("personalDetails"), "designation"))
-                user.setDesignation(jsonNode.get("personalDetails").get("designation").asText());
 
             entityManager.persist(user);
 

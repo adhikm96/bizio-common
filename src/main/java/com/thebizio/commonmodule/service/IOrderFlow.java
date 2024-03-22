@@ -2,22 +2,19 @@ package com.thebizio.commonmodule.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.stripe.model.PaymentIntent;
-import com.thebizio.commonmodule.dto.BillingAddress;
-import com.thebizio.commonmodule.dto.CheckoutReqDto;
-import com.thebizio.commonmodule.dto.OrderResponseDto;
-import com.thebizio.commonmodule.dto.PostpaidAccountResponse;
+import com.thebizio.commonmodule.dto.*;
+import com.thebizio.commonmodule.dto.lead.LeadRegistrationDto;
 import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.entity.*;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.enums.PaymentStatus;
 import com.thebizio.commonmodule.exception.InvalidAddressException;
-import com.thebizio.commonmodule.exception.TaxCalculationException;
 import com.thebizio.commonmodule.exception.TaxSubmissionException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.UUID;
 
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
@@ -28,6 +25,7 @@ public interface IOrderFlow {
 
     Order createOrder(@NotNull String orgCode, @NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @Valid @NotNull BillingAddress billingAddress) throws JsonProcessingException;
 
+    Order createOrder(@NotNull ProductVariant productVariant, @NotNull Price price, Promotion promotion, @NotNull Lead lead) throws JsonProcessingException;
     String checkout(@NotNull String stripeCustId);
 
     String checkout(@NotNull CheckoutReqDto dto);
@@ -41,6 +39,8 @@ public interface IOrderFlow {
     Address createAddressFromPayload(@NotNull String payload) throws JsonProcessingException;
 
     Contact createContactFromPayload(@NotNull String payload) throws JsonProcessingException;
+
+    TemporaryOrderResponseDto temporaryOrderResponse(@NotNull ProductVariant productVariant, @NotNull Price price, BillingAddress billingAddress) throws JsonProcessingException;
 
     OrderResponseDto createOrderResponse(@NotNull Order order,@NotNull String stripeCustId,String clientSecretKey) throws JsonProcessingException;
 
@@ -59,4 +59,6 @@ public interface IOrderFlow {
     void validateBillingAccountExpiry(@NotNull BillingAccount billingAccount);
 
     PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId,BillingAccount billingAccount) throws JsonProcessingException;
+
+    Lead createLead(LeadRegistrationDto dto);
 }

@@ -31,9 +31,14 @@ public class Account extends LastUpdateDetail {
     @JoinColumn(name = "primary_organization_id")
     private Organization primaryOrganization;
 
+    //remove after migration
     @ManyToOne
     @JoinColumn(name = "primary_contact_id")
     private Contact primaryContact;
+
+    private String signupEmail;
+    private String email;
+    private String phone;
 
     private Status status;
 }
