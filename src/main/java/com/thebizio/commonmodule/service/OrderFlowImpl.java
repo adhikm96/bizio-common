@@ -643,6 +643,19 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
+    public void createContactFromLeadForOrganization(Lead lead, Organization org){
+        Contact contact = new Contact();
+        contact.setFirstName(lead.getFirstName());
+        contact.setLastName(lead.getLastName());
+        contact.setEmail(lead.getWorkEmail());
+        contact.setMobile(lead.getPhoneNumber());
+        contact.setPrimaryContact(true);
+        contact.setStatus(Status.ENABLED);
+        contact.setOrg(org);
+        entityManager.persist(contact);
+    }
+
+    @Override
     public void createOrgDomain(Organization org, String domain, DomainStatus status){
         OrgDomain orgDomain = new OrgDomain();
         orgDomain.setOrganization(org);
