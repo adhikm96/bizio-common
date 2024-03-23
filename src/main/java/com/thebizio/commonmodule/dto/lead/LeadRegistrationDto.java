@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -17,16 +18,21 @@ public class LeadRegistrationDto {
     private AccType accountType;
 
     //if account type is individual
+    @Valid
     private PersonalDetails personalDetails;
 
     //if account type is organization
     private OrganizationDetails organizationDetails;
 
     //for both account type
+    @Valid
     private LeadContactDto contact;
 
+    @Valid
     private BillingAddress address;
 
+    @NotNull
     private boolean stayInformedAboutBizio;
+    @NotNull
     private boolean termsConditionsAgreed;
 }

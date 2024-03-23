@@ -15,10 +15,16 @@ public class OrganizationDetails {
     @NotNull(message = "must not be null or blank")
     @NotBlank(message = "must not be null or blank")
     private String name;
-
+    @NotNull(message = "must not be null or blank")
+    @NotBlank(message = "must not be null or blank")
     private String emailDomain;
-
+    @NotNull(message = "must not be null or blank")
+    @NotBlank(message = "must not be null or blank")
     private String website;
+    @NotNull(message = "must not be null or blank")
+    @NotBlank(message = "must not be null or blank")
     private String taxId;
+    @NotNull(message = "must not be null or blank")
+    @NotBlank(message = "must not be null or blank")
     private String typeOfBusiness;
 }

@@ -28,6 +28,7 @@ public class PersonalDetails {
     private LocalDate dob;
 
     private String jobTitle;
+
     @Email
     private String workEmail;
     private String phoneNumber;
