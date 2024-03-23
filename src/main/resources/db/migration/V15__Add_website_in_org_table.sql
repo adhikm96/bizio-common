@@ -1,0 +1,1 @@
+ALTER TABLE organization ADD COLUMN IF NOT EXISTS website VARCHAR(255);

@@ -39,6 +39,8 @@ public class Organization extends LastUpdateDetail {
     @Column(name = "type_of_business")
     private String typeOfBusiness;
 
+    private String website;
+
     @Column(name = "tax_id")
     private String taxId;
 

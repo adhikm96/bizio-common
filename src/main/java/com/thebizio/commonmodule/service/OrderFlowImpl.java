@@ -318,6 +318,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if(!nullCheckpoint(jsonNode, "signupEmail")) org.setBillingEmail(jsonNode.get("signupEmail").asText().toLowerCase());
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
+        if(!nullCheckpoint(jsonNode, "website")) org.setWebsite(jsonNode.get("website").asText());
         org.setStatus(Status.ENABLED);
 
         return org;
