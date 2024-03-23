@@ -318,6 +318,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if(!nullCheckpoint(jsonNode, "signupEmail")) org.setBillingEmail(jsonNode.get("signupEmail").asText().toLowerCase());
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
+        if(!nullCheckpoint(jsonNode, "website")) org.setWebsite(jsonNode.get("website").asText());
         org.setStatus(Status.ENABLED);
 
         return org;
@@ -639,6 +640,19 @@ public class OrderFlowImpl implements IOrderFlow {
 
         user.setContact(userContact);
         entityManager.persist(user);
+    }
+
+    @Override
+    public void createContactFromLeadForOrganization(Lead lead, Organization org){
+        Contact contact = new Contact();
+        contact.setFirstName(lead.getFirstName());
+        contact.setLastName(lead.getLastName());
+        contact.setEmail(lead.getWorkEmail());
+        contact.setMobile(lead.getPhoneNumber());
+        contact.setPrimaryContact(true);
+        contact.setStatus(Status.ENABLED);
+        contact.setOrg(org);
+        entityManager.persist(contact);
     }
 
     @Override
