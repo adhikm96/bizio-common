@@ -26,6 +26,14 @@ public class CalculateUtilService {
         return decfor.format(taxPercentage.multiply(BigDecimal.valueOf(100)));
     }
 
+    public static boolean checkNull(String value){
+        if (value == null) return true;
+        if (value.equals("")) return true;
+        if (value.equals("null")) return true;
+        if (value.equals("NULL")) return true;
+        return false;
+    }
+
     public static boolean isDevEnv() {
         return System.getenv("BIZIO_ENV") != null && System.getenv("BIZIO_ENV").equals(DEVELOPMENT_ENV);
     }

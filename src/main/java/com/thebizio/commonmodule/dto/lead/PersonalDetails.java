@@ -25,9 +25,7 @@ public class PersonalDetails {
 
     private GenderEnum gender;
 
-    @NotNull(message = "must not be null")
     private LocalDate dob;
-
 
     private String jobTitle;
     @Email

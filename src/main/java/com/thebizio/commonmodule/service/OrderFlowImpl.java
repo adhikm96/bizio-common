@@ -315,7 +315,7 @@ public class OrderFlowImpl implements IOrderFlow {
         Organization org = new Organization();
 
         org.setName(!nullCheckpoint(jsonNode, "orgName") ? jsonNode.get("orgName").asText() : "main");
-        org.setBillingEmail(jsonNode.get("signupEmail").asText().toLowerCase());
+        if(!nullCheckpoint(jsonNode, "signupEmail")) org.setBillingEmail(jsonNode.get("signupEmail").asText().toLowerCase());
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
         org.setStatus(Status.ENABLED);
@@ -468,7 +468,7 @@ public class OrderFlowImpl implements IOrderFlow {
         lead.setDob(dto.getPersonalDetails().getDob());
         lead.setGender(dto.getPersonalDetails().getGender());
         lead.setJobTitle(dto.getPersonalDetails().getJobTitle());
-        lead.setWorkEmail(dto.getPersonalDetails().getWorkEmail().toLowerCase());
+        lead.setWorkEmail(CalculateUtilService.checkNull(dto.getPersonalDetails().getWorkEmail()) ? null : dto.getPersonalDetails().getWorkEmail().toLowerCase());
         lead.setPhoneNumber(dto.getPersonalDetails().getPhoneNumber());
 
         lead.setAddressLine1(dto.getAddress().getAddressLine1());
@@ -658,10 +658,12 @@ public class OrderFlowImpl implements IOrderFlow {
         Lead lead = order.getLead();
         String leadString = lead == null ? null : objectMapper.writeValueAsString(lead);
         JsonNode checkoutDto = objectMapper.readTree(op.getPayload());
+
         Organization parentOrg = order.getParentOrganization();
 
         //create org
         Organization org = leadString != null ? createOrganizationFromPayload(leadString) : createOrganizationFromPayload(op.getPayload());
+        if (org.getBillingEmail() == null) org.setBillingEmail(checkoutDto.get("email").asText().toLowerCase());
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());

@@ -5,6 +5,7 @@ import com.thebizio.commonmodule.enums.OrderStatus;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Service("commonOrderService")
@@ -22,9 +23,10 @@ public class OrderService {
         return order;
     }
 
+    @Transactional
     public void changeOrderStatus(Order order, OrderStatus orderStatus) {
-        entityManager.createQuery("update Order o set o.status = :orderStatus where o = :order")
-                .setParameter("status",orderStatus).setParameter("order",order).executeUpdate();
+        entityManager.createQuery("update Order o set o.status = :status where o = :order")
+                .setParameter("status", orderStatus).setParameter("order", order).executeUpdate();
 
         entityManager.clear();
         entityManager.close();
