@@ -723,12 +723,8 @@ public class OrderFlowImpl implements IOrderFlow {
             user.setFirstName(lead.getFirstName());
             user.setLastName(lead.getLastName());
             user.setUsername(checkoutDto.get("userName").asText().toLowerCase());
-            if (lead.getAccType().equals(AccType.INDIVIDUAL)){
-                user.setEmail(checkoutDto.get("email").asText().toLowerCase());
-            }else {
-                user.setEmail(lead.getWorkEmail().toLowerCase());
-                user.setJobTitle(lead.getJobTitle());
-            }
+            user.setEmail(checkoutDto.get("email").asText().toLowerCase());
+            user.setJobTitle(lead.getJobTitle());
             user.setOrganization(org);
             user.setLastPasswordChangeDate(LocalDateTime.now());
             user.setLastEmailChangeDate(LocalDateTime.now());
