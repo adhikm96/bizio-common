@@ -35,6 +35,7 @@ public class Organization extends LastUpdateDetail {
     private String stripeCustomerId;
 
     private String emailDomain;
+    private String subdomain;
 
     @Column(name = "type_of_business")
     private String typeOfBusiness;

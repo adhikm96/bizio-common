@@ -487,7 +487,6 @@ public class OrderFlowImpl implements IOrderFlow {
             lead.setWebsite(dto.getOrganizationDetails().getWebsite());
             lead.setTaxId(dto.getOrganizationDetails().getTaxId());
             lead.setTypeOfBusiness(dto.getOrganizationDetails().getTypeOfBusiness());
-            lead.setEmailDomain(dto.getOrganizationDetails().getEmailDomain());
         }
         lead.setStayInformedAboutBizio(dto.isStayInformedAboutBizio());
         lead.setTermsConditionsAgreed(dto.isTermsConditionsAgreed());
@@ -681,11 +680,10 @@ public class OrderFlowImpl implements IOrderFlow {
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
-        entityManager.persist(org);
-
         if (lead == null || lead.getAccType().equals(AccType.ORGANIZATION)){
-            createOrgDomain(org, lead != null ? lead.getEmailDomain() : checkoutDto.get("emailDomain").asText(), DomainStatus.PENDING);
+            org.setSubdomain(checkoutDto.get("subDomain").asText());
         }
+        entityManager.persist(org);
 
         //create address
         Address address = lead != null ? createAddressFromPayload(leadString) : createAddressFromPayload(op.getPayload());
