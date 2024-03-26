@@ -319,6 +319,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
         if(!nullCheckpoint(jsonNode, "website")) org.setWebsite(jsonNode.get("website").asText());
+        if(!nullCheckpoint(jsonNode, "emailDomain")) org.setEmailDomain(jsonNode.get("emailDomain").asText());
         org.setStatus(Status.ENABLED);
 
         return org;
@@ -745,9 +746,9 @@ public class OrderFlowImpl implements IOrderFlow {
             address.setAccount(account);
             entityManager.persist(address);
 
-            //create contact for primary user or org acc
+            //create contact org acc
             if (lead.getAccType().equals(AccType.ORGANIZATION)) {
-                createContactFromLeadForUser(lead, user);
+                createContactFromLeadForOrganization(lead, org);
             }
 
             PaymentIntent pi = new PaymentIntent();
