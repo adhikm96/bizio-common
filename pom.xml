@@ -4,7 +4,7 @@
 
   <groupId>com.thebizio</groupId>
   <artifactId>common-module</artifactId>
-  <version>0.240326.0-SNAPSHOT</version>
+  <version>0.240326.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>common-module</name>

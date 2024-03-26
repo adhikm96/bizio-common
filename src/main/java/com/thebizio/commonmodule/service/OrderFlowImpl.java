@@ -319,6 +319,7 @@ public class OrderFlowImpl implements IOrderFlow {
         if(!nullCheckpoint(jsonNode, "typeOfBusiness")) org.setTypeOfBusiness(jsonNode.get("typeOfBusiness").asText());
         if(!nullCheckpoint(jsonNode, "taxId")) org.setTaxId(jsonNode.get("taxId").asText());
         if(!nullCheckpoint(jsonNode, "website")) org.setWebsite(jsonNode.get("website").asText());
+        if(!nullCheckpoint(jsonNode, "emailDomain")) org.setEmailDomain(jsonNode.get("emailDomain").asText());
         org.setStatus(Status.ENABLED);
 
         return org;
@@ -681,7 +682,7 @@ public class OrderFlowImpl implements IOrderFlow {
         org.setStripeCustomerId(op.getStripeCustomerId());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         if (lead == null || lead.getAccType().equals(AccType.ORGANIZATION)){
-            org.setSubdomain(checkoutDto.get("subDomain").asText());
+            org.setSubdomain(checkoutDto.get("subDomain").asText().toLowerCase());
         }
         entityManager.persist(org);
 
@@ -708,7 +709,7 @@ public class OrderFlowImpl implements IOrderFlow {
             account.setStatus(Status.ENABLED);
             account.setType(lead.getAccType());
             account.setSignupEmail(lead.getSignupEmail().toLowerCase());
-            account.setEmail(lead.getAccType().equals(AccType.INDIVIDUAL) ? checkoutDto.get("email").asText().toLowerCase() : lead.getSignupEmail().toLowerCase());
+            account.setEmail(checkoutDto.get("email").asText().toLowerCase());
             account.setPrimaryOrganization(org);
             account.setPhone(lead.getMobile());
             entityManager.persist(account);
@@ -745,9 +746,9 @@ public class OrderFlowImpl implements IOrderFlow {
             address.setAccount(account);
             entityManager.persist(address);
 
-            //create contact for primary user or org acc
+            //create contact org acc
             if (lead.getAccType().equals(AccType.ORGANIZATION)) {
-                createContactFromLeadForUser(lead, user);
+                createContactFromLeadForOrganization(lead, org);
             }
 
             PaymentIntent pi = new PaymentIntent();
