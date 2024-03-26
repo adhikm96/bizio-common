@@ -681,7 +681,7 @@ public class OrderFlowImpl implements IOrderFlow {
         org.setStripeCustomerId(op.getStripeCustomerId());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
         if (lead == null || lead.getAccType().equals(AccType.ORGANIZATION)){
-            org.setSubdomain(checkoutDto.get("subDomain").asText());
+            org.setSubdomain(checkoutDto.get("subDomain").asText().toLowerCase());
         }
         entityManager.persist(org);
 
@@ -708,7 +708,7 @@ public class OrderFlowImpl implements IOrderFlow {
             account.setStatus(Status.ENABLED);
             account.setType(lead.getAccType());
             account.setSignupEmail(lead.getSignupEmail().toLowerCase());
-            account.setEmail(lead.getAccType().equals(AccType.INDIVIDUAL) ? checkoutDto.get("email").asText().toLowerCase() : lead.getSignupEmail().toLowerCase());
+            account.setEmail(checkoutDto.get("email").asText().toLowerCase());
             account.setPrimaryOrganization(org);
             account.setPhone(lead.getMobile());
             entityManager.persist(account);
