@@ -56,7 +56,7 @@ public class Lead extends LastUpdateDetail{
     private String website;
     private String taxId;
     private String typeOfBusiness;
-    private String emailDomain;
+    private String subdomain;
 
     // for both acc
     private boolean stayInformedAboutBizio;
