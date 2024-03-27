@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.thebizio.commonmodule.enums.AccType;
 import com.thebizio.commonmodule.enums.Status;
 import com.thebizio.commonmodule.generator.SecureRandomReferenceIdGenerator;
@@ -10,6 +11,8 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity @NoArgsConstructor @Table(name = "accounts")
@@ -41,4 +44,8 @@ public class Account extends LastUpdateDetail {
     private String phone;
 
     private Status status;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    List<AccDomain> accDomains = new ArrayList<>();
 }

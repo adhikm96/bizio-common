@@ -12,16 +12,16 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "org_domains")
-public class OrgDomain extends LastUpdateDetail{
+@Table(name = "acc_domains")
+public class AccDomain extends LastUpdateDetail{
     @Id
     @GeneratedValue(generator = "uuid4")
     @Column(columnDefinition = "uuid")
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     private DomainStatus status;
     private String domain;

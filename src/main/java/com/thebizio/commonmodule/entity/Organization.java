@@ -35,7 +35,6 @@ public class Organization extends LastUpdateDetail {
     private String stripeCustomerId;
 
     private String emailDomain;
-    private String subdomain;
 
     @Column(name = "type_of_business")
     private String typeOfBusiness;
@@ -57,7 +56,4 @@ public class Organization extends LastUpdateDetail {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
-    List<OrgDomain> orgDomains = new ArrayList<>();
 }
