@@ -31,7 +31,6 @@ public class Setting extends LastUpdateDetail{
     @Convert(converter = ListConvertor.class)
     private List<String> authWhitelistedUrls = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT", name = "whitelisted_numbers")
-    @Convert(converter = ListConvertor.class)
-    private List<String> whiteListedNumbers = new ArrayList<>();
+    private Integer personalThreshold;
+    private Integer businessThreshold;
 }

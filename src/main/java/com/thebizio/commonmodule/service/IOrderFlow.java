@@ -26,7 +26,7 @@ public interface IOrderFlow {
 
     void createContactFromLeadForOrganization(Lead lead, Organization org);
 
-    void createOrgDomain(Organization org, String domain, DomainStatus status);
+    void createAccDomain(Account acc, String domain, DomainStatus status);
 
     void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
 

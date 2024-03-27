@@ -656,12 +656,12 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void createOrgDomain(Organization org, String domain, DomainStatus status){
-        OrgDomain orgDomain = new OrgDomain();
-        orgDomain.setOrganization(org);
-        orgDomain.setDomain(domain);
-        orgDomain.setStatus(status);
-        entityManager.persist(orgDomain);
+    public void createAccDomain(Account acc, String domain, DomainStatus status){
+        AccDomain accDomain = new AccDomain();
+        accDomain.setAccount(acc);
+        accDomain.setDomain(domain);
+        accDomain.setStatus(status);
+        entityManager.persist(accDomain);
     }
 
     @Override
@@ -681,9 +681,6 @@ public class OrderFlowImpl implements IOrderFlow {
         org.setParent(parentOrg);
         org.setStripeCustomerId(op.getStripeCustomerId());
         if (parentOrg != null) org.setAccount(parentOrg.getAccount());
-        if (lead == null || lead.getAccType().equals(AccType.ORGANIZATION)){
-            org.setSubdomain(checkoutDto.get("subDomain").asText().toLowerCase());
-        }
         entityManager.persist(org);
 
         //create address
@@ -713,6 +710,10 @@ public class OrderFlowImpl implements IOrderFlow {
             account.setPrimaryOrganization(org);
             account.setPhone(lead.getMobile());
             entityManager.persist(account);
+
+            if (account.getType().equals(AccType.ORGANIZATION)){
+                createAccDomain(account, checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
+            }
 
             //set account in org
             org.setAccount(account);
