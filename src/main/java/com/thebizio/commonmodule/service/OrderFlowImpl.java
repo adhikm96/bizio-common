@@ -735,6 +735,7 @@ public class OrderFlowImpl implements IOrderFlow {
             user.setStatus(Status.ENABLED);
             user.setGender(lead.getGender());
             user.setDob(lead.getDob());
+            user.setPhone(lead.getMobile());
             entityManager.persist(user);
 
             response.setUser(user);
