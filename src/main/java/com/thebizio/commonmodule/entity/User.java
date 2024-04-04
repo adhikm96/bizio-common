@@ -40,6 +40,8 @@ public class User extends LastUpdateDetail {
     private String avatar;
     private Status status;
 
+    private String phone;
+
     private LocalDateTime lastEmailChangeDate;
     private LocalDateTime lastPasswordChangeDate;
 
