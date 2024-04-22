@@ -661,8 +661,12 @@ public class OrderFlowImpl implements IOrderFlow {
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
         accDomain.setStatus(status);
-        accDomain.setTxtRecord("bizio-verification=" + UUID.randomUUID() + "-" + UUID.randomUUID());
+        accDomain.setTxtRecord(getRandomTxt());
         entityManager.persist(accDomain);
+    }
+
+    public String getRandomTxt() {
+        return "bizio-verification=" + UUID.randomUUID() + "-" + UUID.randomUUID();
     }
 
     @Override
