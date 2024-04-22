@@ -1,0 +1,3 @@
+ALTER TABLE acc_domains
+ADD COLUMN IF NOT EXISTS mx_status integer,
+ADD COLUMN IF NOT EXISTS txt_record VARCHAR(255);

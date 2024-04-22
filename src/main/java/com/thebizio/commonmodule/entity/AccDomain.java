@@ -1,6 +1,7 @@
 package com.thebizio.commonmodule.entity;
 
 import com.thebizio.commonmodule.enums.DomainStatus;
+import com.thebizio.commonmodule.enums.MxStatusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,4 +26,6 @@ public class AccDomain extends LastUpdateDetail{
 
     private DomainStatus status;
     private String domain;
+    private String txtRecord;
+    private MxStatusEnum mxStatus;
 }

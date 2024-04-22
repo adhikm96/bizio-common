@@ -25,6 +25,9 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.TXTRecord;
+import org.xbill.DNS.TextParseException;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -661,6 +664,7 @@ public class OrderFlowImpl implements IOrderFlow {
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
         accDomain.setStatus(status);
+        accDomain.setTxtRecord("bizio-verification="+UUID.randomUUID()+"-"+UUID.randomUUID());
         entityManager.persist(accDomain);
     }
 
