@@ -1,0 +1,1 @@
+ALTER TABLE acc_domains ADD COLUMN IF NOT EXISTS mx_record TEXT;
