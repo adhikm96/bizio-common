@@ -1,5 +1,6 @@
 package com.thebizio.commonmodule.entity;
 
+import com.thebizio.commonmodule.convertor.HashMapConvertor;
 import com.thebizio.commonmodule.enums.DomainStatus;
 import com.thebizio.commonmodule.enums.MxStatusEnum;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -28,4 +30,8 @@ public class AccDomain extends LastUpdateDetail{
     private String domain;
     private String txtRecord;
     private MxStatusEnum mxStatus;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> mxRecord;
 }
