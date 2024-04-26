@@ -6,7 +6,6 @@ import com.thebizio.commonmodule.dto.*;
 import com.thebizio.commonmodule.dto.lead.LeadRegistrationDto;
 import com.thebizio.commonmodule.dto.tax.TaxAddress;
 import com.thebizio.commonmodule.entity.*;
-import com.thebizio.commonmodule.enums.DomainStatus;
 import com.thebizio.commonmodule.enums.InvoiceStatus;
 import com.thebizio.commonmodule.enums.PaymentStatus;
 import com.thebizio.commonmodule.exception.InvalidAddressException;
@@ -15,7 +14,6 @@ import com.thebizio.commonmodule.exception.TaxSubmissionException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public interface IOrderFlow {
     String createCustomer(@NotNull String name, @NotNull String email);
@@ -24,13 +22,7 @@ public interface IOrderFlow {
 
     void createContactFromLeadForUser(@NotNull Lead lead, @NotNull User user);
 
-    void createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl);
-
-    void createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value);
-
     void createContactFromLeadForOrganization(Lead lead, Organization org);
-
-    void createAccDomain(Account acc, String domain, DomainStatus status);
 
     void createOrderPayload(@NotNull Order order, @NotNull String payloadType, @NotNull String payload, @NotNull String stripeCustomerId);
 
