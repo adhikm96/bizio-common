@@ -62,7 +62,8 @@ public class OrderFlowImpl implements IOrderFlow {
 
     private final ITaxService taxJarService;
 
-    public OrderFlowImpl(PromotionService promotionService, OrderService orderService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService) {
+    private final DnsDomainImpl dnsDomain;
+    public OrderFlowImpl(PromotionService promotionService, OrderService orderService, EntityManager entityManager, ObjectMapper objectMapper, ModelMapper modelMapper, BillingAccountService billingAccountService, OrderPayloadService orderPayloadService, TaxJarService taxJarService, DnsDomainImpl dnsDomain) {
         this.promotionService = promotionService;
         this.orderService = orderService;
         this.entityManager = entityManager;
@@ -71,6 +72,7 @@ public class OrderFlowImpl implements IOrderFlow {
         this.billingAccountService = billingAccountService;
         this.orderPayloadService = orderPayloadService;
         this.taxJarService = taxJarService;
+        this.dnsDomain = dnsDomain;
     }
 
     @Override
@@ -656,41 +658,6 @@ public class OrderFlowImpl implements IOrderFlow {
     }
 
     @Override
-    public void createAccDomain(Account acc, String domain, DomainStatus status){
-        AccDomain accDomain = new AccDomain();
-        accDomain.setAccount(acc);
-        accDomain.setDomain(domain);
-        accDomain.setStatus(status);
-        entityManager.persist(accDomain);
-    }
-
-    @Override
-    public void createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl){
-        DnsRecord dnsRecord = new DnsRecord();
-        dnsRecord.setAccDomain(accDomain);
-        dnsRecord.setName(name);
-        dnsRecord.setTtl(ttl);
-        dnsRecord.setType(DnsRecordType.TXT);
-        dnsRecord.setValue(getRandomTxt());
-        entityManager.persist(dnsRecord);
-    }
-
-    @Override
-    public void createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value){
-        DnsRecord dnsRecord = new DnsRecord();
-        dnsRecord.setAccDomain(accDomain);
-        dnsRecord.setName(name);
-        dnsRecord.setTtl(ttl);
-        dnsRecord.setType(DnsRecordType.MX);
-        dnsRecord.setValue(value);
-        entityManager.persist(dnsRecord);
-    }
-
-    public String getRandomTxt() {
-        return "bizio-verification=" + UUID.randomUUID() + "-" + UUID.randomUUID();
-    }
-
-    @Override
     public PostpaidAccountResponse setUpAccountForPostpaidVariant(String orderRefNo, String paymentMethodId, BillingAccount billingAccount) throws JsonProcessingException {
         OrderPayload op = orderPayloadService.findByOrderRefNo(orderRefNo);
         if (op == null) throw new ValidationException("order not found");
@@ -738,7 +705,7 @@ public class OrderFlowImpl implements IOrderFlow {
             entityManager.persist(account);
 
             if (account.getType().equals(AccType.ORGANIZATION)){
-                createAccDomain(account, checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
+                dnsDomain.createAccDomain(account, checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
             }
 
             //set account in org

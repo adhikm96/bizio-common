@@ -28,5 +28,9 @@ public class AccDomain extends LastUpdateDetail{
 
     private DomainStatus status;
     private String domain;
+    private String domainDnsRecord;
     private MxStatusEnum mxStatus;
+
+    @Column(columnDefinition = "TEXT")
+    private String emailDnsRecords;
 }
