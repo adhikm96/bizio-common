@@ -661,8 +661,29 @@ public class OrderFlowImpl implements IOrderFlow {
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
         accDomain.setStatus(status);
-        accDomain.setTxtRecord(getRandomTxt());
         entityManager.persist(accDomain);
+    }
+
+    @Override
+    public void createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl){
+        DnsRecord dnsRecord = new DnsRecord();
+        dnsRecord.setAccDomain(accDomain);
+        dnsRecord.setName(name);
+        dnsRecord.setTtl(ttl);
+        dnsRecord.setType(DnsRecordType.TXT);
+        dnsRecord.setValue(getRandomTxt());
+        entityManager.persist(dnsRecord);
+    }
+
+    @Override
+    public void createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value){
+        DnsRecord dnsRecord = new DnsRecord();
+        dnsRecord.setAccDomain(accDomain);
+        dnsRecord.setName(name);
+        dnsRecord.setTtl(ttl);
+        dnsRecord.setType(DnsRecordType.MX);
+        dnsRecord.setValue(value);
+        entityManager.persist(dnsRecord);
     }
 
     public String getRandomTxt() {

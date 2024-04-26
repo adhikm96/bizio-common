@@ -24,6 +24,10 @@ public interface IOrderFlow {
 
     void createContactFromLeadForUser(@NotNull Lead lead, @NotNull User user);
 
+    void createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl);
+
+    void createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value);
+
     void createContactFromLeadForOrganization(Lead lead, Organization org);
 
     void createAccDomain(Account acc, String domain, DomainStatus status);
