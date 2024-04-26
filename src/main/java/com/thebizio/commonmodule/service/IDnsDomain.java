@@ -18,9 +18,5 @@ import java.math.BigDecimal;
 
 public interface IDnsDomain {
 
-    DnsRecord createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl);
-
-    DnsRecord createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value);
-
     AccDomain createAccDomain(Account acc, String domain, DomainStatus status);
 }

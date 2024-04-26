@@ -2,8 +2,6 @@ package com.thebizio.commonmodule.service;
 
 import com.thebizio.commonmodule.entity.AccDomain;
 import com.thebizio.commonmodule.entity.Account;
-import com.thebizio.commonmodule.entity.DnsRecord;
-import com.thebizio.commonmodule.enums.DnsRecordType;
 import com.thebizio.commonmodule.enums.DomainStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,33 +21,8 @@ public class DnsDomainImpl implements IDnsDomain {
         this.entityManager = entityManager;
     }
 
-
-    @Override
-    public DnsRecord createTxtDnsRecord(AccDomain accDomain, String name, Integer ttl) {
-        DnsRecord dnsRecord = new DnsRecord();
-        dnsRecord.setAccDomain(accDomain);
-        dnsRecord.setName(name);
-        dnsRecord.setTtl(ttl);
-        dnsRecord.setType(DnsRecordType.TXT);
-        dnsRecord.setValue(getRandomTxt());
-        entityManager.persist(dnsRecord);
-        return dnsRecord;
-    }
-
     public String getRandomTxt() {
         return "bizio-verification=" + UUID.randomUUID() + "-" + UUID.randomUUID();
-    }
-
-    @Override
-    public DnsRecord createMxDnsRecord(AccDomain accDomain, String name, Integer ttl, String value) {
-        DnsRecord dnsRecord = new DnsRecord();
-        dnsRecord.setAccDomain(accDomain);
-        dnsRecord.setName(name);
-        dnsRecord.setTtl(ttl);
-        dnsRecord.setType(DnsRecordType.MX);
-        dnsRecord.setValue(value);
-        entityManager.persist(dnsRecord);
-        return dnsRecord;
     }
 
     @Override
@@ -58,6 +31,7 @@ public class DnsDomainImpl implements IDnsDomain {
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
         accDomain.setStatus(status);
+        accDomain.setDomainDnsRecord(getRandomTxt());
         entityManager.persist(accDomain);
         return accDomain;
     }
