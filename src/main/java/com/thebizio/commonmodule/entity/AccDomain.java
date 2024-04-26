@@ -28,10 +28,5 @@ public class AccDomain extends LastUpdateDetail{
 
     private DomainStatus status;
     private String domain;
-    private String txtRecord;
     private MxStatusEnum mxStatus;
-
-    @Convert(converter = HashMapConvertor.class)
-    @Column(columnDefinition = "TEXT")
-    private Map<String, Object> mxRecord;
 }
