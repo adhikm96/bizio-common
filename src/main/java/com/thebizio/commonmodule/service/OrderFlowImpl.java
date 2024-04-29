@@ -682,14 +682,6 @@ public class OrderFlowImpl implements IOrderFlow {
         address.setPrimaryAddress(true);
         entityManager.persist(address);
 
-        //create contact for child org
-        if (lead == null){
-            Contact contact = createContactFromPayload(op.getPayload());
-            contact.setOrg(org);
-            contact.setPrimaryContact(true);
-            entityManager.persist(contact);
-        }
-
         PostpaidAccountResponse response = new PostpaidAccountResponse();
 
         User user = null;
@@ -706,6 +698,7 @@ public class OrderFlowImpl implements IOrderFlow {
 
             if (account.getType().equals(AccType.ORGANIZATION)){
                 dnsDomain.createAccDomain(account, checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
+                createContactFromLeadForOrganization(lead, org);
             }
 
             //set account in org
