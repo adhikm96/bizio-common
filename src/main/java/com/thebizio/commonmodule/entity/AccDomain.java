@@ -31,6 +31,28 @@ public class AccDomain extends LastUpdateDetail{
     private String domainDnsRecord;
     private MxStatusEnum mxStatus;
 
+    @Convert(converter = HashMapConvertor.class)
     @Column(columnDefinition = "TEXT")
-    private String emailDnsRecords;
+    private Map<String, Object> dnsMx;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> dnsSpf;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> dnsDkim;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> dnsDmark;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> dnsDmarkReport;
+
+    @Convert(converter = HashMapConvertor.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, Object> dnsRecommended;
+
 }
