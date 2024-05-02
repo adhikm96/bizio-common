@@ -45,11 +45,11 @@ public class AccDomain extends LastUpdateDetail{
 
     @Convert(converter = HashMapConvertor.class)
     @Column(columnDefinition = "TEXT")
-    private Map<String, Object> dnsDmark;
+    private Map<String, Object> dnsDmarc;
 
     @Convert(converter = HashMapConvertor.class)
     @Column(columnDefinition = "TEXT")
-    private Map<String, Object> dnsDmarkReport;
+    private Map<String, Object> dnsDmarcReport;
 
     @Convert(converter = HashMapConvertor.class)
     @Column(columnDefinition = "TEXT")
