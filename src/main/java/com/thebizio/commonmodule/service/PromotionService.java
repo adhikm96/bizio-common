@@ -2,6 +2,7 @@ package com.thebizio.commonmodule.service;
 
 import com.thebizio.commonmodule.entity.Promotion;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
@@ -19,6 +20,7 @@ public class PromotionService {
         entityManager.persist(promotion);
     }
 
+    @Transactional
     public void decrementPromocodeCounter(Promotion promotion) {
         promotion.setTimesRedeemed(promotion.getTimesRedeemed()-1);
         entityManager.persist(promotion);
