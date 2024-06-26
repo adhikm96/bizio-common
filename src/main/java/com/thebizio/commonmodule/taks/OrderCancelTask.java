@@ -7,6 +7,7 @@ import com.thebizio.commonmodule.service.PromotionService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.TimerTask;
@@ -30,6 +31,7 @@ public class OrderCancelTask extends TimerTask {
     }
 
     @Override
+    @Transactional
     public void run() {
         Order order = orderService.fetchById(orderId);
 
