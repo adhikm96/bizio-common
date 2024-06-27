@@ -26,6 +26,10 @@ public class AccDomain extends LastUpdateDetail{
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @ManyToOne
+    @JoinColumn(name = "org_id")
+    private Organization organization;
+
     private DomainStatus status;
     private String domain;
     private String domainDnsRecord;
