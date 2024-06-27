@@ -2,6 +2,7 @@ package com.thebizio.commonmodule.service;
 
 import com.thebizio.commonmodule.entity.AccDomain;
 import com.thebizio.commonmodule.entity.Account;
+import com.thebizio.commonmodule.entity.Organization;
 import com.thebizio.commonmodule.enums.DomainStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,13 @@ public class DnsDomainImpl implements IDnsDomain {
     }
 
     @Override
-    public AccDomain createAccDomain(Account acc, String domain, DomainStatus status) {
+    public AccDomain createAccDomain(Account acc, Organization org,  String domain, DomainStatus status) {
         AccDomain accDomain = new AccDomain();
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
         accDomain.setStatus(status);
         accDomain.setDomainDnsRecord(getRandomTxt());
+        accDomain.setOrganization(org);
         entityManager.persist(accDomain);
         return accDomain;
     }

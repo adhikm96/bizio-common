@@ -697,7 +697,7 @@ public class OrderFlowImpl implements IOrderFlow {
             entityManager.persist(account);
 
             if (account.getType().equals(AccType.ORGANIZATION)){
-                dnsDomain.createAccDomain(account, checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
+                dnsDomain.createAccDomain(account, org ,checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
                 createContactFromLeadForOrganization(lead, org);
             }
 
