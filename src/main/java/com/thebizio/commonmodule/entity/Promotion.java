@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class Promotion extends LastUpdateDetail{
         if(!status.equals(Status.ENABLED)){
             return false;
         }
-        if(endDate != null && endDate.isBefore(LocalDateTime.now())){
+        if(endDate != null && endDate.toLocalDate().isBefore(LocalDate.now())){
             return false;
         }
         return timesRedeemed == null || (timesRedeemed < maxRedemptions);

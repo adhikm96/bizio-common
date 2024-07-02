@@ -27,7 +27,7 @@ public class DnsDomainImpl implements IDnsDomain {
     }
 
     @Override
-    public AccDomain createAccDomain(Account acc, Organization org,  String domain, DomainStatus status) {
+    public AccDomain createAccDomain(Account acc, Organization org, String domain, DomainStatus status) {
         AccDomain accDomain = new AccDomain();
         accDomain.setAccount(acc);
         accDomain.setDomain(domain);
