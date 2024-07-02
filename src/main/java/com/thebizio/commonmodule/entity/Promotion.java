@@ -45,7 +45,7 @@ public class Promotion extends LastUpdateDetail{
         if(!status.equals(Status.ENABLED)){
             return false;
         }
-        if(endDate != null && endDate.isBefore(LocalDateTime.now())){
+        if(endDate != null && endDate.toLocalDate().isBefore(LocalDateTime.now().toLocalDate())){
             return false;
         }
         return timesRedeemed == null || (timesRedeemed < maxRedemptions);
