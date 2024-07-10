@@ -26,8 +26,9 @@ public class Contact extends LastUpdateDetail{
     private String mobile;
     private String email;
     private String fax;
-    private String website;
     private Status status;
+    private String designation;
+    private String organization;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean primaryContact;

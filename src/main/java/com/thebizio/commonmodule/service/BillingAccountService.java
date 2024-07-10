@@ -1,7 +1,6 @@
 package com.thebizio.commonmodule.service;
 
 import com.thebizio.commonmodule.entity.BillingAccount;
-import com.thebizio.commonmodule.entity.Promotion;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
