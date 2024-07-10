@@ -401,7 +401,8 @@ public class OrderFlowImpl implements IOrderFlow {
         if (!nullCheckpoint(jsonNode, "email")) contact.setEmail(jsonNode.get("email").asText());
         if (!nullCheckpoint(jsonNode, "mobile")) contact.setMobile(jsonNode.get("mobile").asText());
         if (!nullCheckpoint(jsonNode, "fax")) contact.setFax(jsonNode.get("fax").asText());
-        if (!nullCheckpoint(jsonNode, "website")) contact.setWebsite(jsonNode.get("website").asText());
+        if (!nullCheckpoint(jsonNode, "organization")) contact.setOrganization(jsonNode.get("organization").asText());
+        if (!nullCheckpoint(jsonNode, "designation")) contact.setDesignation(jsonNode.get("designation").asText());
         contact.setStatus(Status.ENABLED);
 
         //attach org later
@@ -652,6 +653,7 @@ public class OrderFlowImpl implements IOrderFlow {
         contact.setEmail(lead.getWorkEmail());
         contact.setMobile(lead.getPhoneNumber());
         contact.setPrimaryContact(true);
+        contact.setDesignation(lead.getJobTitle());
         contact.setStatus(Status.ENABLED);
         contact.setOrg(org);
         entityManager.persist(contact);
@@ -696,6 +698,7 @@ public class OrderFlowImpl implements IOrderFlow {
             account.setPhone(lead.getMobile());
             entityManager.persist(account);
 
+            //create contact org acc
             if (account.getType().equals(AccType.ORGANIZATION)){
                 dnsDomain.createAccDomain(account, org ,checkoutDto.get("email").asText().split("@")[1].toLowerCase(), DomainStatus.VERIFIED);
                 createContactFromLeadForOrganization(lead, org);
@@ -729,11 +732,6 @@ public class OrderFlowImpl implements IOrderFlow {
             //set account in address
             address.setAccount(account);
             entityManager.persist(address);
-
-            //create contact org acc
-            if (lead.getAccType().equals(AccType.ORGANIZATION)) {
-                createContactFromLeadForOrganization(lead, org);
-            }
 
             PaymentIntent pi = new PaymentIntent();
             pi.setPaymentMethod(paymentMethodId);
