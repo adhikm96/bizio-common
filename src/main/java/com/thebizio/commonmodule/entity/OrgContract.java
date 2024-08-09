@@ -23,6 +23,9 @@ public class OrgContract extends LastUpdateDetail{
     @Id
     private String productCode;
 
+    @Id
+    private String subName;
+
     private ContractStatus status;
 
     @Convert(converter = HashMapConvertor.class)
