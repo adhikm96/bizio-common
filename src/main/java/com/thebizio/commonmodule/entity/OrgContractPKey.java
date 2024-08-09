@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class OrgContractPKey implements Serializable {
     private String orgCode;
     private String productCode;
+    private String subName;
 }
